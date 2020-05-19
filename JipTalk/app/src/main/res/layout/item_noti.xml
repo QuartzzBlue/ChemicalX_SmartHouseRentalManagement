@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="10dp">
+
+    <FrameLayout
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_weight="1">
+
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/card"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:cardBackgroundColor="#FF5722"
+            app:cardCornerRadius="30dp" />
+
+        <TextView
+            android:id="@+id/textViewNotiName"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:elevation="@android:dimen/app_icon_size"
+            android:foregroundGravity="top"
+            android:gravity="center"
+            android:text="최여진"
+            android:textAlignment="center"
+            android:textColor="@android:color/white"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:translationZ="@dimen/cardview_compat_inset_shadow" />
+
+    </FrameLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_weight="30"
+        android:orientation="vertical"
+        android:paddingLeft="5dp">
+
+        <TextView
+            android:id="@+id/textViewNotiTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="메세지 제목"
+            android:textColor="@android:color/black"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/textViewNotiContent"
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:text="메세지 내용" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/textViewNotiTime"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="00:00pm"
+        android:textAlignment="textEnd" />
+</LinearLayout>

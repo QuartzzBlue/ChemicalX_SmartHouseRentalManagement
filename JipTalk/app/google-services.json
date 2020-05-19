@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "144052869690",
+    "firebase_url": "https://smart-house-rental-management.firebaseio.com",
+    "project_id": "smart-house-rental-management",
+    "storage_bucket": "smart-house-rental-management.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:144052869690:android:58c619e83d969a0e48b303",
+        "android_client_info": {
+          "package_name": "com.example.jiptalk"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "144052869690-imjo0dsurjigkdcn3d01hu33hdqpbqc2.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAEptE3las7yIkDCokTQVv92HassOCUJbo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "144052869690-imjo0dsurjigkdcn3d01hu33hdqpbqc2.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
