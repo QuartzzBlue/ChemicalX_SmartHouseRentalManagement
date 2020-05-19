@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">집똑</string>
+    <string name="title_home">홈</string>
+    <string name="title_building">건물</string>
+    <string name="title_message">메세지</string>
+    <string name="title_search">검색</string>
+    <string name="title_setting">설정</string>
+</resources>
