@@ -7,31 +7,4 @@
     android:background="#6C1CFF"
     android:gravity="center"
     android:orientation="vertical"
-    tools:context=".SplashActivity">
-
-    <TextView
-        android:id="@+id/tv_title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="집똑🤓"
-        android:textColor="@android:color/white"
-        android:textSize="55sp"
-        android:textStyle="bold" />
-
-    <TextView
-        android:id="@+id/textView2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="by"
-        android:textColor="@android:color/white"
-        android:textSize="30sp" />
-
-    <TextView
-        android:id="@+id/textView3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="ChemicalX"
-        android:textColor="@android:color/white"
-        android:textSize="30sp"
-        android:textStyle="italic" />
-</LinearLayout>
+    tools:context=".SplashActivity"/>
