@@ -16,9 +16,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.jiptalk.R;
-import com.firebase.ui.database.FirebaseRecyclerAdapter;
-import com.firebase.ui.database.FirebaseRecyclerOptions;
-import com.google.firebase.database.DatabaseReference;
 
 import java.util.ArrayList;
 
@@ -29,36 +26,13 @@ public class MessageFragment extends Fragment {
     MessageItemAdapter messageItemAdapter;
     NotiItemAdapter notiItemAdapter;
 
-    View root;
-
-
-
-
-
-
-    /////
-
-
-    private DatabaseReference mRootRef;
-    private DatabaseReference mChatData;
-    private FirebaseRecyclerOptions<MessageVO> mOptions;
-//    private FirebaseRecyclerAdapter<MessageVO,MessageViewHolder> mAdapter;
-    private DatabaseReference mChatFriendData;
-
-
-
-    ////
-
-
-
-
-
-//    private MessageViewModel notificationsViewModel;
+    private MessageViewModel notificationsViewModel;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-//        notificationsViewModel = ViewModelProviders.of(this).get(MessageViewModel.class);
-        root = inflater.inflate(R.layout.fragment_message, container, false);
+        notificationsViewModel =
+                ViewModelProviders.of(this).get(MessageViewModel.class);
+        View root = inflater.inflate(R.layout.fragment_message, container, false);
 
 
         getMsgData();
