@@ -11,6 +11,8 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentPagerAdapter;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.viewpager.widget.PagerAdapter;
@@ -18,14 +20,17 @@ import androidx.viewpager.widget.ViewPager;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.example.jiptalk.R;
+import com.google.android.material.tabs.TabLayout;
+
+import me.relex.circleindicator.CircleIndicator;
 
 import static androidx.core.content.ContextCompat.getSystemService;
 
 public class HomeFragment extends Fragment {
 
     private HomeViewModel homeViewModel;
-    private ViewPager2 viewPager;
-    private TextViewPagerAdapter pagerAdapter;
+    FragmentPagerAdapter adapterViewPager;
+
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -33,63 +38,51 @@ public class HomeFragment extends Fragment {
                 ViewModelProviders.of(this).get(HomeViewModel.class);
         View root = inflater.inflate(R.layout.fragment_home, container, false);
 
-        viewPager = (ViewPager2)root.findViewById(R.id.viewPager);
-        pagerAdapter = new TextViewPagerAdapte ;
-        viewPager.setAdapter(pagerAdapter) ;
+        ViewPager viewPager = (ViewPager) root.findViewById(R.id.viewPager);
+        adapterViewPager = new MyPagerAdapter(getFragmentManager());
+        viewPager.setAdapter(adapterViewPager);
+
+        CircleIndicator indicator = (CircleIndicator) root.findViewById(R.id.indicator);
+        indicator.setViewPager(viewPager);
+
 
         return root;
     }
-
-
 }
 
- class TextViewPagerAdapter extends PagerAdapter{
+class MyPagerAdapter extends FragmentPagerAdapter {
+    private static int NUM_ITEMS = 3;
 
-     // LayoutInflater 서비스 사용을 위한 Context 참조 저장.
-     private Context mContext = null ;
-
-     public TextViewPagerAdapter() {
-
-     }
-
-     // Context를 전달받아 mContext에 저장하는 생성자 추가.
-     public TextViewPagerAdapter(Context context) {
-         mContext = context ;
-     }
-
-
-     @Override
-    public Object instantiateItem(ViewGroup container, int position){
-        View view = null ;
-
-        if (mContext != null) {
-            // LayoutInflater를 통해 "/res/layout/page.xml"을 뷰로 생성.
-            LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            view = inflater.inflate(R.layout.highlight_chart1, container, false);
-
-            TextView textView = (TextView) view.findViewById(R.id.title) ;
-            textView.setText("TEXT " + position) ;
-        }
-
-        // 뷰페이저에 추가.
-        container.addView(view) ;
-
-        return view ;
+    public MyPagerAdapter(FragmentManager fragmentManager) {
+        super(fragmentManager);
     }
-     @Override
-     public void destroyItem(ViewGroup container, int position, Object object) {
-         // 뷰페이저에서 삭제.
-         container.removeView((View) object);
-     }
 
-     @Override
-     public int getCount() {
-         // 전체 페이지 수는 10개로 고정.
-         return 10;
-     }
+    // Returns total number of pages
+    @Override
+    public int getCount() {
+        return NUM_ITEMS;
+    }
 
-     @Override
-     public boolean isViewFromObject(@NonNull View view, @NonNull Object object) {
-         return (view == (View)object);
-     }
+    // Returns the fragment to display for that page
+    @Override
+    public Fragment getItem(int position) {
+        switch (position) {
+            case 0:
+
+                return Chart1Fragment.newInstance(0, "Page # 1");
+            case 1:
+                return Chart2Fragment.newInstance(1, "Page # 2");
+            case 2:
+                return Chart3Fragment.newInstance(2, "Page # 3");
+            default:
+                return null;
+        }
+    }
+
+    // Returns the page title for the top indicator
+    @Override
+    public CharSequence getPageTitle(int position) {
+        return "Page " + position;
+    }
 }
+
