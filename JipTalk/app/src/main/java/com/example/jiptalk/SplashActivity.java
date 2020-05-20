@@ -23,7 +23,9 @@ public class SplashActivity extends Activity {
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+//                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+//                임시로 일단 로그인 액티비티 띄워봄
+                Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
                 startActivity(intent);
                 finish();
             }
