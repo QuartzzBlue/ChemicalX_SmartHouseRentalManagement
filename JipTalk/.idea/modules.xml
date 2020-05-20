@@ -2,8 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/JipTalk.iml" filepath="$PROJECT_DIR$/JipTalk.iml" group="JipTalk" />
-      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" group="JipTalk/app" />
+      <module fileurl="file://$PROJECT_DIR$/JipTalk.iml" filepath="$PROJECT_DIR$/JipTalk.iml" />
+      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
     </modules>
   </component>
 </project>
