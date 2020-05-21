@@ -9,8 +9,13 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.google.firebase.auth.FirebaseAuth;
 
 public class LoginActivity extends AppCompatActivity {
+    private FirebaseAuth signInAuth;
+
     EditText userId, userPwd;
     TextView findIdPwd;
     Button loginBt, signUpBt;
@@ -26,7 +31,28 @@ public class LoginActivity extends AppCompatActivity {
         loginBt = findViewById(R.id.loginBt);
         signUpBt = findViewById(R.id.signUpBt);
 
-        //클릭 가능 여부 설정 및 클릭 리스너 설정
+        //클릭 리스너 설정
+
+//        Button.OnClickListener onClickListener = new Button.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                Intent intent;
+//                switch (view.getId()) {
+//                    case R.id.loginBt :
+//                        String id = userId.getText().toString();
+//                        String password = userPwd.getText().toString();
+//                        Log.d("***",id+", "+password);
+//
+//                        intent = new Intent(getApplicationContext(), MainActivity.class);
+//                        startActivity(intent);
+//                    case R.id.signUpBt :
+//                        Log.d("+++", "회원가입버튼 클릭리스너");
+//                        intent = new Intent(getApplicationContext(), SignUpActivity.class);
+//                        startActivity(intent);
+//                }
+//            }
+//        } ;
+
         loginBt.setClickable(true);
         loginBt.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -37,7 +63,19 @@ public class LoginActivity extends AppCompatActivity {
 
                 Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                 startActivity(intent);
-                finish();
+//                finish();
+            }
+        });
+
+
+        signUpBt.setClickable(true);
+        signUpBt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d("+++", "회원가입버튼 클릭리스너");
+                Intent intent = new Intent(getApplicationContext(), SignUpActivity.class);
+                startActivity(intent);
+//                finish();
             }
         });
     }
