@@ -6,4 +6,6 @@
     <string name="title_search">검색</string>
     <string name="title_setting">설정</string>
     <string name="highlightText">하이라이트</string>
+    <string name="paymentStatusText">납부 현황</string>
+    <string name="moreBtn">더보기</string>
 </resources>

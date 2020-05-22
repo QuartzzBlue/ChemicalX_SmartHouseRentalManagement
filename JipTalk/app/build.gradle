@@ -46,4 +46,5 @@ dependencies {
 
     //View Paser Index
     implementation 'me.relex:circleindicator:1.2.2'
+    implementation 'androidx.viewpager:viewpager:1.0.0'
 }
