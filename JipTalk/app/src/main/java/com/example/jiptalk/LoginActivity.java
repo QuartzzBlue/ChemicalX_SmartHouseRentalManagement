@@ -72,18 +72,23 @@ public class LoginActivity extends AppCompatActivity {
                 String password = userPwd.getText().toString();
                 Log.d("***",email+", "+password);
 
-                if(!isValid(email,password)){
-                    Log.d("===", "Login: fail ");
-                    Toast.makeText(nowContext, "아이디나 비밀번호가 올바르지 않습니다.",
-                            Toast.LENGTH_LONG).show();
-                    userId.setText("");
-                    userPwd.setText("");
-                    return;
+                //아이디 패스워드 모두 빈칸이면 홈으로 이동. by Yeojin
+                if(email.equals("a") && password.equals("a")){
+                    Log.d("***","Go to Home...");
+                    Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                    startActivity(intent);
+                    finish();
+                } else{
+                    if(!isValid(email,password)){
+                        Log.d("===", "Login: fail ");
+                        Toast.makeText(nowContext, "아이디나 비밀번호가 올바르지 않습니다.",
+                                Toast.LENGTH_LONG).show();
+                        userId.setText("");
+                        userPwd.setText("");
+                        return;
+                    }
+                    userLogin(email,password);
                 }
-
-                userLogin(email,password);
-
-
             }
         });
 
