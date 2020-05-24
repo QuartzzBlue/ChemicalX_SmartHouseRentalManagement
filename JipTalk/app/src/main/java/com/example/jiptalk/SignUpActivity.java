@@ -2,12 +2,17 @@ package com.example.jiptalk;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.RadioButton;
@@ -36,12 +41,14 @@ public class SignUpActivity extends AppCompatActivity {
 
     protected ProgressDialog mProgressDialog = null;
 
+    Valid valid;
+
     Context nowContext;
-    EditText idTv, pwdTv, phoneTv, nameTv;
+    EditText idTv, pwdTv, phoneTv, nameTv, pwdCheckTv;
+    TextView pwdValidTv, pwdCheckValidTv;
     TextView saveBt;
 
     RadioButton checkedSexRgbt, checkedCategoryRgbt;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,11 +57,81 @@ public class SignUpActivity extends AppCompatActivity {
 
         initialization();
 
-        saveBt.setOnClickListener(new View.OnClickListener(){
+        /*** 비밀번호 형식 유효성 체크 ***/
+        pwdTv.addTextChangedListener(new TextWatcher() {
             @Override
-            public void onClick(View v){
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
 
-                /*******먼저 모든 문항 유효성 체크해야함!********/
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if(!valid.isValidPwd(s.toString())){
+                    pwdValidTv.setText("형식에 맞지 않는 비밀번호입니다.");
+                    pwdValidTv.setTextColor(ContextCompat.getColor(nowContext, R.color.danger));
+                }else{
+                    pwdValidTv.setText("가능한 비밀번호입니다.");
+                    pwdValidTv.setTextColor(ContextCompat.getColor(nowContext, R.color.success));
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) { }
+        });
+
+        /*** 비밀번호 일치 확인 ***/
+        pwdCheckTv.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                String tempPwd = pwdTv.getText().toString();
+                if(!s.toString().equals(tempPwd)){
+                    pwdCheckValidTv.setText("비밀번호가 일치하지 않습니다.");
+                    pwdCheckValidTv.setTextColor(ContextCompat.getColor(nowContext, R.color.danger));
+                }else{
+                    pwdCheckValidTv.setText("비밀번호가 일치합니다.");
+                    pwdCheckValidTv.setTextColor(ContextCompat.getColor(nowContext, R.color.success));
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {}
+        });
+
+//        /*** 저장 버튼 눌렸을 때 ***/
+//        saveBt.setOnClickListener(new View.OnClickListener(){
+//            @Override
+//            public void onClick(View v){
+//
+//                String email = idTv.getText().toString();
+//                String password = pwdTv.getText().toString();
+//                String phone = phoneTv.getText().toString();
+//                String name = nameTv.getText().toString();
+//                String sex = checkedSexRgbt.getText().toString();
+//                String category = checkedCategoryRgbt.getText().toString();
+//                User newUser = new User(email, password, phone, name, sex, category);
+//
+//                /* 유효성 검사 */
+//                if(!isValid(newUser)) return;
+//
+//                /* 유효성 검사 끝나면 인증 & DB 삽입*/
+//                createUser(newUser);
+//
+//            }
+//        });
+
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.appbar_action_save, menu) ;
+        return true ;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_save :
 
                 String email = idTv.getText().toString();
                 String password = pwdTv.getText().toString();
@@ -65,14 +142,15 @@ public class SignUpActivity extends AppCompatActivity {
                 User newUser = new User(email, password, phone, name, sex, category);
 
                 /* 유효성 검사 */
-                if(!isValid(newUser)) return;
+                if(!isValid(newUser)) return false;
 
                 /* 유효성 검사 끝나면 인증 & DB 삽입*/
                 createUser(newUser);
 
-            }
-        });
-
+                return true ;
+            default :
+                return super.onOptionsItemSelected(item) ;
+        }
     }
 
     private void createUser(final User newUser){
@@ -129,30 +207,6 @@ public class SignUpActivity extends AppCompatActivity {
                             return;
                         }
                     });
-//                    userRef.child(uid).setValue(user)
-//                            .addOnSuccessListener(new OnSuccessListener<Void>() {
-//                                @Override
-//                                public void onSuccess(Void aVoid) {
-//                                    Log.d("===", "insertUserToDatabase: succeed");
-//                                    Toast.makeText(nowContext, "회원가입이 성공적으로 이루어졌습니다.", Toast.LENGTH_SHORT).show();
-//                                    util.hideProgressDialog();
-//
-//                                    // 액티비티 이동
-//                                    Intent intent = new Intent(getApplicationContext(), SignUpCompleteActivity.class);
-//                                    startActivity(intent);
-//                                    finish();
-//                                }
-//
-//                            })
-//                            .addOnFailureListener(new OnFailureListener() {
-//                                @Override
-//                                public void onFailure(@NonNull Exception e) {
-//                                    Toast.makeText(nowContext, "회원가입에 실패하였습니다.", Toast.LENGTH_SHORT).show();
-//                                    Log.w("===", "insertUserToDatabase : Failed");
-//                                    util.hideProgressDialog();
-//                                    return;
-//                                }
-//                            });
 
                 }
 
@@ -168,18 +222,22 @@ public class SignUpActivity extends AppCompatActivity {
         pwdTv = findViewById(R.id.signUpPwdTv);
         phoneTv = findViewById(R.id.signUpPhoneTv);
         nameTv = findViewById(R.id.signUpNameTv);
+        pwdCheckTv = findViewById(R.id.signUpPwdCheckTv);
 
         RadioGroup sexRg = findViewById(R.id.signUpSexRg);
         RadioGroup categoryRg = findViewById(R.id.signUpCategoryRg);
         checkedSexRgbt = findViewById(sexRg.getCheckedRadioButtonId());
         checkedCategoryRgbt = findViewById(categoryRg.getCheckedRadioButtonId());
 
-        saveBt = findViewById(R.id.signUpSaveBt);
+        pwdValidTv = findViewById(R.id.signUpPwdValidTv);
+        pwdCheckValidTv = findViewById(R.id.signUpPwdCheckValidTv);
+
+//        saveBt = findViewById(R.id.signUpSaveBt);
         nowContext = this; // this = View.getContext();  현재 실행되고 있는 View의 context를 return 하는데 보통은 현재 활성화된 activity의 context가 된다.
+        valid = new Valid();
     }
 
     private boolean isValid(User newUser){
-        Valid valid = new Valid();
 
         if(!valid.isNotBlank(newUser.getEmail()) || !valid.isValidEmail(newUser.getEmail())){
             Log.d("===", "createAccount: email is not valid ");
@@ -193,6 +251,14 @@ public class SignUpActivity extends AppCompatActivity {
                     Toast.LENGTH_SHORT).show();
             return false;
         }
+
+        if(!newUser.getPwd().equals(pwdCheckTv.getText().toString())){
+            Log.d("===", "createAccount: password not equal");
+            Toast.makeText(nowContext, "비밀번호가 일치하지 않습니다.",
+                    Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
         if(!valid.isNotBlank(newUser.getName())){
             Log.d("===", "createAccount: name is not valid ");
             Toast.makeText(nowContext, "이름을 입력해 주세요.",

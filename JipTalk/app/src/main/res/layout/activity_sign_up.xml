@@ -5,31 +5,10 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:paddingLeft="25dp"
+    android:paddingEnd="15dp"
+    android:paddingRight="25dp"
     tools:context=".SignUpActivity">
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
-        <TextView
-            android:id="@+id/textView11"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="회원가입"
-            android:textAlignment="center"
-            android:textSize="30sp" />
-
-        <TextView
-            android:id="@+id/signUpSaveBt"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:clickable="true"
-            android:contextClickable="true"
-            android:text="완료" />
-    </LinearLayout>
 
     <ScrollView
         android:layout_width="match_parent"
@@ -38,19 +17,22 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical" >
+            android:orientation="vertical">
 
             <ImageView
                 android:id="@+id/imageView"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
-                app:srcCompat="@drawable/logo" />
+                android:layout_marginBottom="15dp"
+                app:srcCompat="@drawable/logo_medium" />
 
             <TextView
                 android:id="@+id/textView12"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="아이디" />
+                android:text="아이디(이메일)"
+                android:textColor="@color/black"
+                android:textSize="18sp" />
 
             <EditText
                 android:id="@+id/signUpIdTv"
@@ -60,23 +42,40 @@
                 android:inputType="textEmailAddress" />
 
             <TextView
+                android:id="@+id/textView24"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="12sp" />
+
+            <TextView
                 android:id="@+id/textView13"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="비밀번호" />
+                android:text="비밀번호"
+                android:textColor="@color/black"
+                android:textSize="18sp" />
 
             <EditText
                 android:id="@+id/signUpPwdTv"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ems="10"
+                android:hint="대/소문자, 숫자, 특수문자를 포함한 8~15자리"
                 android:inputType="textPassword" />
+
+            <TextView
+                android:id="@+id/signUpPwdValidTv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="12sp" />
 
             <TextView
                 android:id="@+id/textView14"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="비밀번호 확인" />
+                android:text="비밀번호 확인"
+                android:textColor="@color/black"
+                android:textSize="18sp" />
 
             <EditText
                 android:id="@+id/signUpPwdCheckTv"
@@ -86,10 +85,18 @@
                 android:inputType="textPassword" />
 
             <TextView
-                android:id="@+id/textView15"
-                android:layout_width="78dp"
+                android:id="@+id/signUpPwdCheckValidTv"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="휴대폰 번호" />
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/textView15"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="휴대폰 번호"
+                android:textColor="@color/black"
+                android:textSize="18sp" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -100,7 +107,9 @@
                     android:id="@+id/signUpPhoneTv"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_weight="2"
                     android:ems="10"
+                    android:hint="010-0000-0000"
                     android:inputType="phone" />
 
                 <Button
@@ -108,14 +117,19 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="인증번호 요청" />
+                    android:background="@drawable/round_button_1"
+                    android:backgroundTint="@color/colorPrimary"
+                    android:text="인증번호 요청"
+                    android:textColor="@color/white" />
             </LinearLayout>
 
             <TextView
                 android:id="@+id/textView16"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="인증번호 입력" />
+                android:text="인증번호 입력"
+                android:textColor="@color/black"
+                android:textSize="18sp" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -126,7 +140,7 @@
                     android:id="@+id/editText5"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
+                    android:layout_weight="2"
                     android:ems="10"
                     android:inputType="number" />
 
@@ -135,8 +149,19 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="인증번호 확인" />
+                    android:background="@drawable/round_button_1"
+                    android:backgroundTint="@color/colorPrimary"
+                    android:text="인증번호 확인"
+                    android:textColor="@color/white"
+                    android:textColorHint="#FFFFFF" />
+
             </LinearLayout>
+
+            <TextView
+                android:id="@+id/textView25"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="12sp" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -152,15 +177,17 @@
                         android:id="@+id/textView17"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="이름" />
+                        android:text="이름"
+                        android:textColor="@color/black"
+                        android:textSize="18sp" />
 
                     <EditText
                         android:id="@+id/signUpNameTv"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:ems="10"
-                        android:inputType="textPersonName"
-                        android:text="Name" />
+                        android:inputType="textPersonName" />
+
                 </LinearLayout>
 
                 <LinearLayout
@@ -170,9 +197,11 @@
 
                     <TextView
                         android:id="@+id/textView18"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="성별" />
+                        android:layout_width="184dp"
+                        android:layout_height="match_parent"
+                        android:text="성별"
+                        android:textColor="@color/black"
+                        android:textSize="18sp" />
 
                     <RadioGroup
                         android:id="@+id/signUpSexRg"
@@ -182,16 +211,20 @@
 
                         <RadioButton
                             android:id="@+id/radioButton4"
-                            android:layout_width="wrap_content"
+                            android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:checked="true"
-                            android:text="남성" />
+                            android:text="남성"
+                            android:textColorHighlight="@color/colorPrimary"
+                            android:textColorLink="@color/colorPrimary"
+                            android:textSize="16sp" />
 
                         <RadioButton
                             android:id="@+id/radioButton3"
-                            android:layout_width="wrap_content"
+                            android:layout_width="match_parent"
                             android:layout_height="match_parent"
-                            android:text="여성" />
+                            android:text="여성"
+                            android:textSize="16sp" />
 
                     </RadioGroup>
 
@@ -200,10 +233,18 @@
             </LinearLayout>
 
             <TextView
+                android:id="@+id/textView26"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="12sp" />
+
+            <TextView
                 android:id="@+id/textView20"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="가입 유형" />
+                android:text="가입 유형"
+                android:textColor="@color/black"
+                android:textSize="18sp" />
 
             <RadioGroup
                 android:id="@+id/signUpCategoryRg"
@@ -217,14 +258,18 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:checked="true"
-                    android:text="임대인" />
+                    android:text="임대인"
+                    android:textColorHighlight="@color/colorPrimary"
+                    android:textColorLink="@color/colorPrimary"
+                    android:textSize="16sp" />
 
                 <RadioButton
                     android:id="@+id/radioButton5"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="세입자" />
+                    android:text="세입자"
+                    android:textSize="16sp" />
 
             </RadioGroup>
 
