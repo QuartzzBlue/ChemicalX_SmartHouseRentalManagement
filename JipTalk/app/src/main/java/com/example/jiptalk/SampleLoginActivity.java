@@ -22,5 +22,6 @@ public class SampleLoginActivity extends AppCompatActivity {
         String userUID = intent.getExtras().getString("userUID"); /*String형*/
         userId.setText(userID);
         userUid.setText(userUID);
+
     }
 }
