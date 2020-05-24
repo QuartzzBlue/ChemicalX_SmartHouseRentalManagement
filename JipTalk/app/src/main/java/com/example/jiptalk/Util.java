@@ -5,7 +5,7 @@ import android.content.Context;
 import android.os.Build;
 
 
-public class UtilClass {
+public class Util {
     public ProgressDialog mProgressDialog;
 
     public void showProgressDialog(Context nowContext) {

@@ -5,7 +5,7 @@ import android.text.TextUtils;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class ValidClass {
+public class Valid {
 
     public boolean isValidEmail(String email){
         if (email == null || TextUtils.isEmpty(email)) {
@@ -24,6 +24,23 @@ public class ValidClass {
             return true;
         }else{
             return false;
+        }
+    }
+
+    public boolean isValidPhone(String phone){
+
+        if (Pattern.matches("^01(?:0|1|[6-9])-(?:\\d{3}|\\d{4})-\\d{4}$", phone)){
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+    public boolean isNotBlank(String value){
+        if(value.replace(" ","").equals("")){
+            return false;
+        }else{
+            return true;
         }
     }
 

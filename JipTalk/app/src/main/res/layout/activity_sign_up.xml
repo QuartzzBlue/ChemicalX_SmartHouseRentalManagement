@@ -97,7 +97,7 @@
                 android:orientation="horizontal">
 
                 <EditText
-                    android:id="@+id/editText4"
+                    android:id="@+id/signUpPhoneTv"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:ems="10"
@@ -155,7 +155,7 @@
                         android:text="이름" />
 
                     <EditText
-                        android:id="@+id/editText6"
+                        android:id="@+id/signUpNameTv"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:ems="10"
@@ -175,29 +175,28 @@
                         android:text="성별" />
 
                     <RadioGroup
+                        android:id="@+id/signUpSexRg"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content">
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
 
-                        <LinearLayout
-                            android:layout_width="match_parent"
+                        <RadioButton
+                            android:id="@+id/radioButton4"
+                            android:layout_width="wrap_content"
                             android:layout_height="match_parent"
-                            android:orientation="horizontal">
+                            android:checked="true"
+                            android:text="남성" />
 
-                            <RadioButton
-                                android:id="@+id/radioButton4"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="남성" />
+                        <RadioButton
+                            android:id="@+id/radioButton3"
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:text="여성" />
 
-                            <RadioButton
-                                android:id="@+id/radioButton3"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="여성" />
-                        </LinearLayout>
                     </RadioGroup>
 
                 </LinearLayout>
+
             </LinearLayout>
 
             <TextView
@@ -207,28 +206,26 @@
                 android:text="가입 유형" />
 
             <RadioGroup
+                android:id="@+id/signUpCategoryRg"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent" >
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
 
-                <LinearLayout
-                    android:layout_width="match_parent"
+                <RadioButton
+                    android:id="@+id/radioButton6"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal">
+                    android:layout_weight="1"
+                    android:checked="true"
+                    android:text="임대인" />
 
-                    <RadioButton
-                        android:id="@+id/radioButton6"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="임대인" />
+                <RadioButton
+                    android:id="@+id/radioButton5"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="세입자" />
 
-                    <RadioButton
-                        android:id="@+id/radioButton5"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="세입자" />
-                </LinearLayout>
             </RadioGroup>
 
         </LinearLayout>

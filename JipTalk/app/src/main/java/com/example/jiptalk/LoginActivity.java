@@ -73,22 +73,23 @@ public class LoginActivity extends AppCompatActivity {
                 Log.d("***",email+", "+password);
 
                 //아이디 패스워드 모두 빈칸이면 홈으로 이동. by Yeojin
-                if(email.equals("a") && password.equals("a")){
-                    Log.d("***","Go to Home...");
-                    Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                    startActivity(intent);
-                    finish();
-                } else{
-                    if(!isValid(email,password)){
-                        Log.d("===", "Login: fail ");
-                        Toast.makeText(nowContext, "아이디나 비밀번호가 올바르지 않습니다.",
-                                Toast.LENGTH_LONG).show();
-                        userId.setText("");
-                        userPwd.setText("");
-                        return;
-                    }
-                    userLogin(email,password);
+//                if(email.equals("a") && password.equals("a")){
+//                    Log.d("***","Go to Home...");
+//                    Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+//                    startActivity(intent);
+//                    finish();
+//                }
+
+                if(!isValid(email,password)){
+                    Log.d("===", "Login: fail ");
+                    Toast.makeText(nowContext, "아이디나 비밀번호가 올바르지 않습니다.",
+                            Toast.LENGTH_LONG).show();
+                    userId.setText("");
+                    userPwd.setText("");
+                    return;
                 }
+                userLogin(email,password);
+
             }
         });
 
@@ -125,10 +126,13 @@ public class LoginActivity extends AppCompatActivity {
                             /* Version 업데이트 되면서 굳이 콜백함수 안 쓰고 바로 user 정보 불러와서 해결하는듯 */
                             FirebaseUser user = mAuth.getCurrentUser();
 
+                            // 액티비티 이동
                             Intent intent = new Intent(getApplicationContext(), SampleLoginActivity.class);
+
                             intent.putExtra("userID", user.getEmail());
                             intent.putExtra("userUID", user.getUid());
                             startActivity(intent);
+
 
                         }
 
@@ -153,7 +157,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private boolean isValid(String email, String password){
-        ValidClass valid = new ValidClass();
+        Valid valid = new Valid();
         if(!valid.isValidEmail(email) || !valid.isValidPwd(password)){
             return false;
         }else{
