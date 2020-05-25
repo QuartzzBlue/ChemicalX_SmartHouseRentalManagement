@@ -62,8 +62,7 @@ public class LoginActivity extends AppCompatActivity {
 //            }
 //        }; //[End AuthStateListener]
 
-        //클릭 리스너 설정
-        loginBt.setClickable(true);
+        /*** 로그인 ***/
         loginBt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -93,15 +92,24 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
-
-        signUpBt.setClickable(true);
+        /*** 회원가입 ***/
         signUpBt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d("+++", "회원가입버튼 클릭리스너");
-                Intent intent = new Intent(getApplicationContext(), SignUpActivity.class);
+                Log.d("===", "Go to Signup Activity");
+                Intent intent = new Intent(nowContext, SignUpActivity.class);
                 startActivity(intent);
-//                finish();
+
+            }
+        });
+
+        /*** 아이디 & 비밀번호 찾기 ***/
+        findIdPwd.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                Log.d("===", "Go to SettingIdPwd Activity");
+                Intent intent = new Intent(nowContext, SettingIdPwdActivity.class);
+                startActivity(intent);
             }
         });
     }
@@ -112,7 +120,6 @@ public class LoginActivity extends AppCompatActivity {
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
-//                        Log.d("===", "LoginAuthentication: onComplete:" + task.isSuccessful());
 
                         if (!task.isSuccessful()) {
                             Log.w("===", "LoginAuthentication: fail", task.getException());
@@ -127,7 +134,7 @@ public class LoginActivity extends AppCompatActivity {
                             FirebaseUser user = mAuth.getCurrentUser();
 
                             // 액티비티 이동
-                            Intent intent = new Intent(getApplicationContext(), SampleLoginActivity.class);
+                            Intent intent = new Intent(nowContext, SampleLoginActivity.class);
 
                             intent.putExtra("userID", user.getEmail());
                             intent.putExtra("userUID", user.getUid());
@@ -148,7 +155,7 @@ public class LoginActivity extends AppCompatActivity {
 
         userId = findViewById(R.id.userIdTv);
         userPwd = findViewById(R.id.userPwdTv);
-        findIdPwd = findViewById(R.id.findIdPwdTv);
+        findIdPwd = findViewById(R.id.loginFindIdPwdTv);
         loginBt = findViewById(R.id.loginBt);
         signUpBt = findViewById(R.id.signUpBt);
 

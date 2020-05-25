@@ -96,4 +96,16 @@ public class User {
 
         return result;
     }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "email='" + email + '\'' +
+                ", pwd='" + pwd + '\'' +
+                ", phone='" + phone + '\'' +
+                ", name='" + name + '\'' +
+                ", sex='" + sex + '\'' +
+                ", category='" + category + '\'' +
+                '}';
+    }
 }
