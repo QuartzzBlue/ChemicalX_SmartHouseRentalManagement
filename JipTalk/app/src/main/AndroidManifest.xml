@@ -9,10 +9,16 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".SignUpCompleteActivity"></activity>
+        <activity android:name=".FindPwdActivity"></activity>
+        <activity
+            android:name=".FindIdActivity"
+            android:label="아이디 찾기"/>
+        <activity android:name=".SettingIdPwdActivity" />
+        <activity android:name=".SignUpCompleteActivity" />
         <activity android:name=".SampleLoginActivity" />
-        <activity android:name=".SignUpActivity"
-            android:label="회원가입"/>
+        <activity
+            android:name=".SignUpActivity"
+            android:label="회원가입" />
         <activity android:name=".LoginActivity" />
         <activity android:name=".ui.message.MessageDetailActivity" />
         <activity android:name=".MainActivity" />
@@ -23,6 +29,7 @@
             android:theme="@style/SplashTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>

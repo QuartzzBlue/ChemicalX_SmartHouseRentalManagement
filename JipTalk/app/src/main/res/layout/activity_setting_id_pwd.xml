@@ -5,25 +5,20 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".SampleLoginActivity">
-
-    <TextView
-        android:id="@+id/loginUserId"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="TextView"
-        android:textSize="24sp" />
-
-    <TextView
-        android:id="@+id/loginUserUid"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="TextView"
-        android:textSize="24sp" />
+    android:textAlignment="center"
+    tools:context=".SettingIdPwdActivity">
 
     <Button
-        android:id="@+id/sample_signoutBt"
+        android:id="@+id/settingFindIdBt"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="SIGN OUT" />
+        android:background="@drawable/round_button_2"
+        android:text="아이디 찾기" />
+
+    <Button
+        android:id="@+id/settingFindPwdBt"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/round_button_2"
+        android:text="비밀번호 찾기" />
 </LinearLayout>

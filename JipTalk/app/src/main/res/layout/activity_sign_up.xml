@@ -6,8 +6,8 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:paddingLeft="25dp"
-    android:paddingEnd="15dp"
     android:paddingRight="25dp"
+    android:paddingBottom="15dp"
     tools:context=".SignUpActivity">
 
     <ScrollView
@@ -113,7 +113,7 @@
                     android:inputType="phone" />
 
                 <Button
-                    android:id="@+id/button"
+                    android:id="@+id/signUpPhoneAuthBt"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -137,7 +137,7 @@
                 android:orientation="horizontal">
 
                 <EditText
-                    android:id="@+id/editText5"
+                    android:id="@+id/signUpPhoneCheckTv"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="2"
@@ -145,7 +145,7 @@
                     android:inputType="number" />
 
                 <Button
-                    android:id="@+id/button2"
+                    android:id="@+id/signUpPhoneAuthVerificationBt"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -171,6 +171,7 @@
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_weight="4"
                     android:orientation="vertical">
 
                     <TextView
@@ -193,6 +194,7 @@
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_weight="3"
                     android:orientation="vertical">
 
                     <TextView
