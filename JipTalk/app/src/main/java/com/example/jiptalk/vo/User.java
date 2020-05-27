@@ -1,8 +1,4 @@
-package com.example.jiptalk;
-
-import android.app.ProgressDialog;
-import android.content.Context;
-import android.os.Build;
+package com.example.jiptalk.vo;
 
 import com.google.firebase.database.Exclude;
 import com.google.firebase.database.IgnoreExtraProperties;
