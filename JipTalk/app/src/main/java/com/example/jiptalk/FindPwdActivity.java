@@ -77,7 +77,7 @@ public class FindPwdActivity extends AppCompatActivity {
         });
     }
 
-    private boolean sendPwdResetEmail(String email) {
+    private void sendPwdResetEmail(String email) {
 
     }
 

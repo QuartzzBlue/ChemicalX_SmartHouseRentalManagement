@@ -134,10 +134,8 @@ public class LoginActivity extends AppCompatActivity {
                             FirebaseUser user = mAuth.getCurrentUser();
 
                             // 액티비티 이동
-                            Intent intent = new Intent(nowContext, SampleLoginActivity.class);
+                            Intent intent = new Intent(nowContext, MainActivity.class);
 
-                            intent.putExtra("userID", user.getEmail());
-                            intent.putExtra("userUID", user.getUid());
                             startActivity(intent);
 
 
