@@ -3,6 +3,7 @@ package com.example.jiptalk.ui.home;
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +17,8 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
 import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
 
 import com.example.jiptalk.R;
@@ -30,7 +33,9 @@ public class HomeFragment extends Fragment {
     private HomeViewModel homeViewModel;
     FragmentPagerAdapter adapterViewPager;
     ArrayList<Building> buildings;
-
+    RecyclerView recyclerView;
+    RecyclerView.LayoutManager layoutManager; //어댑터에서 getView 역할을 하는것
+    // (뷰홀더 지정. 뷰홀더 : 화면에 표시될 아이템 뷰를 저장하는 객체)
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -38,7 +43,17 @@ public class HomeFragment extends Fragment {
                 ViewModelProviders.of(this).get(HomeViewModel.class);
         View root = inflater.inflate(R.layout.fragment_home, container, false);
 
-        //Hightlight Charts
+        recyclerView = root.findViewById(R.id.recycler_view);
+        recyclerView.setHasFixedSize(true);
+        layoutManager = new LinearLayoutManager(getContext().getApplicationContext());
+        recyclerView.setLayoutManager(layoutManager);
+
+        InitializePaymentStatus();
+
+        MyRecycleViewAdapter myRecycleViewAdapter = new MyRecycleViewAdapter(buildings);
+        recyclerView.setAdapter(myRecycleViewAdapter);
+
+        /*//Hightlight Charts
         ViewPager viewPager = (ViewPager) root.findViewById(R.id.viewPager);
         adapterViewPager = new MyPagerAdapter(getFragmentManager());
         viewPager.setAdapter(adapterViewPager);
@@ -53,7 +68,7 @@ public class HomeFragment extends Fragment {
         final MyListViewAdapter myListViewAdapter = new MyListViewAdapter(getContext().getApplicationContext(),buildings);
         listView.setAdapter(myListViewAdapter);
         listViewHeightSet(myListViewAdapter,listView);
-
+*/
         return root;
     }
 
@@ -84,6 +99,64 @@ public class HomeFragment extends Fragment {
         ViewGroup.LayoutParams params = listView.getLayoutParams();
         params.height = totalHeight + (listView.getDividerHeight() * (listAdapter.getCount() - 1));
         listView.setLayoutParams(params);
+    }
+}
+
+class MyRecycleViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
+
+    class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
+
+        TextView buildingName;
+        int position;
+
+        MyViewHolder(@NonNull View view) {
+            super(view);
+            buildingName = view.findViewById(R.id.buildingName);
+        }
+
+        void onBind(){
+            buildingName.setText("진성원룸");
+           // changeVisibility(selectedItems.get(position));
+            buildingName.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View v) {
+            if(v.getId()==R.id.buildingName){
+
+            }
+        }
+    }
+
+    private ArrayList<Building> buildingArrayList;
+    private SparseBooleanArray selectedItems = new SparseBooleanArray(); //item 의 클릭 상태를 저장할 array 객체
+    private int prePosition = -1; //직전에 클릭됐던 item 의 position
+
+    MyRecycleViewAdapter(ArrayList<Building> buildingArrayList){
+        this.buildingArrayList=buildingArrayList;
+    }
+
+    //RecyclerView 의 행을 표시하는데 사용되는 레이아웃 xml 을 가져옴
+    @NonNull
+    @Override
+    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.recyclerview_item,parent,false);
+
+        return new MyViewHolder(v);
+    }
+
+    //RecyclerView 의 행에 보여질 view 설정
+    @Override
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
+        MyViewHolder myViewHolder = (MyViewHolder) holder;
+
+        myViewHolder.buildingName.setText(buildingArrayList.get(position).name);
+    }
+
+    //RecyclerVew 의 행 갯수 리턴
+    @Override
+    public int getItemCount() {
+        return buildingArrayList.size();
     }
 }
 
