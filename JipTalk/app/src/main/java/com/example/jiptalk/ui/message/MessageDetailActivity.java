@@ -74,6 +74,8 @@ public class MessageDetailActivity extends AppCompatActivity {
     private Button buttonInsertDateStart, buttonInsertDateEnd, buttonInsertTime, buttonSendMsg;
 
 
+
+
     private FrameLayout frameLayoutMsgDetail;
 
     private DatePickerDialog.OnDateSetListener callbackMethodDatePicker;
@@ -213,18 +215,20 @@ public class MessageDetailActivity extends AppCompatActivity {
 
     public void loadMessages() {
 
-        DatabaseReference messageRef = databaseReference.child("messages").child(currentUserID).child(chatUserID);
-
-        Query messageQuery = messageRef.limitToLast(currentPage * TOTAL_ITEMS_TO_LOAD);
+//        DatabaseReference messageRef = databaseReference.child("messages").child(currentUserID).child(chatUserID);
+//
+//        Query messageQuery = messageRef.limitToLast(currentPage * TOTAL_ITEMS_TO_LOAD);
 
         databaseReference.child("messages").child(currentUserID).child(chatUserID).addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
 
                 ChatDataDTO chatData = dataSnapshot.getValue(ChatDataDTO.class);
+                for(DataSnapshot d : dataSnapshot.getChildren()) {
+
+                }
 
                 Log.d(TAG, "dataSnapshot.getChildrenCount() : " + dataSnapshot.getChildrenCount());
-
 
                 itemPos++;
 

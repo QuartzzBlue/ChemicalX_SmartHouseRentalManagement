@@ -1,16 +1,16 @@
-package com.example.jiptalk.ui.message;
+package com.example.jiptalk.vo;
 
-public class NotiVO {
+public class Noti {
     String name;
     String title;
     String content;
     String time;
 
 
-    public NotiVO() {
+    public Noti() {
     }
 
-    public NotiVO(String name, String title, String content, String time) {
+    public Noti(String name, String title, String content, String time) {
         this.name = name;
         this.title = title;
         this.content = content;
