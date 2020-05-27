@@ -5,27 +5,24 @@
     android:layout_height="match_parent"
     tools:context=".ui.message.MessageDetailActivity">
 
-    <include
-        android:id="@+id/toolbarMsgDetail"
-        layout="@layout/app_bar_layout" />
-
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/swipeRefreshLayoutMsgDetail"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/toolbarMsgDetail"
+        android:layout_above="@+id/chat_bar"
         android:layout_alignParentStart="true"
         android:layout_alignParentEnd="true"
         android:layout_marginStart="0dp"
         android:layout_marginTop="0dp"
-        android:layout_marginEnd="0dp">
+        android:layout_marginEnd="0dp"
+        android:layout_marginBottom="6dp">
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerViewMsgDetail"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_below="@+id/toolbarMsgDetail"
+            android:layout_above="@+id/chat_bar"
             android:layout_alignParentStart="true"
             android:layout_alignParentEnd="true"
             android:layout_marginStart="0dp"
@@ -37,47 +34,442 @@
 
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
-    <!--    <RelativeLayout-->
-    <!--        android:id="@+id/chat_bar"-->
-    <!--        android:layout_width="match_parent"-->
-    <!--        android:layout_height="74dp"-->
-    <!--        android:layout_alignParentBottom="true"-->
-    <!--        android:layout_marginBottom="0dp"-->
-    <!--        android:orientation="horizontal">-->
+    <RelativeLayout
+        android:id="@+id/chat_bar"
+        android:layout_width="match_parent"
+        android:layout_height="74dp"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginEnd="5dp"
+        android:layout_marginBottom="5dp"
+        android:orientation="horizontal"
+        android:padding="2dp">
 
-    <!--        <ImageView-->
-    <!--            android:id="@+id/chat_add_button"-->
-    <!--            android:layout_width="74dp"-->
-    <!--            android:layout_height="74dp"-->
-    <!--            android:layout_alignParentLeft="true"-->
-    <!--            android:layout_alignParentBottom="true"-->
-    <!--            app:srcCompat="@drawable/ic_chat_add" />-->
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@android:color/white"
+            android:elevation="5dp"
+            android:fadingEdge="horizontal"
+            android:fadingEdgeLength="2dp"
+            app:cardCornerRadius="15dp"
+            app:cardElevation="5dp"
+            app:cardMaxElevation="5dp">
 
-    <!--        <EditText-->
+            <Button
+                android:id="@+id/btnSendMsg"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/btn_selectable"
+                android:onClick="composeMsgBtnClick"
+                android:text="메세지 보내기"
+                android:textColor="#FFFFFF"
+                android:textSize="24sp"
+                android:textStyle="bold" />
+        </androidx.cardview.widget.CardView>
 
-    <!--            android:id="@+id/chat_edit_text"-->
-    <!--            android:layout_width="247dp"-->
-    <!--            android:layout_height="wrap_content"-->
-    <!--            android:layout_centerVertical="true"-->
-    <!--            android:layout_marginStart="0dp"-->
-    <!--            android:layout_marginEnd="0dp"-->
-    <!--            android:layout_toStartOf="@+id/chat_send_button"-->
-    <!--            android:layout_toEndOf="@+id/chat_add_button"-->
-    <!--            android:background="@drawable/text_input"-->
-    <!--            android:fontFamily="casual"-->
-    <!--            android:hint="Message" />-->
+    </RelativeLayout>
 
-    <!--        <ImageView-->
-    <!--            android:id="@+id/chat_send_button"-->
-    <!--            android:layout_width="74dp"-->
-    <!--            android:layout_height="74dp"-->
-    <!--            android:layout_alignParentRight="true"-->
-    <!--            android:layout_alignParentBottom="true"-->
-    <!--            android:layout_marginRight="0dp"-->
-    <!--            android:layout_marginBottom="0dp"-->
-    <!--            app:layout_constraintBottom_toBottomOf="parent"-->
-    <!--            app:layout_constraintEnd_toEndOf="parent"-->
-    <!--            app:srcCompat="@drawable/ic_chat_send" />-->
-    <!--    </RelativeLayout>-->
+    <FrameLayout
+        android:id="@+id/frameLayoutMsgDetail"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+    </FrameLayout>
+
+    <!--    <FrameLayout-->
+<!--        android:id="@+id/frameLayoutDark"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="match_parent"-->
+<!--        android:alpha="0.7"-->
+<!--        android:background="@android:color/black"-->
+<!--        android:clickable="true"-->
+<!--        android:visibility="gone">-->
+
+<!--    </FrameLayout>-->
+
+<!--    <FrameLayout-->
+<!--        android:id="@+id/frameLayoutSendMsgLayout"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:clickable="true"-->
+<!--        android:visibility="gone">-->
+
+<!--        <LinearLayout-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_margin="5dp"-->
+<!--            android:orientation="vertical">-->
+
+<!--            <TextView-->
+<!--                android:id="@+id/textViewTitle"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:text="메세지 작성하기"-->
+<!--                android:textColor="@android:color/white"-->
+<!--                android:textSize="24sp"-->
+<!--                android:textStyle="bold" />-->
+
+<!--            <androidx.cardview.widget.CardView-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                app:cardCornerRadius="15dp">-->
+
+<!--                <LinearLayout-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_gravity="center"-->
+<!--                    android:layout_margin="10dp"-->
+<!--                    android:orientation="vertical"-->
+<!--                    android:textAlignment="center">-->
+
+<!--                    <LinearLayout-->
+<!--                        android:layout_width="match_parent"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:layout_marginBottom="5dp"-->
+<!--                        android:orientation="horizontal">-->
+
+<!--                        <Button-->
+<!--                            android:id="@+id/buttonTitle"-->
+<!--                            android:layout_width="wrap_content"-->
+<!--                            android:layout_height="wrap_content"-->
+<!--                            android:layout_marginLeft="5dp"-->
+<!--                            android:layout_marginRight="5dp"-->
+<!--                            android:layout_weight="1"-->
+<!--                            android:background="@drawable/btn_selectable"-->
+<!--                            android:onClick="clickBtn"-->
+<!--                            android:text="주제"-->
+<!--                            android:textColor="@android:color/white"-->
+<!--                            android:textSize="18sp"-->
+<!--                            android:textStyle="bold" />-->
+
+<!--                        <Button-->
+<!--                            android:id="@+id/buttonDate"-->
+<!--                            android:layout_width="wrap_content"-->
+<!--                            android:layout_height="wrap_content"-->
+<!--                            android:layout_marginLeft="5dp"-->
+<!--                            android:layout_marginRight="5dp"-->
+<!--                            android:layout_weight="1"-->
+<!--                            android:background="@drawable/btn_selectable"-->
+<!--                            android:onClick="clickBtn"-->
+<!--                            android:text="날짜"-->
+<!--                            android:textColor="@android:color/white"-->
+<!--                            android:textSize="18sp"-->
+<!--                            android:textStyle="bold" />-->
+<!--                    </LinearLayout>-->
+
+<!--                    <FrameLayout-->
+<!--                        android:id="@+id/frameLayoutTitleChoices"-->
+<!--                        android:layout_width="match_parent"-->
+<!--                        android:layout_height="wrap_content">-->
+
+<!--                        <LinearLayout-->
+<!--                            android:layout_width="match_parent"-->
+<!--                            android:layout_height="wrap_content"-->
+<!--                            android:orientation="vertical">-->
+
+<!--                            <LinearLayout-->
+<!--                                android:layout_width="match_parent"-->
+<!--                                android:layout_height="wrap_content"-->
+<!--                                android:layout_weight="1"-->
+<!--                                android:orientation="horizontal">-->
+
+<!--                                <Button-->
+<!--                                    android:id="@+id/buttonTitleAppointment"-->
+<!--                                    android:layout_width="wrap_content"-->
+<!--                                    android:layout_height="wrap_content"-->
+<!--                                    android:layout_margin="5dp"-->
+<!--                                    android:layout_weight="1"-->
+<!--                                    android:background="@drawable/btn_selectable"-->
+<!--                                    android:onClick="clickBtn"-->
+<!--                                    android:text="방문"-->
+<!--                                    android:textColor="@android:color/white" />-->
+
+<!--                                <Button-->
+<!--                                    android:id="@+id/buttonTitleFee"-->
+<!--                                    android:layout_width="wrap_content"-->
+<!--                                    android:layout_height="wrap_content"-->
+<!--                                    android:layout_margin="5dp"-->
+<!--                                    android:layout_weight="1"-->
+<!--                                    android:background="@drawable/btn_selectable"-->
+<!--                                    android:onClick="clickBtn"-->
+<!--                                    android:text="관리비"-->
+<!--                                    android:textColor="@android:color/white" />-->
+
+<!--                                <Button-->
+<!--                                    android:id="@+id/buttonTitleMonthlyPayment"-->
+<!--                                    android:layout_width="wrap_content"-->
+<!--                                    android:layout_height="wrap_content"-->
+<!--                                    android:layout_margin="5dp"-->
+<!--                                    android:layout_weight="1"-->
+<!--                                    android:background="@drawable/btn_selectable"-->
+<!--                                    android:onClick="clickBtn"-->
+<!--                                    android:text="월세"-->
+<!--                                    android:textColor="@android:color/white" />-->
+<!--                            </LinearLayout>-->
+
+<!--                            <LinearLayout-->
+<!--                                android:layout_width="match_parent"-->
+<!--                                android:layout_height="wrap_content"-->
+<!--                                android:layout_weight="1"-->
+<!--                                android:orientation="horizontal">-->
+
+<!--                                <Button-->
+<!--                                    android:id="@+id/buttonTitleBldgContruction"-->
+<!--                                    android:layout_width="wrap_content"-->
+<!--                                    android:layout_height="wrap_content"-->
+<!--                                    android:layout_margin="5dp"-->
+<!--                                    android:layout_weight="1"-->
+<!--                                    android:background="@drawable/btn_selectable"-->
+<!--                                    android:onClick="clickBtn"-->
+<!--                                    android:text="건물공사"-->
+<!--                                    android:textColor="@android:color/white" />-->
+
+<!--                                <Button-->
+<!--                                    android:id="@+id/buttonTitleNoise"-->
+<!--                                    android:layout_width="wrap_content"-->
+<!--                                    android:layout_height="wrap_content"-->
+<!--                                    android:layout_margin="5dp"-->
+<!--                                    android:layout_weight="1"-->
+<!--                                    android:background="@drawable/btn_selectable"-->
+<!--                                    android:onClick="clickBtn"-->
+<!--                                    android:text="층간소음"-->
+<!--                                    android:textColor="@android:color/white" />-->
+
+<!--                                <Button-->
+<!--                                    android:id="@+id/buttonTitleRecycle"-->
+<!--                                    android:layout_width="wrap_content"-->
+<!--                                    android:layout_height="wrap_content"-->
+<!--                                    android:layout_margin="5dp"-->
+<!--                                    android:layout_weight="1"-->
+<!--                                    android:background="@drawable/btn_selectable"-->
+<!--                                    android:onClick="clickBtn"-->
+<!--                                    android:text="재활용"-->
+<!--                                    android:textColor="@android:color/white" />-->
+<!--                            </LinearLayout>-->
+
+<!--                            <LinearLayout-->
+<!--                                android:layout_width="match_parent"-->
+<!--                                android:layout_height="wrap_content"-->
+<!--                                android:layout_weight="1"-->
+<!--                                android:orientation="horizontal">-->
+
+<!--                                <Button-->
+<!--                                    android:id="@+id/buttonTitle7"-->
+<!--                                    android:layout_width="wrap_content"-->
+<!--                                    android:layout_height="wrap_content"-->
+<!--                                    android:layout_margin="5dp"-->
+<!--                                    android:layout_weight="1"-->
+<!--                                    android:background="@drawable/btn_selectable"-->
+<!--                                    android:onClick="clickBtn"-->
+<!--                                    android:text="Button"-->
+<!--                                    android:textColor="@android:color/white" />-->
+
+<!--                                <Button-->
+<!--                                    android:id="@+id/buttonTitle8"-->
+<!--                                    android:layout_width="wrap_content"-->
+<!--                                    android:layout_height="wrap_content"-->
+<!--                                    android:layout_margin="5dp"-->
+<!--                                    android:layout_weight="1"-->
+<!--                                    android:background="@drawable/btn_selectable"-->
+<!--                                    android:onClick="clickBtn"-->
+<!--                                    android:text="Button"-->
+<!--                                    android:textColor="@android:color/white" />-->
+
+<!--                                <Button-->
+<!--                                    android:id="@+id/buttonTitle9"-->
+<!--                                    android:layout_width="wrap_content"-->
+<!--                                    android:layout_height="wrap_content"-->
+<!--                                    android:layout_margin="5dp"-->
+<!--                                    android:layout_weight="1"-->
+<!--                                    android:background="@drawable/btn_selectable"-->
+<!--                                    android:onClick="clickBtn"-->
+<!--                                    android:text="Button"-->
+<!--                                    android:textColor="@android:color/white" />-->
+<!--                            </LinearLayout>-->
+
+<!--                            <LinearLayout-->
+<!--                                android:layout_width="match_parent"-->
+<!--                                android:layout_height="wrap_content"-->
+<!--                                android:layout_weight="1"-->
+<!--                                android:orientation="horizontal">-->
+
+<!--                                <Button-->
+<!--                                    android:id="@+id/buttonTitle10"-->
+<!--                                    android:layout_width="wrap_content"-->
+<!--                                    android:layout_height="wrap_content"-->
+<!--                                    android:layout_margin="5dp"-->
+<!--                                    android:layout_weight="1"-->
+<!--                                    android:background="@drawable/btn_selectable"-->
+<!--                                    android:onClick="clickBtn"-->
+<!--                                    android:text="Button"-->
+<!--                                    android:textColor="@android:color/white" />-->
+
+<!--                                <Button-->
+<!--                                    android:id="@+id/buttonTitle11"-->
+<!--                                    android:layout_width="wrap_content"-->
+<!--                                    android:layout_height="wrap_content"-->
+<!--                                    android:layout_margin="5dp"-->
+<!--                                    android:layout_weight="1"-->
+<!--                                    android:background="@drawable/btn_selectable"-->
+<!--                                    android:onClick="clickBtn"-->
+<!--                                    android:text="Button"-->
+<!--                                    android:textColor="@android:color/white" />-->
+
+<!--                                <Button-->
+<!--                                    android:id="@+id/buttonTitle12"-->
+<!--                                    android:layout_width="wrap_content"-->
+<!--                                    android:layout_height="wrap_content"-->
+<!--                                    android:layout_margin="5dp"-->
+<!--                                    android:layout_weight="1"-->
+<!--                                    android:background="@drawable/btn_selectable"-->
+<!--                                    android:onClick="clickBtn"-->
+<!--                                    android:text="Button"-->
+<!--                                    android:textColor="@android:color/white" />-->
+<!--                            </LinearLayout>-->
+
+<!--                        </LinearLayout>-->
+<!--                    </FrameLayout>-->
+
+<!--                    <FrameLayout-->
+<!--                        android:id="@+id/frameLayoutCalendar"-->
+<!--                        android:layout_width="match_parent"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:visibility="gone">-->
+
+<!--                        <LinearLayout-->
+<!--                            android:layout_width="match_parent"-->
+<!--                            android:layout_height="wrap_content"-->
+<!--                            android:gravity="center"-->
+<!--                            android:orientation="vertical">-->
+
+<!--                            <LinearLayout-->
+<!--                                android:layout_width="match_parent"-->
+<!--                                android:layout_height="wrap_content"-->
+<!--                                android:gravity="center"-->
+<!--                                android:orientation="horizontal">-->
+
+<!--                                <EditText-->
+<!--                                    android:id="@+id/editText"-->
+<!--                                    android:layout_width="wrap_content"-->
+<!--                                    android:layout_height="wrap_content"-->
+<!--                                    android:clickable="false"-->
+<!--                                    android:ems="8"-->
+<!--                                    android:inputType="date"-->
+<!--                                    android:text="from"-->
+<!--                                    android:textAlignment="center"-->
+<!--                                    android:textColor="@color/design_default_color_primary" />-->
+
+<!--                                <TextView-->
+<!--                                    android:id="@+id/textView9"-->
+<!--                                    android:layout_width="wrap_content"-->
+<!--                                    android:layout_height="wrap_content"-->
+<!--                                    android:text="~" />-->
+
+<!--                                <EditText-->
+<!--                                    android:id="@+id/editText2"-->
+<!--                                    android:layout_width="wrap_content"-->
+<!--                                    android:layout_height="wrap_content"-->
+<!--                                    android:clickable="false"-->
+<!--                                    android:ems="8"-->
+<!--                                    android:inputType="date"-->
+<!--                                    android:text="to"-->
+<!--                                    android:textAlignment="center"-->
+<!--                                    android:textColor="@color/design_default_color_primary" />-->
+<!--                            </LinearLayout>-->
+
+<!--&lt;!&ndash;                            <CalendarView&ndash;&gt;-->
+<!--&lt;!&ndash;                                android:id="@+id/calendarViewRequestDate"&ndash;&gt;-->
+<!--&lt;!&ndash;                                android:layout_width="wrap_content"&ndash;&gt;-->
+<!--&lt;!&ndash;                                android:layout_height="wrap_content" />&ndash;&gt;-->
+
+<!--                            <DatePicker-->
+<!--                                android:id="@+id/datePickerRequestDate"-->
+<!--                                android:layout_width="match_parent"-->
+<!--                                android:layout_height="wrap_content" />-->
+
+<!--                        </LinearLayout>-->
+
+<!--                    </FrameLayout>-->
+
+<!--                </LinearLayout>-->
+
+<!--            </androidx.cardview.widget.CardView>-->
+
+<!--            <androidx.cardview.widget.CardView-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_marginTop="5dp"-->
+<!--                app:cardBackgroundColor="@android:color/white"-->
+<!--                app:cardCornerRadius="15dp"-->
+<!--                app:contentPadding="15dp">-->
+
+<!--                <FrameLayout-->
+<!--                    android:id="@+id/frameLayoutChat"-->
+<!--                    android:layout_width="60dp"-->
+<!--                    android:layout_height="60dp"-->
+<!--                    android:layout_weight="1">-->
+
+
+<!--                    <androidx.cardview.widget.CardView-->
+<!--                        android:id="@+id/cardViewChat"-->
+<!--                        android:layout_width="match_parent"-->
+<!--                        android:layout_height="match_parent"-->
+<!--                        app:cardBackgroundColor="@android:color/black"-->
+<!--                        app:cardCornerRadius="30dp" />-->
+
+<!--                    <TextView-->
+<!--                        android:id="@+id/textViewLandLord"-->
+<!--                        android:layout_width="match_parent"-->
+<!--                        android:layout_height="match_parent"-->
+<!--                        android:elevation="@android:dimen/app_icon_size"-->
+<!--                        android:foregroundGravity="top"-->
+<!--                        android:gravity="center"-->
+<!--                        android:text="집주인"-->
+<!--                        android:textAlignment="center"-->
+<!--                        android:textColor="@android:color/white"-->
+<!--                        android:textSize="18sp"-->
+<!--                        android:textStyle="bold"-->
+<!--                        android:translationZ="@dimen/cardview_compat_inset_shadow" />-->
+
+<!--                </FrameLayout>-->
+
+<!--                <TextView-->
+<!--                    android:id="@+id/textViewMsgPreview"-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_alignParentTop="true"-->
+<!--                    android:layout_marginStart="70dp"-->
+<!--                    android:layout_marginTop="10dp"-->
+<!--                    android:layout_toEndOf="@+id/frameLayoutChat"-->
+<!--                    android:background="@drawable/chat_bubble_2"-->
+<!--                    android:fontFamily="casual"-->
+<!--                    android:paddingStart="10dp"-->
+<!--                    android:paddingLeft="5dp"-->
+<!--                    android:paddingTop="5dp"-->
+<!--                    android:paddingEnd="5dp"-->
+<!--                    android:paddingRight="5dp"-->
+<!--                    android:paddingBottom="5dp"-->
+<!--                    android:text="작성된 메세지 미리보기"-->
+<!--                    android:textColor="@android:color/black"-->
+<!--                    android:textSize="18sp" />-->
+
+
+<!--            </androidx.cardview.widget.CardView>-->
+
+<!--            <Button-->
+<!--                android:id="@+id/buttonInsertDate"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:background="@drawable/btn_selectable"-->
+<!--                android:text="날짜 입력하기"-->
+<!--                android:textColor="@android:color/white"-->
+<!--                android:textStyle="bold"-->
+<!--                android:visibility="gone" />-->
+
+<!--        </LinearLayout>-->
+
+<!--    </FrameLayout>-->
 
 </RelativeLayout>

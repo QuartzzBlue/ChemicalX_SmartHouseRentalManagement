@@ -3,114 +3,402 @@ package com.example.jiptalk.ui.message;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.format.DateFormat;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.FrameLayout;
+import android.widget.LinearLayout;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.jiptalk.R;
+import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.firebase.ui.database.FirebaseRecyclerOptions;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Locale;
 
 public class MessageFragment extends Fragment {
+
+    private String TAG = "=== jiptalk.ui.message.MessageFragment";
+
     ArrayList<MessageVO> msgList = new ArrayList<>();
     ArrayList<NotiVO> notiList = new ArrayList<>();
 
-    MessageItemAdapter messageItemAdapter;
     NotiItemAdapter notiItemAdapter;
 
-    private MessageViewModel notificationsViewModel;
+    View root;
 
-    public View onCreateView(@NonNull LayoutInflater inflater,
+
+    private Animation fab_open, fab_close;
+    private Boolean isFabOpen = false;
+    private FloatingActionButton fabAddBtn, fabAddMsg, fabAddNoti;
+    private FrameLayout frameLayoutMessage, frameLayoutAddMsg, frameLayoutAddNoti;
+    private TextView textViewAddMsg, textViewAddNoti;
+    private Spinner spinnerTenantList, spinnerBuildingList;
+    private ArrayList<String> arrayListTenantList;
+    private ArrayAdapter<String> arrayAdapterTenant;
+    private Button buttonAddMsg, buttonAddNoti;
+    private String tenantSelected;
+
+
+    /////
+
+    private RecyclerView recyclerViewMsg;
+    private View mView;
+    private String currentUserID;
+    private String category;
+    private DatabaseReference rootRef;
+    private DatabaseReference chatData;
+    private FirebaseRecyclerOptions<MessageVO> messageOptions;
+    private FirebaseRecyclerAdapter<MessageVO, MessageViewHolder> messageAdapter;
+    private DatabaseReference mChatFriendData;
+
+
+    ////
+
+
+//    private MessageViewModel notificationsViewModel;
+
+    public View onCreateView(@NonNull final LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        notificationsViewModel =
-                ViewModelProviders.of(this).get(MessageViewModel.class);
-        View root = inflater.inflate(R.layout.fragment_message, container, false);
+//        notificationsViewModel = ViewModelProviders.of(this).get(MessageViewModel.class);
+        root = inflater.inflate(R.layout.fragment_message, container, false);
 
-
-        getMsgData();
-        getNotiData();
-
-        messageItemAdapter = new MessageItemAdapter(msgList);
+//        messageItemAdapter = new MessageItemAdapter(msgList);
         notiItemAdapter = new NotiItemAdapter(notiList);
 
-        RecyclerView recyclerViewMsg = root.findViewById(R.id.recyclerViewMsg);
-        recyclerViewMsg.setLayoutManager(new LinearLayoutManager(getContext()));
-        recyclerViewMsg.setAdapter(messageItemAdapter);
+//        RecyclerView recyclerViewMsg = root.findViewById(R.id.recyclerViewMsg);
+//        recyclerViewMsg.setLayoutManager(new LinearLayoutManager(getContext()));
+//        recyclerViewMsg.setAdapter(messageItemAdapter);
+
+
+        recyclerViewMsg = root.findViewById(R.id.recyclerViewMsg);
+        recyclerViewMsg.setHasFixedSize(false);
+//        currentUserID = FirebaseAuth.getInstance().getUid();
+         currentUserID = "집주인";
+//        currentUserID = "조현민";
+        category = "임대인";
+//        currentUserID = "이슬";
+//        category = "임차인";
+        rootRef = FirebaseDatabase.getInstance().getReference();
+        chatData = rootRef.child("chat").child(currentUserID);
+
+        messageOptions = new FirebaseRecyclerOptions.Builder<MessageVO>().setQuery(chatData, MessageVO.class).build();
+
+
+        messageAdapter = new FirebaseRecyclerAdapter<MessageVO, MessageViewHolder>(messageOptions) {
+            @Override
+            protected void onBindViewHolder(@NonNull final MessageViewHolder holder, int position, @NonNull MessageVO model) {
+                final String chat_friend_id = getRef(position).getKey();
+                DatabaseReference mRootChat = rootRef.child("chat");
+                mRootChat.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+
+
+                        // tested for spinner. to put names of friend list of the user.
+//                        Iterator it = dataSnapshot.child(currentUserID).getChildren().iterator();
+//                        while (it.hasNext()) {
+//                            Log.d(TAG, it.next().toString());
+//                        }
+
+                        if (dataSnapshot.child(currentUserID).child(chat_friend_id).child("lastMessageId").getValue() != null) {
+                            String lastMessageId = dataSnapshot.child(currentUserID).child(chat_friend_id).child("lastMessageId").getValue().toString();
+                            holder.chatLayout.setVisibility(View.VISIBLE);
+                            holder.chatLayout.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    Intent intent = new Intent(getContext(), MessageDetailActivity.class);
+                                    intent.putExtra("name", chat_friend_id);
+                                    startActivity(intent);
+                                }
+                            });
+
+                            holder.chatLayout.setOnLongClickListener(new View.OnLongClickListener() {
+                                @Override
+                                public boolean onLongClick(View v) {
+                                    Toast.makeText(getContext(), "Long Clicked", Toast.LENGTH_SHORT).show();
+
+
+                                    return false;
+                                }
+                            });
+                            DatabaseReference mOursMessage = rootRef.child("messages").child(currentUserID).child(chat_friend_id).child(lastMessageId);
+                            mOursMessage.addValueEventListener(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(DataSnapshot dataSnapshot) {
+                                    final String fromID = dataSnapshot.child("from").getValue(String.class);
+                                    final String last_message = dataSnapshot.child("message").getValue(String.class);
+                                    final Long message_time = dataSnapshot.child("time").getValue(Long.class);
+
+
+                                    holder.setName(chat_friend_id);
+                                    holder.setContent(last_message);
+                                    holder.setTime(getDate(message_time));
+
+                                }
+
+                                @Override
+                                public void onCancelled(DatabaseError databaseError) {
+                                    Log.d("mOursMessage: ", databaseError.getMessage());
+                                }
+                            });
+                        } else {
+                            holder.chatLayout.setVisibility(View.GONE);
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                        Log.d("mRootChat: ", databaseError.getMessage());
+                    }
+                });
+
+
+            }
+
+            @NonNull
+            @Override
+            public MessageViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+                View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_message, parent, false);
+                return new MessageViewHolder(view);
+            }
+        };
+
+
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
+        recyclerViewMsg.setLayoutManager(layoutManager);
+        messageAdapter.startListening();
+        recyclerViewMsg.setAdapter(messageAdapter);
+
 
         RecyclerView recyclerViewNoti = root.findViewById(R.id.recyclerViewNoti);
         recyclerViewNoti.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerViewNoti.setAdapter(notiItemAdapter);
 
+
+        fab_open = AnimationUtils.loadAnimation(getContext(), R.anim.fab_open);
+        fab_close = AnimationUtils.loadAnimation(getContext(), R.anim.fab_close);
+
+        fabAddBtn = (FloatingActionButton) root.findViewById(R.id.fabAddBtn);
+        fabAddMsg = (FloatingActionButton) root.findViewById(R.id.fabAddMsg);
+        fabAddNoti = (FloatingActionButton) root.findViewById(R.id.fabAddNoti);
+
+        frameLayoutMessage = (FrameLayout) root.findViewById(R.id.frameLayoutMessage);
+        frameLayoutAddMsg = (FrameLayout) root.findViewById(R.id.frameLayoutAddMsg);
+        frameLayoutAddNoti = (FrameLayout) root.findViewById(R.id.frameLayoutAddNoti);
+
+        textViewAddMsg = root.findViewById(R.id.textViewAddMsg);
+        textViewAddNoti = root.findViewById(R.id.textViewAddNoti);
+
+        spinnerTenantList = root.findViewById(R.id.spinnerTenantList);
+        buttonAddMsg = root.findViewById(R.id.buttonAddMsg);
+
+
+        arrayListTenantList = new ArrayList<>();
+        arrayListTenantList.add("최여진");
+        arrayListTenantList.add("이슬");
+        arrayListTenantList.add("조현민");
+        arrayListTenantList.add("최여진");
+        arrayListTenantList.add("이슬");
+        arrayListTenantList.add("조현민");
+        arrayListTenantList.add("최여진");
+        arrayListTenantList.add("이슬");
+        arrayListTenantList.add("조현민");
+        arrayListTenantList.add("최여진");
+        arrayListTenantList.add("이슬");
+        arrayListTenantList.add("조현민");
+        arrayListTenantList.add("최여진");
+        arrayListTenantList.add("이슬");
+        arrayListTenantList.add("조현민");
+        arrayListTenantList.add("최여진");
+        arrayListTenantList.add("이슬");
+        arrayListTenantList.add("조현민");
+        arrayAdapterTenant = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_dropdown_item, arrayListTenantList);
+        spinnerTenantList.setAdapter(arrayAdapterTenant);
+        spinnerTenantList.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                tenantSelected = arrayListTenantList.get(position);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
+        buttonAddMsg.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (tenantSelected != null) {
+                    Intent intent = new Intent(getContext(), MessageDetailActivity.class);
+                    intent.putExtra("name", tenantSelected + "");
+                    startActivity(intent);
+                }
+            }
+        });
+
+
+        fabAddBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                frameLayoutMessage.setAlpha(0.7f);
+                frameLayoutMessage.setClickable(true);
+                anim();
+
+            }
+        });
+
+
+        fabAddMsg.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                anim();
+                frameLayoutMessage.setVisibility(View.VISIBLE);
+                frameLayoutMessage.setAlpha(0.7f);
+                frameLayoutAddMsg.setVisibility(View.VISIBLE);
+
+            }
+        });
+
+        fabAddNoti.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                anim();
+                frameLayoutMessage.setVisibility(View.VISIBLE);
+                frameLayoutMessage.setAlpha(0.7f);
+                frameLayoutAddNoti.setVisibility(View.VISIBLE);
+            }
+        });
+
+        frameLayoutMessage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                frameLayoutAddMsg.setVisibility(View.GONE);
+                frameLayoutAddNoti.setVisibility(View.GONE);
+//                frameLayoutMessage.setClickable(false);
+                frameLayoutMessage.setVisibility(View.GONE);
+
+                if (isFabOpen) {
+                    fabAddMsg.startAnimation(fab_close);
+                    fabAddNoti.startAnimation(fab_close);
+                }
+                fabAddMsg.setClickable(false);
+                fabAddNoti.setClickable(false);
+                textViewAddMsg.setVisibility(View.INVISIBLE);
+                textViewAddNoti.setVisibility(View.INVISIBLE);
+                isFabOpen = false;
+            }
+        });
+
+
         return root;
     }
 
+    public void anim() {
 
-    class MessageItemAdapter extends RecyclerView.Adapter<MessageItemAdapter.ViewHolder> {
-
-        ArrayList<MessageVO> messageList;
-
-        public class ViewHolder extends RecyclerView.ViewHolder {
-
-            TextView name, title, content, time;
-
-            public ViewHolder(View itemView) {
-                super(itemView);
-
-                name = itemView.findViewById(R.id.textViewMsgName);
-                title = itemView.findViewById(R.id.textViewMsgTitle);
-                content = itemView.findViewById(R.id.textViewMsgContent);
-                time = itemView.findViewById(R.id.textViewMsgTime);
-            }
-        }
-
-
-        public MessageItemAdapter(ArrayList<MessageVO> messageList) {
-            this.messageList = messageList;
-        }
-
-
-        @NonNull
-        @Override
-        public MessageItemAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-
-            Context context = parent.getContext();
-            LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            View view = inflater.inflate(R.layout.item_message, parent, false);
-            MessageItemAdapter.ViewHolder viewHolder = new MessageItemAdapter.ViewHolder(view);
-            return viewHolder;
-        }
-
-        @Override
-        public void onBindViewHolder(@NonNull MessageItemAdapter.ViewHolder holder, final int position) {
-
-            holder.name.setText(messageList.get(position).getName() + "");
-            holder.title.setText(messageList.get(position).getTitle() + "");
-            holder.content.setText(messageList.get(position).getContent() + "");
-            holder.time.setText(messageList.get(position).getTime() + "");
-            holder.itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-//                    Toast.makeText(getContext(), messageList.get(position).getTitle(), Toast.LENGTH_SHORT).show();
-                    Intent intent = new Intent(getContext(), MessageDetailActivity.class);
-                    intent.putExtra("name", messageList.get(position).getName()+"");
-                    startActivity(intent);
-                }
-            });
-        }
-
-        @Override
-        public int getItemCount() {
-            return messageList.size();
+        if (isFabOpen) {
+//            frameLayoutMessage.setAlpha(0);
+            frameLayoutMessage.setVisibility(View.GONE);
+            fabAddMsg.startAnimation(fab_close);
+            fabAddNoti.startAnimation(fab_close);
+            fabAddMsg.setClickable(false);
+            fabAddNoti.setClickable(false);
+            textViewAddMsg.setVisibility(View.INVISIBLE);
+            textViewAddNoti.setVisibility(View.INVISIBLE);
+            isFabOpen = false;
+        } else {
+            frameLayoutMessage.setVisibility(View.VISIBLE);
+            frameLayoutMessage.setAlpha(0.7f);
+            frameLayoutMessage.setClickable(true);
+            fabAddMsg.startAnimation(fab_open);
+            fabAddNoti.startAnimation(fab_open);
+            fabAddMsg.setClickable(true);
+            fabAddNoti.setClickable(true);
+            textViewAddMsg.setVisibility(View.VISIBLE);
+            textViewAddNoti.setVisibility(View.VISIBLE);
+            isFabOpen = true;
         }
     }
+
+
+    // Message
+    public static class MessageViewHolder extends RecyclerView.ViewHolder {
+
+        LinearLayout chatLayout;
+
+        public MessageViewHolder(final View itemView) {
+            super(itemView);
+            chatLayout = itemView.findViewById(R.id.linearLayoutMessageItem);
+        }
+
+        public void setName(String name) {
+            TextView textViewName = itemView.findViewById(R.id.textViewMsgName);
+            textViewName.setText(name);
+        }
+
+        public void setTitle(String title) {
+            TextView textViewTitle = itemView.findViewById(R.id.textViewMsgTitle);
+            textViewTitle.setText(title);
+        }
+
+        public void setContent(String content) {
+            TextView textViewConent = itemView.findViewById(R.id.textViewMsgContent);
+            textViewConent.setText(content);
+        }
+
+
+        public void setTime(String time) {
+            TextView textViewTime = itemView.findViewById(R.id.textViewMsgTime);
+            textViewTime.setText(time);
+        }
+
+    }
+
+    public String getDate(long time) {
+        Calendar cal = Calendar.getInstance(Locale.ENGLISH);
+        cal.setTimeInMillis(time);
+        String date = null;
+
+        Log.d(TAG, "yesterday : " + DateFormat.format("MMdd", cal.get(cal.DATE) - 1));
+        long today = System.currentTimeMillis();
+        Log.d(TAG, "today : " + today);
+        Log.d(TAG, "time : " + time);
+        if (DateFormat.format("MMdd", time).equals(DateFormat.format("MMdd", today))) {
+            date = DateFormat.format("HH:mm", cal).toString();
+        } else if (DateFormat.format("MMdd", time).equals(DateFormat.format("MMdd", today))) {
+
+            if ((Integer.parseInt(DateFormat.format("MMdd", today).toString()) - Integer.parseInt(DateFormat.format("MMdd", time).toString())) == 1) {
+                return "어제";
+            }
+        } else if ((Integer.parseInt(DateFormat.format("MMdd", today).toString()) - Integer.parseInt(DateFormat.format("MMdd", time).toString())) > 1) {
+            return DateFormat.format("MM/dd", time).toString();
+        }
+        return date;
+    }
+
 
     class NotiItemAdapter extends RecyclerView.Adapter<NotiItemAdapter.ViewHolder> {
 
@@ -170,28 +458,4 @@ public class MessageFragment extends Fragment {
     }
 
 
-    public void getMsgData() {
-        msgList.add(new MessageVO("최여진", "집수리", "화장실 세면대 수돗꼭지 누수", "00:00pm"));
-        msgList.add(new MessageVO("조현민", "층간소음", "화장실 세면대 수돗꼭지 누수", "00:00pm"));
-        msgList.add(new MessageVO("이슬", "복도청소", "화장실 세면대 수돗꼭지 누수", "00:00pm"));
-        msgList.add(new MessageVO("ㅊㅇㅈ", "집수리", "화장실 세면대 수돗꼭지 누수", "00:00pm"));
-        msgList.add(new MessageVO("ㅈㅎㅁ", "집수리", "화장실 세면대 수돗꼭지 누수", "00:00pm"));
-        msgList.add(new MessageVO("ㅇㅅ", "집수리", "화장실 세면대 수돗꼭지 누수", "00:00pm"));
-        msgList.add(new MessageVO("최여진", "집수리", "화장실 세면대 수돗꼭지 누수", "00:00pm"));
-        msgList.add(new MessageVO("최여진", "집수리", "화장실 세면대 수돗꼭지 누수", "00:00pm"));
-        msgList.add(new MessageVO("최여진", "집수리", "화장실 세면대 수돗꼭지 누수", "00:00pm"));
-    }
-
-    public void getNotiData() {
-        notiList.add(new NotiVO("최여진", "집수리", "화장실 세면대 수돗꼭지 누수", "00:00pm"));
-        notiList.add(new NotiVO("조현민", "층간소음", "화장실 세면대 수돗꼭지 누수", "00:00pm"));
-        notiList.add(new NotiVO("이슬", "복도청소", "화장실 세면대 수돗꼭지 누수", "00:00pm"));
-        notiList.add(new NotiVO("ㅊㅇㅈ", "집수리", "화장실 세면대 수돗꼭지 누수", "00:00pm"));
-        notiList.add(new NotiVO("ㅈㅎㅁ", "집수리", "화장실 세면대 수돗꼭지 누수", "00:00pm"));
-        notiList.add(new NotiVO("ㅇㅅ", "집수리", "화장실 세면대 수돗꼭지 누수", "00:00pm"));
-        notiList.add(new NotiVO("최여진", "집수리", "화장실 세면대 수돗꼭지 누수", "00:00pm"));
-        notiList.add(new NotiVO("최여진", "집수리", "화장실 세면대 수돗꼭지 누수", "00:00pm"));
-        notiList.add(new NotiVO("최여진", "집수리", "화장실 세면대 수돗꼭지 누수", "00:00pm"));
-        notiList.add(new NotiVO("최여진", "집수리", "화장실 세면대 수돗꼭지 누수", "00:00pm"));
-    }
 }
