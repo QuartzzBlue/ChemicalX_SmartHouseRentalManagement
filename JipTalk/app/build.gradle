@@ -47,4 +47,10 @@ dependencies {
     //View Paser Index
     implementation 'me.relex:circleindicator:1.2.2'
     implementation 'androidx.viewpager:viewpager:1.0.0'
+
+    //Recyclerview,cardview
+    implementation 'androidx.cardview:cardview:1.0.0'
+    implementation 'androidx.recyclerview:recyclerview:1.0.0'
+
+
 }
