@@ -1,6 +1,6 @@
-package com.example.jiptalk.ui.message;
+package com.example.jiptalk.vo;
 
-public class MessageVO {
+public class Message {
 
     String name;
     String title;
@@ -8,10 +8,10 @@ public class MessageVO {
     String time;
 
 
-    public MessageVO() {
+    public Message() {
     }
 
-    public MessageVO(String name, String title, String content, String time) {
+    public Message(String name, String title, String content, String time) {
         this.name = name;
         this.title = title;
         this.content = content;
@@ -52,7 +52,7 @@ public class MessageVO {
 
     @Override
     public String toString() {
-        return "MessageVO{" +
+        return "Message{" +
                 "name='" + name + '\'' +
                 ", title='" + title + '\'' +
                 ", content='" + content + '\'' +
