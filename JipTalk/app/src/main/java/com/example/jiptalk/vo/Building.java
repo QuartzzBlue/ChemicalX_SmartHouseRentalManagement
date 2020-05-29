@@ -13,36 +13,28 @@ public class Building {
 
     String id;
     String name;
+    String buildingAddress;
     int unitCnt;
     int occupiedCnt;
     int emptyCnt;
     int paidCnt;
     int unpaidCnt;
+    int monthlyIncome;
     ArrayList<Unit> unitList;
-
 
     public Building() {
     }
 
-    public Building(String name, int unitCnt, int occupiedCnt, int emptyCnt, int paidCnt, int unpaidCnt, ArrayList<Unit> unitList) {
+    public Building(String name, String buildingAddress, int unitCnt) {
         this.name = name;
+        this.buildingAddress = buildingAddress;
         this.unitCnt = unitCnt;
-        this.occupiedCnt = occupiedCnt;
-        this.emptyCnt = emptyCnt;
-        this.paidCnt = paidCnt;
-        this.unpaidCnt = unpaidCnt;
-        this.unitList = unitList;
     }
 
-    public Building(String id, String name, int unitCnt, int occupiedCnt, int emptyCnt, int paidCnt, int unpaidCnt, ArrayList<Unit> unitList) {
+    public Building(String id, String name, String buildingAddress, int unitCnt, int occupiedCnt, int emptyCnt, int paidCnt, int unpaidCnt, int monthlyIncome, ArrayList<Unit> unitList) {
         this.id = id;
         this.name = name;
-        this.unitCnt = unitCnt;
-        this.occupiedCnt = occupiedCnt;
-        this.emptyCnt = emptyCnt;
-        this.paidCnt = paidCnt;
-        this.unpaidCnt = unpaidCnt;
-        this.unitList = unitList;
+        this.buildingAddress = buildingAddress;
     }
 
     public String getId() {
@@ -59,6 +51,14 @@ public class Building {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getBuildingAddress() {
+        return buildingAddress;
+    }
+
+    public void setBuildingAddress(String buildingAddress) {
+        this.buildingAddress = buildingAddress;
     }
 
     public int getUnitCnt() {
@@ -100,6 +100,13 @@ public class Building {
     public void setUnpaidCnt(int unpaidCnt) {
         this.unpaidCnt = unpaidCnt;
     }
+    public int getMonthlyIncome() {
+        return monthlyIncome;
+    }
+
+    public void setMonthlyIncome(int monthlyIncome) {
+        this.monthlyIncome = monthlyIncome;
+    }
 
     public ArrayList<Unit> getUnitList() {
         return unitList;
@@ -114,11 +121,15 @@ public class Building {
         return "Building{" +
                 "id='" + id + '\'' +
                 ", name='" + name + '\'' +
+                ", buildingAddress='" + buildingAddress + '\'' +
+
                 ", unitCnt=" + unitCnt +
                 ", occupiedCnt=" + occupiedCnt +
                 ", emptyCnt=" + emptyCnt +
                 ", paidCnt=" + paidCnt +
                 ", unpaidCnt=" + unpaidCnt +
+                ", monthlyIncome=" + monthlyIncome +
+
                 ", unitList=" + unitList +
                 '}';
     }
@@ -132,6 +143,8 @@ public class Building {
         result.put("emptyCnt", emptyCnt);
         result.put("paidCnt", paidCnt);
         result.put("unpaidCnt", unpaidCnt);
+        result.put("monthlyIncome",monthlyIncome);
+
 
         return result;
     }
