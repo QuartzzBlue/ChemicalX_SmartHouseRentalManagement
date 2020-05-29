@@ -25,6 +25,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.jiptalk.R;
+import com.example.jiptalk.vo.MessageVO;
+import com.example.jiptalk.vo.Noti;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -43,7 +45,7 @@ public class MessageFragment extends Fragment {
     private String TAG = "=== jiptalk.ui.message.MessageFragment";
 
     ArrayList<MessageVO> msgList = new ArrayList<>();
-    ArrayList<NotiVO> notiList = new ArrayList<>();
+    ArrayList<Noti> notiList = new ArrayList<>();
 
     NotiItemAdapter notiItemAdapter;
 
@@ -344,7 +346,7 @@ public class MessageFragment extends Fragment {
     }
 
 
-    // Message
+    // MessageVO
     public static class MessageViewHolder extends RecyclerView.ViewHolder {
 
         LinearLayout chatLayout;
@@ -402,7 +404,7 @@ public class MessageFragment extends Fragment {
 
     class NotiItemAdapter extends RecyclerView.Adapter<NotiItemAdapter.ViewHolder> {
 
-        ArrayList<NotiVO> notiList;
+        ArrayList<Noti> notiList;
 
         public class ViewHolder extends RecyclerView.ViewHolder {
 
@@ -419,7 +421,7 @@ public class MessageFragment extends Fragment {
         }
 
 
-        public NotiItemAdapter(ArrayList<NotiVO> notiList) {
+        public NotiItemAdapter(ArrayList<Noti> notiList) {
             this.notiList = notiList;
         }
 

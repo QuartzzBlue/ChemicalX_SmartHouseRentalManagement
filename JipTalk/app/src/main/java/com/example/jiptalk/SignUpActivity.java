@@ -21,22 +21,20 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.jiptalk.vo.User;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseException;
-import com.google.firebase.FirebaseTooManyRequestsException;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.auth.PhoneAuthProvider;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
-import java.sql.Ref;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -54,7 +52,6 @@ public class SignUpActivity extends AppCompatActivity {
     Context nowContext;
     EditText idTv, pwdTv, phoneTv, nameTv, pwdCheckTv, phoneCheckTv;
     TextView pwdValidTv, pwdCheckValidTv;
-    TextView saveBt;
 
     RadioButton checkedSexRgbt, checkedCategoryRgbt;
     Button phoneAuthBt, phoneAuthCheckBt;
@@ -172,7 +169,7 @@ public class SignUpActivity extends AppCompatActivity {
                 String name = nameTv.getText().toString();
                 String sex = checkedSexRgbt.getText().toString();
                 String category = checkedCategoryRgbt.getText().toString();
-                User newUser = new User(email, password, phone, name, sex, category);
+                User newUser = new User(email, password, phone, name, sex, category, true);
 
                 /* 유효성 검사 */
                 if(!isValid(newUser)) return false;

@@ -1,8 +1,4 @@
-package com.example.jiptalk;
-
-import android.app.ProgressDialog;
-import android.content.Context;
-import android.os.Build;
+package com.example.jiptalk.vo;
 
 import com.google.firebase.database.Exclude;
 import com.google.firebase.database.IgnoreExtraProperties;
@@ -18,6 +14,7 @@ public class User {
     String name;
     String sex;
     String category;    // 임대인 or 임차인
+    Boolean isAlarmOn;
 
     public User() {
     }
@@ -27,13 +24,15 @@ public class User {
         this.pwd = pwd;
     }
 
-    public User(String email, String pwd, String phone, String name, String sex, String category) {
+
+    public User(String email, String pwd, String phone, String name, String sex, String category, Boolean isAlarmOn) {
         this.email = email;
         this.pwd = pwd;
         this.phone = phone;
         this.name = name;
         this.sex = sex;
         this.category = category;
+        this.isAlarmOn = isAlarmOn;
     }
 
     public String getEmail() {
@@ -84,6 +83,14 @@ public class User {
         this.category = category;
     }
 
+    public Boolean getAlarmOn() {
+        return isAlarmOn;
+    }
+
+    public void setAlarmOn(Boolean alarmOn) {
+        isAlarmOn = alarmOn;
+    }
+
     @Exclude
     public Map<String, Object> toMap() {
         HashMap<String, Object> result = new HashMap<>();
@@ -93,7 +100,7 @@ public class User {
         result.put("name", name);
         result.put("sex", sex);
         result.put("category", category);
-
+        result.put("isAlarmOn", isAlarmOn);
         return result;
     }
 
@@ -106,6 +113,7 @@ public class User {
                 ", name='" + name + '\'' +
                 ", sex='" + sex + '\'' +
                 ", category='" + category + '\'' +
+                ", isAlarmOn=" + isAlarmOn +
                 '}';
     }
 }

@@ -35,13 +35,6 @@ public class Building {
         this.id = id;
         this.name = name;
         this.buildingAddress = buildingAddress;
-        this.unitCnt = unitCnt;
-        this.occupiedCnt = occupiedCnt;
-        this.emptyCnt = emptyCnt;
-        this.paidCnt = paidCnt;
-        this.unpaidCnt = unpaidCnt;
-        this.monthlyIncome = monthlyIncome;
-        this.unitList = unitList;
     }
 
     public String getId() {
@@ -107,7 +100,6 @@ public class Building {
     public void setUnpaidCnt(int unpaidCnt) {
         this.unpaidCnt = unpaidCnt;
     }
-
     public int getMonthlyIncome() {
         return monthlyIncome;
     }
@@ -130,12 +122,14 @@ public class Building {
                 "id='" + id + '\'' +
                 ", name='" + name + '\'' +
                 ", buildingAddress='" + buildingAddress + '\'' +
+
                 ", unitCnt=" + unitCnt +
                 ", occupiedCnt=" + occupiedCnt +
                 ", emptyCnt=" + emptyCnt +
                 ", paidCnt=" + paidCnt +
                 ", unpaidCnt=" + unpaidCnt +
                 ", monthlyIncome=" + monthlyIncome +
+
                 ", unitList=" + unitList +
                 '}';
     }
@@ -150,6 +144,7 @@ public class Building {
         result.put("paidCnt", paidCnt);
         result.put("unpaidCnt", unpaidCnt);
         result.put("monthlyIncome",monthlyIncome);
+
 
         return result;
     }
