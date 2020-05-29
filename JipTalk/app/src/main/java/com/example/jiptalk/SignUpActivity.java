@@ -52,7 +52,6 @@ public class SignUpActivity extends AppCompatActivity {
     Context nowContext;
     EditText idTv, pwdTv, phoneTv, nameTv, pwdCheckTv, phoneCheckTv;
     TextView pwdValidTv, pwdCheckValidTv;
-    TextView saveBt;
 
     RadioButton checkedSexRgbt, checkedCategoryRgbt;
     Button phoneAuthBt, phoneAuthCheckBt;
@@ -170,7 +169,7 @@ public class SignUpActivity extends AppCompatActivity {
                 String name = nameTv.getText().toString();
                 String sex = checkedSexRgbt.getText().toString();
                 String category = checkedCategoryRgbt.getText().toString();
-                User newUser = new User(email, password, phone, name, sex, category);
+                User newUser = new User(email, password, phone, name, sex, category, true);
 
                 /* 유효성 검사 */
                 if(!isValid(newUser)) return false;

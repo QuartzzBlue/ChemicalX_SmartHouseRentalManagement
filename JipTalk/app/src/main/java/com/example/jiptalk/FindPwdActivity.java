@@ -1,5 +1,6 @@
 package com.example.jiptalk;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
@@ -11,6 +12,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -46,14 +49,18 @@ public class FindPwdActivity extends AppCompatActivity {
                     emailTv.requestFocus();
                     return;
                 }
-
+                verifyEmail(email);
 
             }
         });
 
     }
     private void verifyEmail(final String email) {
+        Log.w("===", "verifyEmail");
+        sendPwdResetEmail(email);
+        /*
         Query query = findUserRef.orderByChild("email").equalTo(email);
+        Log.w("===", "verifyEmail 1");
         query.addValueEventListener(new ValueEventListener() {  //addValueEventListener : 한 번만 콜백되고 즉시 삭제
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -75,10 +82,20 @@ public class FindPwdActivity extends AppCompatActivity {
             }
 
         });
+        */
     }
 
     private void sendPwdResetEmail(String email) {
-
+        setPwdAuth = FirebaseAuth.getInstance();
+        setPwdAuth.sendPasswordResetEmail(email)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful()) {
+                            Log.d("===", "Email sent.");
+                        }
+                    }
+                });
     }
 
     private void initialization() {
@@ -87,7 +104,6 @@ public class FindPwdActivity extends AppCompatActivity {
         sendEmail = findViewById(R.id.findPwdSendEmailBt);
         emailTv = findViewById(R.id.findPwdEmailTv);
         emailCheckTv = findViewById(R.id.findPwdEmailValidTv);
-        setPwdAuth = FirebaseAuth.getInstance();
         findUserRef = FirebaseDatabase.getInstance().getReference("user");
     }
 }
