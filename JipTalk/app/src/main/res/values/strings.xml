@@ -8,4 +8,7 @@
     <string name="highlightText">하이라이트</string>
     <string name="paymentStatusText">납부 현황</string>
     <string name="moreBtn">더보기</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
