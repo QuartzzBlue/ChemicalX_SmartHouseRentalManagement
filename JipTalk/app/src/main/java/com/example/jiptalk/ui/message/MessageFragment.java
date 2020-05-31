@@ -27,9 +27,11 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.jiptalk.R;
 import com.example.jiptalk.vo.MessageVO;
 import com.example.jiptalk.vo.Noti;
+import com.example.jiptalk.vo.User;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -58,20 +60,20 @@ public class MessageFragment extends Fragment {
     private FrameLayout frameLayoutMessage, frameLayoutAddMsg, frameLayoutAddNoti;
     private TextView textViewAddMsg, textViewAddNoti;
     private Spinner spinnerTenantList, spinnerBuildingList;
-    private ArrayList<String> arrayListTenantList;
+    private ArrayList<String> clientNameList = new ArrayList<>();
+    private ArrayList<User> clientList = new ArrayList<>();
     private ArrayAdapter<String> arrayAdapterTenant;
     private Button buttonAddMsg, buttonAddNoti;
-    private String tenantSelected;
+    private String clientSelected;
 
 
     /////
 
     private RecyclerView recyclerViewMsg;
     private View mView;
-    private String currentUserID;
+    private String currentUserUID;
     private String category;
-    private DatabaseReference rootRef;
-    private DatabaseReference chatData;
+    private DatabaseReference rootRef, chatData, userData;
     private FirebaseRecyclerOptions<MessageVO> messageOptions;
     private FirebaseRecyclerAdapter<MessageVO, MessageViewHolder> messageAdapter;
     private DatabaseReference mChatFriendData;
@@ -84,6 +86,8 @@ public class MessageFragment extends Fragment {
 
     public View onCreateView(@NonNull final LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
+
+        Log.d(TAG, "Entered MessageFragment onCreateView");
 //        notificationsViewModel = ViewModelProviders.of(this).get(MessageViewModel.class);
         root = inflater.inflate(R.layout.fragment_message, container, false);
 
@@ -97,14 +101,14 @@ public class MessageFragment extends Fragment {
 
         recyclerViewMsg = root.findViewById(R.id.recyclerViewMsg);
         recyclerViewMsg.setHasFixedSize(false);
-//        currentUserID = FirebaseAuth.getInstance().getUid();
-         currentUserID = "집주인";
-//        currentUserID = "조현민";
-        category = "임대인";
-//        currentUserID = "이슬";
+        currentUserUID = FirebaseAuth.getInstance().getUid();
+//         currentUserUID = "집주인";
+//        currentUserUID = "조현민";
+//        category = "임대인";
+//        currentUserUID = "이슬";
 //        category = "임차인";
         rootRef = FirebaseDatabase.getInstance().getReference();
-        chatData = rootRef.child("chat").child(currentUserID);
+        chatData = rootRef.child("chat").child(currentUserUID);
 
         messageOptions = new FirebaseRecyclerOptions.Builder<MessageVO>().setQuery(chatData, MessageVO.class).build();
 
@@ -112,27 +116,22 @@ public class MessageFragment extends Fragment {
         messageAdapter = new FirebaseRecyclerAdapter<MessageVO, MessageViewHolder>(messageOptions) {
             @Override
             protected void onBindViewHolder(@NonNull final MessageViewHolder holder, int position, @NonNull MessageVO model) {
-                final String chat_friend_id = getRef(position).getKey();
+                final String chatUserUID = getRef(position).getKey();
+                Log.d(TAG, "chatUserUID : " + chatUserUID);
                 DatabaseReference mRootChat = rootRef.child("chat");
                 mRootChat.addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
 
-
-                        // tested for spinner. to put names of friend list of the user.
-//                        Iterator it = dataSnapshot.child(currentUserID).getChildren().iterator();
-//                        while (it.hasNext()) {
-//                            Log.d(TAG, it.next().toString());
-//                        }
-
-                        if (dataSnapshot.child(currentUserID).child(chat_friend_id).child("lastMessageId").getValue() != null) {
-                            String lastMessageId = dataSnapshot.child(currentUserID).child(chat_friend_id).child("lastMessageId").getValue().toString();
+                        if (dataSnapshot.child(currentUserUID).child(chatUserUID).child("lastMessageId").getValue() != null) {
+                            String lastMessageId = dataSnapshot.child(currentUserUID).child(chatUserUID).child("lastMessageId").getValue().toString();
                             holder.chatLayout.setVisibility(View.VISIBLE);
                             holder.chatLayout.setOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
                                     Intent intent = new Intent(getContext(), MessageDetailActivity.class);
-                                    intent.putExtra("name", chat_friend_id);
+                                    intent.putExtra("name", getChatUserName(chatUserUID));
+                                    intent.putExtra("clientUID", chatUserUID);
                                     startActivity(intent);
                                 }
                             });
@@ -146,7 +145,7 @@ public class MessageFragment extends Fragment {
                                     return false;
                                 }
                             });
-                            DatabaseReference mOursMessage = rootRef.child("messages").child(currentUserID).child(chat_friend_id).child(lastMessageId);
+                            DatabaseReference mOursMessage = rootRef.child("messages").child(currentUserUID).child(chatUserUID).child(lastMessageId);
                             mOursMessage.addValueEventListener(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(DataSnapshot dataSnapshot) {
@@ -155,7 +154,7 @@ public class MessageFragment extends Fragment {
                                     final Long message_time = dataSnapshot.child("time").getValue(Long.class);
 
 
-                                    holder.setName(chat_friend_id);
+                                    holder.setName(getChatUserName(chatUserUID));
                                     holder.setContent(last_message);
                                     holder.setTime(getDate(message_time));
 
@@ -189,10 +188,10 @@ public class MessageFragment extends Fragment {
         };
 
 
-        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
-        recyclerViewMsg.setLayoutManager(layoutManager);
-        messageAdapter.startListening();
-        recyclerViewMsg.setAdapter(messageAdapter);
+//        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
+//        recyclerViewMsg.setLayoutManager(layoutManager);
+//        messageAdapter.startListening();
+//        recyclerViewMsg.setAdapter(messageAdapter);
 
 
         RecyclerView recyclerViewNoti = root.findViewById(R.id.recyclerViewNoti);
@@ -218,47 +217,61 @@ public class MessageFragment extends Fragment {
         buttonAddMsg = root.findViewById(R.id.buttonAddMsg);
 
 
-        arrayListTenantList = new ArrayList<>();
-        arrayListTenantList.add("최여진");
-        arrayListTenantList.add("이슬");
-        arrayListTenantList.add("조현민");
-        arrayListTenantList.add("최여진");
-        arrayListTenantList.add("이슬");
-        arrayListTenantList.add("조현민");
-        arrayListTenantList.add("최여진");
-        arrayListTenantList.add("이슬");
-        arrayListTenantList.add("조현민");
-        arrayListTenantList.add("최여진");
-        arrayListTenantList.add("이슬");
-        arrayListTenantList.add("조현민");
-        arrayListTenantList.add("최여진");
-        arrayListTenantList.add("이슬");
-        arrayListTenantList.add("조현민");
-        arrayListTenantList.add("최여진");
-        arrayListTenantList.add("이슬");
-        arrayListTenantList.add("조현민");
-        arrayAdapterTenant = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_dropdown_item, arrayListTenantList);
-        spinnerTenantList.setAdapter(arrayAdapterTenant);
-        spinnerTenantList.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                tenantSelected = arrayListTenantList.get(position);
-            }
+        /**
+         * @author: JHM9191
+         * @detail: set name of clients in spinner when add new message button clicked to add new message
+         */
+//        userData = FirebaseDatabase.getInstance().getReference().child("client"); // data should be fetched from client collection
+        userData = FirebaseDatabase.getInstance().getReference().child("user"); // let's just get data from user from now.
 
+        userData.addListenerForSingleValueEvent(new ValueEventListener() {
+            //        userData.addValueEventListener(new ValueEventListener() {
             @Override
-            public void onNothingSelected(AdapterView<?> parent) {
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-            }
-        });
+                for (DataSnapshot userSnapshot : dataSnapshot.getChildren()) {
+                    Log.d(TAG, "Entered MessageFragment addListenerForSingleValueEvent");
 
-        buttonAddMsg.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (tenantSelected != null) {
-                    Intent intent = new Intent(getContext(), MessageDetailActivity.class);
-                    intent.putExtra("name", tenantSelected + "");
-                    startActivity(intent);
+                    User client = userSnapshot.getValue(User.class);
+                    client.setUID(userSnapshot.getKey());
+                    Log.d(TAG, client.toString());
+                    if (client != null) {
+                        clientList.add(client);
+                        clientNameList.add(client.getName());
+                    }
                 }
+
+                arrayAdapterTenant = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_dropdown_item, clientNameList);
+                spinnerTenantList.setAdapter(arrayAdapterTenant);
+                spinnerTenantList.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                    @Override
+                    public void onItemSelected(AdapterView<?> parent, View view, final int position, long id) {
+                        clientSelected = clientNameList.get(position);
+                        buttonAddMsg.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                if (clientSelected != null) {
+                                    Intent intent = new Intent(getContext(), MessageDetailActivity.class);
+                                    intent.putExtra("clientUID", clientList.get(position).getUID() + "");
+                                    intent.putExtra("name", clientSelected + "");
+                                    startActivity(intent);
+                                }
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onNothingSelected(AdapterView<?> parent) {
+
+                    }
+                });
+
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
             }
         });
 
@@ -316,7 +329,49 @@ public class MessageFragment extends Fragment {
         });
 
 
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
+        recyclerViewMsg.setLayoutManager(layoutManager);
+        messageAdapter.startListening();
+        recyclerViewMsg.setAdapter(messageAdapter);
+
         return root;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        Log.d(TAG, "Entered MessageFragment onResume");
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Log.d(TAG, "Entered MessageFragment on Destroy");
+    }
+
+    @Override
+    public void onAttachFragment(@NonNull Fragment childFragment) {
+        super.onAttachFragment(childFragment);
+        Log.d(TAG, "Entered MessageFragment on onAttachFragment");
+
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        Log.d(TAG, "Entered MessageFragment on onDetach");
+
+    }
+
+    public String getChatUserName(String chatUserUID) {
+        Log.d(TAG, "Entered MessageFragment getChatUserName");
+        Log.d(TAG, "clientList : " + clientList);
+        for (User user : clientList) {
+            if (chatUserUID.equals(user.getUID())) {
+                return user.getName();
+            }
+        }
+        return "NoName";
     }
 
     public void anim() {

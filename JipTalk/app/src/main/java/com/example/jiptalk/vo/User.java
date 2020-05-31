@@ -8,6 +8,7 @@ import java.util.Map;
 
 @IgnoreExtraProperties
 public class User {
+    String UID;
     String email;
     String pwd;
     String phone;
@@ -17,6 +18,10 @@ public class User {
     Boolean isAlarmOn;
 
     public User() {
+    }
+
+    public User(String UID) {
+        this.UID = UID;
     }
 
     public User(String email, String pwd) {
@@ -91,6 +96,14 @@ public class User {
         isAlarmOn = alarmOn;
     }
 
+    public String getUID() {
+        return UID;
+    }
+
+    public void setUID(String UID) {
+        this.UID = UID;
+    }
+
     @Exclude
     public Map<String, Object> toMap() {
         HashMap<String, Object> result = new HashMap<>();
@@ -107,7 +120,8 @@ public class User {
     @Override
     public String toString() {
         return "User{" +
-                "email='" + email + '\'' +
+                "UID='" + UID + '\'' +
+                ", email='" + email + '\'' +
                 ", pwd='" + pwd + '\'' +
                 ", phone='" + phone + '\'' +
                 ", name='" + name + '\'' +

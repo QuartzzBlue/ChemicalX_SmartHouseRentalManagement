@@ -25,7 +25,10 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import com.example.jiptalk.Constant;
 import com.example.jiptalk.R;
+import com.example.jiptalk.vo.User;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -54,8 +57,9 @@ public class MessageDetailActivity extends AppCompatActivity {
 
 
     private DatabaseReference databaseReference;
-    private String currentUserID;
-    private String chatUserID;
+    private String currentUserUID;
+    private String chatUserName;
+    private String chatUserUID;
     private String category;
     private int currentPage = 1;
     private int itemPos = 0;
@@ -74,8 +78,6 @@ public class MessageDetailActivity extends AppCompatActivity {
     private Button buttonInsertDateStart, buttonInsertDateEnd, buttonInsertTime, buttonSendMsg;
 
 
-
-
     private FrameLayout frameLayoutMsgDetail;
 
     private DatePickerDialog.OnDateSetListener callbackMethodDatePicker;
@@ -91,22 +93,39 @@ public class MessageDetailActivity extends AppCompatActivity {
         setContentView(R.layout.activity_message_detail);
 
         databaseReference = FirebaseDatabase.getInstance().getReference();
-        currentUserID = "집주인";
-//        currentUserID = "조현민";
-        category = "임대인";
-//        currentUserID = "이슬";
-//        category = "임차인";
-        Log.d(TAG, "currentUserID : " + currentUserID);
-//        currentUserID = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
+        currentUserUID = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        databaseReference.child("user").child(currentUserUID).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                User user = dataSnapshot.getValue(User.class);
+                Constant.category = user.getCategory();
+                Log.d(TAG, "category : " + Constant.category);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+//        Constant.category = "임대인";
+        Log.d(TAG, "currentUserUID : " + currentUserUID);
+        /* These data should be saved in Constant class upon successful login.
+
+        currentUserUID = Constant.userUID;
+        category = Constant.category;
+        */
         // Set ActionBar Title to name of the Tenant
-        chatUserID = getIntent().getStringExtra("name").toString();
-        Log.d(TAG, "chatUserID : " + chatUserID);
-        getSupportActionBar().setTitle(chatUserID);
+
+        chatUserUID = getIntent().getStringExtra("clientUID").toString();
+
+        chatUserName = getIntent().getStringExtra("name").toString();
+        Log.d(TAG, "chatUserName : " + chatUserName);
+        getSupportActionBar().setTitle(chatUserName);
 
 
         swipeRefreshLayout = findViewById(R.id.swipeRefreshLayoutMsgDetail);
-        chatDataAdapter = new ChatDataAdapter(chatDataList, chatUserID);
+        chatDataAdapter = new ChatDataAdapter(chatDataList, chatUserName);
         recyclerView = findViewById(R.id.recyclerViewMsgDetail);
         linearLayoutManager = new LinearLayoutManager(this);
         recyclerView.setHasFixedSize(true);
@@ -157,11 +176,11 @@ public class MessageDetailActivity extends AppCompatActivity {
             sendSound.start();
 
 
-            String currentUserRef = "messages/" + currentUserID + "/" + chatUserID;
-            String chatUserRef = "messages/" + chatUserID + "/" + currentUserID;
+            String currentUserRef = "messages/" + currentUserUID + "/" + chatUserUID;
+            String chatUserRef = "messages/" + chatUserUID+ "/" + currentUserUID;
 
 
-            DatabaseReference userMessagePush = databaseReference.child("message").child(currentUserID).child(chatUserID).push();
+            DatabaseReference userMessagePush = databaseReference.child("message").child(currentUserUID).child(chatUserUID).push();
 
             String pushID = userMessagePush.getKey();
 
@@ -170,7 +189,7 @@ public class MessageDetailActivity extends AppCompatActivity {
             Map messageMap = new HashMap();
             messageMap.put("message", message);
             messageMap.put("time", sendTime);
-            messageMap.put("from", currentUserID);
+            messageMap.put("from", currentUserUID);
             messageMap.put("title", title);
 
             Map messageUserMap = new HashMap();
@@ -194,8 +213,8 @@ public class MessageDetailActivity extends AppCompatActivity {
             chatAddMap.put("lastMessageId", pushID);
 
             Map chatUserMap = new HashMap();
-            chatUserMap.put("chat/" + currentUserID + "/" + chatUserID, chatAddMap);
-            chatUserMap.put("chat/" + chatUserID + "/" + currentUserID, chatAddMap);
+            chatUserMap.put("chat/" + currentUserUID + "/" + chatUserUID, chatAddMap);
+            chatUserMap.put("chat/" + chatUserUID + "/" + currentUserUID, chatAddMap);
 
 
             databaseReference.updateChildren(chatUserMap, new DatabaseReference.CompletionListener() {
@@ -215,16 +234,16 @@ public class MessageDetailActivity extends AppCompatActivity {
 
     public void loadMessages() {
 
-//        DatabaseReference messageRef = databaseReference.child("messages").child(currentUserID).child(chatUserID);
+//        DatabaseReference messageRef = databaseReference.child("messages").child(currentUserUID).child(chatUserName);
 //
 //        Query messageQuery = messageRef.limitToLast(currentPage * TOTAL_ITEMS_TO_LOAD);
 
-        databaseReference.child("messages").child(currentUserID).child(chatUserID).addChildEventListener(new ChildEventListener() {
+        databaseReference.child("messages").child(currentUserUID).child(chatUserUID).addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
 
                 ChatDataDTO chatData = dataSnapshot.getValue(ChatDataDTO.class);
-                for(DataSnapshot d : dataSnapshot.getChildren()) {
+                for (DataSnapshot d : dataSnapshot.getChildren()) {
 
                 }
 
@@ -272,16 +291,16 @@ public class MessageDetailActivity extends AppCompatActivity {
     }
 
     private void getChatFriendSent() {
-        databaseReference.child("chat").child(currentUserID).child(chatUserID).child("lastMessageId").addValueEventListener(new ValueEventListener() {
+        databaseReference.child("chat").child(currentUserUID).child(chatUserUID).child("lastMessageId").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (dataSnapshot.getValue() != null) {
                     String lastID = dataSnapshot.getValue().toString();
-                    databaseReference.child("messages").child(currentUserID).child(chatUserID).child(lastID).addValueEventListener(new ValueEventListener() {
+                    databaseReference.child("messages").child(currentUserUID).child(chatUserUID).child(lastID).addValueEventListener(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                             if (dataSnapshot.child("from").getValue() != null) {
-                                if (!dataSnapshot.child("from").getValue().toString().equals(currentUserID)) {
+                                if (!dataSnapshot.child("from").getValue().toString().equals(currentUserUID)) {
                                     if (once) {
                                         final MediaPlayer sendSound = MediaPlayer.create(getApplicationContext(), R.raw.plucky);
                                         sendSound.start();
@@ -308,7 +327,7 @@ public class MessageDetailActivity extends AppCompatActivity {
 
     private void loadMoreMessages() {
 
-        DatabaseReference messageRef = databaseReference.child("messages").child(currentUserID).child(chatUserID);
+        DatabaseReference messageRef = databaseReference.child("messages").child(currentUserUID).child(chatUserUID);
         Query messageQuery = messageRef.orderByKey().endAt(lastKey).limitToLast(20);
         messageQuery.addChildEventListener(new ChildEventListener() {
             @Override
@@ -383,7 +402,7 @@ public class MessageDetailActivity extends AppCompatActivity {
             ChatDataDTO chatData = chatDataList.get(position);
             String from = chatData.getFrom();
 
-            if (from.equals(currentUserID)) { // Msg sent by me
+            if (from.equals(currentUserUID)) { // Msg sent by me
                 holder.cardView.setVisibility(View.INVISIBLE);
                 holder.textViewSenderName.setVisibility(View.INVISIBLE);
                 holder.textViewMsgRecieved.setVisibility(View.INVISIBLE);
@@ -427,13 +446,13 @@ public class MessageDetailActivity extends AppCompatActivity {
 //        buttonInsertDate.setVisibility(View.INVISIBLE);
 //        Toast.makeText(this, "view.getId() : " + view.getId(), Toast.LENGTH_SHORT).show();
 
-        if (category.equals("임대인")) {
+        if (Constant.category.equals("임대인")) {
             final LayoutInflater inflater = (LayoutInflater) getApplicationContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             final View frameLayoutMsgInputForm = inflater.inflate(R.layout.layout_message_detail_msg_input_form_landlord, frameLayoutMsgDetail, false);
             frameLayoutMsgDetail.addView(frameLayoutMsgInputForm);
             initializeView();
 
-        } else if (category.equals("임차인")) {
+        } else if (Constant.category.equals("임차인")) {
             final LayoutInflater inflater = (LayoutInflater) getApplicationContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             final View frameLayoutMsgInputFormTenant = inflater.inflate(R.layout.layout_message_detail_msg_input_form_tenant, frameLayoutMsgDetail, false);
             frameLayoutMsgDetail.addView(frameLayoutMsgInputFormTenant);
