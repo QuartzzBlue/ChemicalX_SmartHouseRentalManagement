@@ -48,16 +48,16 @@ public class HomeFragment extends Fragment {
                 ViewModelProviders.of(this).get(HomeViewModel.class);
         View root = inflater.inflate(R.layout.fragment_home, container, false);
 
-        recyclerView = root.findViewById(R.id.recycler_view);
-        recyclerView.setHasFixedSize(true);
-        layoutManager = new LinearLayoutManager(getContext().getApplicationContext());
-        recyclerView.setLayoutManager(layoutManager);
+        //recyclerView = root.findViewById(R.id.recycler_view);
+        //recyclerView.setHasFixedSize(true);
+        //layoutManager = new LinearLayoutManager(getContext().getApplicationContext());
+        //recyclerView.setLayoutManager(layoutManager);
         buildingAddBtn = root.findViewById(R.id.btn_home_buildingAdd);
 
         InitializePaymentStatus();
 
-        MyRecycleViewAdapter myRecycleViewAdapter = new MyRecycleViewAdapter(buildings);
-        recyclerView.setAdapter(myRecycleViewAdapter);
+        //MyRecycleViewAdapter myRecycleViewAdapter = new MyRecycleViewAdapter(buildings);
+        //recyclerView.setAdapter(myRecycleViewAdapter);
 
         buildingAddBtn.setOnClickListener(new View.OnClickListener(){
 
@@ -69,22 +69,6 @@ public class HomeFragment extends Fragment {
             }
         });
 
-        /*//Hightlight Charts
-        ViewPager viewPager = (ViewPager) root.findViewById(R.id.viewPager);
-        adapterViewPager = new MyPagerAdapter(getFragmentManager());
-        viewPager.setAdapter(adapterViewPager);
-
-        CircleIndicator indicator = (CircleIndicator) root.findViewById(R.id.indicator);
-        indicator.setViewPager(viewPager);
-
-        //Pament Status Per Building
-
-        InitializePaymentStatus();
-        ListView listView = root.findViewById(R.id.listView);
-        final MyListViewAdapter myListViewAdapter = new MyListViewAdapter(getContext().getApplicationContext(),buildings);
-        listView.setAdapter(myListViewAdapter);
-        listViewHeightSet(myListViewAdapter,listView);
-*/
         return root;
     }
 
@@ -96,19 +80,6 @@ public class HomeFragment extends Fragment {
 
         //db 에서 내가 가진 모든 건물 당 납부 내역 최신순 3개 add
 
-    }
-
-    private static void listViewHeightSet(BaseAdapter listAdapter, ListView listView){
-        int totalHeight = 0;
-        for (int i = 0; i < listAdapter.getCount(); i++){
-            View listItem = listAdapter.getView(i, null, listView);
-            listItem.measure(0, 0);
-            totalHeight += listItem.getMeasuredHeight();
-        }
-
-        ViewGroup.LayoutParams params = listView.getLayoutParams();
-        params.height = totalHeight + (listView.getDividerHeight() * (listAdapter.getCount() - 1));
-        listView.setLayoutParams(params);
     }
 }
 
