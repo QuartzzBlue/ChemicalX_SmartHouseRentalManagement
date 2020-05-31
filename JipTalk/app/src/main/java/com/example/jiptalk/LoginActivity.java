@@ -31,7 +31,7 @@ public class LoginActivity extends AppCompatActivity {
     Button loginBt, signUpBt;
     CheckBox checkBox;
 
-    private SharedPreferences appData;
+    SharedPreferences appData;
     private boolean saveLoginData;
     private String email,password;
 
@@ -45,18 +45,15 @@ public class LoginActivity extends AppCompatActivity {
 
         initialization();
 
-        Log.d("===","2. saveLoginData : "+saveLoginData);
+        mAuth = FirebaseAuth.getInstance();
 
         if(saveLoginData){
-            userId.setText(email);
-            userPwd.setText(password);
-            checkBox.setChecked(saveLoginData);
+            userLogin(email,password);
         }
 
 
         /*** Firebase Authentication ***/
         //FirebaseAuth 인스턴스 가져오기
-        mAuth = FirebaseAuth.getInstance();
 //        mAuthListener = new FirebaseAuth.AuthStateListener() {
 //            @Override
 //            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) { //콜백함수(로그인되거나 로그아웃될때)

@@ -3,26 +3,32 @@ package com.example.jiptalk.ui.home;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
-import android.widget.ListView;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.jiptalk.MainActivity;
 import com.example.jiptalk.R;
 import com.example.jiptalk.vo.Building;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -31,8 +37,8 @@ import java.util.Map;
 public class HomeFragment extends Fragment {
 
     private HomeViewModel homeViewModel;
-    FragmentPagerAdapter adapterViewPager;
     Button buildingAddBtn;
+    View root;
 
     ArrayList<Building> buildings;
     RecyclerView recyclerView;
@@ -42,22 +48,17 @@ public class HomeFragment extends Fragment {
     Map<String,Object> building = new HashMap<>();
     Context nowContext;
 
+    FirebaseDatabase firebaseDatabase;
+    DatabaseReference databaseReference;
+    ChildEventListener childEventListener;
+
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         homeViewModel =
                 ViewModelProviders.of(this).get(HomeViewModel.class);
-        View root = inflater.inflate(R.layout.fragment_home, container, false);
+        root = inflater.inflate(R.layout.fragment_home, container, false);
 
-        //recyclerView = root.findViewById(R.id.recycler_view);
-        //recyclerView.setHasFixedSize(true);
-        //layoutManager = new LinearLayoutManager(getContext().getApplicationContext());
-        //recyclerView.setLayoutManager(layoutManager);
-        buildingAddBtn = root.findViewById(R.id.btn_home_buildingAdd);
-
-        InitializePaymentStatus();
-
-        //MyRecycleViewAdapter myRecycleViewAdapter = new MyRecycleViewAdapter(buildings);
-        //recyclerView.setAdapter(myRecycleViewAdapter);
+        Initialize();
 
         buildingAddBtn.setOnClickListener(new View.OnClickListener(){
 
@@ -72,72 +73,112 @@ public class HomeFragment extends Fragment {
         return root;
     }
 
-    public void InitializePaymentStatus(){
-        buildings = new ArrayList<Building>();
+    public void Initialize(){
 
-        //데이터베이스에서 내가 가진 모든 건물 불러오기.
+        InitDatabase();
 
+        buildingAddBtn = root.findViewById(R.id.btn_home_buildingAdd);
+        buildings = new ArrayList<>();
+        buildings.add(new Building("진성원룸","경기도 용인시",16));
+        buildings.add(new Building("해피하우스","경기도 용인시",16));
+        buildings.add(new Building("로체팰리스","경기도 용인시",16));
 
-        //db 에서 내가 가진 모든 건물 당 납부 내역 최신순 3개 add
+        recyclerView = root.findViewById(R.id.home_recycler_view);
+        recyclerView.setHasFixedSize(true);
+        layoutManager = new LinearLayoutManager(getContext().getApplicationContext());
+        recyclerView.setLayoutManager(layoutManager);
+        MyRecyclerViewAdapter myRecycleViewAdapter = new MyRecyclerViewAdapter(buildings);
+        myRecycleViewAdapter.setOnItemClickListeer(new MyRecyclerViewAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(View v, int position) {
+                // 액티비티 이동
+                Intent intent = new Intent(getActivity(), BuildingDetailActivity.class);
+                intent.putExtra("buildingName",buildings.get(position).getName());
+                startActivity(intent); //intent 로 선택한 빌딩 정보 값 넘겨줘야한다
+            }
+        });
+        recyclerView.setAdapter(myRecycleViewAdapter);
+
+    }
+
+    public void InitDatabase(){
+
+        firebaseDatabase = FirebaseDatabase.getInstance();
+        databaseReference = firebaseDatabase.getReference("building");
 
     }
 }
 
-class MyRecycleViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
+class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAdapter.MyViewHolder>{
 
-    class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
+    private ArrayList<Building> buildings = null;
+    private OnItemClickListener onItemClickListener=null;
+
+    //아이템 뷰를 저장하는 뷰 홀더 클래스
+    public class MyViewHolder extends RecyclerView.ViewHolder{
 
         TextView buildingName;
-        int position;
+        TextView isDelayed;
+        ImageButton btn_buildingDetail;
 
-        MyViewHolder(@NonNull View view) {
-            super(view);
-            buildingName = view.findViewById(R.id.buildingName);
-        }
+        //뷰 객체에 대한 참조
+        MyViewHolder(final View itemView){
+            super(itemView);
+            buildingName = itemView.findViewById(R.id.tv_rectclerview_buildingName);
+            isDelayed = itemView.findViewById(R.id.tv_isDelayed);
+            btn_buildingDetail = itemView.findViewById(R.id.btn_recyclerview_buildingDetail);
 
-        void onBind(){
-            buildingName.setText("진성원룸");
-           // changeVisibility(selectedItems.get(position));
-            buildingName.setOnClickListener(this);
-        }
-
-        @Override
-        public void onClick(View v) {
-            if(v.getId()==R.id.buildingName){
-
-            }
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    int pos = getAdapterPosition();
+                    if(pos!=RecyclerView.NO_POSITION){
+                        if(onItemClickListener!=null){
+                            onItemClickListener.onItemClick(v,pos);
+                        }
+                    }
+                }
+            });
         }
     }
 
-    private ArrayList<Building> buildingArrayList;
-    private SparseBooleanArray selectedItems = new SparseBooleanArray(); //item 의 클릭 상태를 저장할 array 객체
-    private int prePosition = -1; //직전에 클릭됐던 item 의 position
-
-    MyRecycleViewAdapter(ArrayList<Building> buildingArrayList){
-        this.buildingArrayList=buildingArrayList;
+    //생성자에서 데이터 리스트 객체를 전달받음
+    MyRecyclerViewAdapter(ArrayList<Building> buildinglist){
+        buildings = buildinglist;
     }
 
-    //RecyclerView 의 행을 표시하는데 사용되는 레이아웃 xml 을 가져옴
+
+    // onCreateViewHolder() - 아이템 뷰를 위한 뷰홀더 객체 생성하여 리턴.
     @NonNull
     @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.recyclerview_item,parent,false);
+    public MyRecyclerViewAdapter.MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        Context context = parent.getContext() ;
+        LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) ;
 
-        return new MyViewHolder(v);
+        View view = inflater.inflate(R.layout.recyclerview_item, parent, false) ;
+        MyRecyclerViewAdapter.MyViewHolder myViewHolder = new MyRecyclerViewAdapter.MyViewHolder(view) ;
+        return myViewHolder;
     }
 
-    //RecyclerView 의 행에 보여질 view 설정
+    // onBindViewHolder() - position에 해당하는 데이터를 뷰홀더의 아이템뷰에 표시.
     @Override
-    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-        MyViewHolder myViewHolder = (MyViewHolder) holder;
-
-       // myViewHolder.buildingName.setText(buildingArrayList.get(position).name);
+    public void onBindViewHolder(@NonNull MyRecyclerViewAdapter.MyViewHolder holder, int position) {
+        String buildingName = buildings.get(position).getName();
+        holder.buildingName.setText(buildingName);
     }
 
-    //RecyclerVew 의 행 갯수 리턴
+    // getItemCount() - 전체 데이터 갯수 리턴.
     @Override
     public int getItemCount() {
-        return buildingArrayList.size();
+        return buildings.size();
+    }
+
+    public interface OnItemClickListener{
+        void onItemClick(View v, int position);
+    }
+
+    public void setOnItemClickListeer(OnItemClickListener listener){
+        this.onItemClickListener = listener;
     }
 }
 
@@ -176,43 +217,4 @@ class MyRecycleViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 //        return "Page " + position;
 //    }
 //}
-
-class MyListViewAdapter extends BaseAdapter{
-
-    Context mContext = null;
-    LayoutInflater mLayoutInflater = null;
-    ArrayList<Building> buildings;
-
-    public MyListViewAdapter() {
-    }
-
-    public MyListViewAdapter(Context mContext, ArrayList<Building> buildings) {
-        this.mContext = mContext;
-        this.buildings = buildings;
-        mLayoutInflater = LayoutInflater.from(mContext);
-    }
-
-    @Override
-    public int getCount() {
-        return buildings.size();
-    }
-
-    @Override
-    public Object getItem(int position) {
-        return position;
-    }
-
-    @Override
-    public long getItemId(int position) {
-        return position;
-    }
-
-    @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-
-        View view = mLayoutInflater.inflate(R.layout.payment_status,null);
-
-        return view;
-    }
-}
 

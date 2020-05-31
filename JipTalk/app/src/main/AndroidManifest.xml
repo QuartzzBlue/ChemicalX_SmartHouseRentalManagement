@@ -41,6 +41,7 @@
         <activity android:name=".ui.home.AddBuildingActivity"
             android:label="신규 건물 등록"/>
         <activity android:name=".ui.home.JusoWebViewActivity" />
+        <activity android:name=".ui.home.BuildingDetailActivity"/>
 
     </application>
 
