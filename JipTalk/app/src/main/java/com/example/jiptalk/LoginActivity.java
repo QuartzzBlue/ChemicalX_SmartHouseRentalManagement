@@ -5,10 +5,12 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -27,13 +29,30 @@ public class LoginActivity extends AppCompatActivity {
     EditText userId, userPwd;
     TextView findIdPwd;
     Button loginBt, signUpBt;
+    CheckBox checkBox;
+
+    private SharedPreferences appData;
+    private boolean saveLoginData;
+    private String email,password;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+        appData = getSharedPreferences("appData",MODE_PRIVATE);
+        load();
+
         initialization();
+
+        Log.d("===","2. saveLoginData : "+saveLoginData);
+
+        if(saveLoginData){
+            userId.setText(email);
+            userPwd.setText(password);
+            checkBox.setChecked(saveLoginData);
+        }
+
 
         /*** Firebase Authentication ***/
         //FirebaseAuth 인스턴스 가져오기
@@ -67,17 +86,9 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                String email = userId.getText().toString();
-                String password = userPwd.getText().toString();
+                email = userId.getText().toString();
+                password = userPwd.getText().toString();
                 Log.d("***",email+", "+password);
-
-                //아이디 패스워드 모두 빈칸이면 홈으로 이동. by Yeojin
-//                if(email.equals("a") && password.equals("a")){
-//                    Log.d("***","Go to Home...");
-//                    Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-//                    startActivity(intent);
-//                    finish();
-//                }
 
                 if(!isValid(email,password)){
                     Log.d("===", "Login: fail ");
@@ -87,6 +98,14 @@ public class LoginActivity extends AppCompatActivity {
                     userPwd.setText("");
                     return;
                 }
+
+                SharedPreferences.Editor editor = appData.edit();
+                editor.putBoolean("SAVE_LOGIN_DATA",checkBox.isChecked());
+                editor.putString("email",email);
+                editor.putString("password",password);
+
+                editor.apply();
+
                 userLogin(email,password);
 
             }
@@ -156,6 +175,7 @@ public class LoginActivity extends AppCompatActivity {
         findIdPwd = findViewById(R.id.loginFindIdPwdTv);
         loginBt = findViewById(R.id.loginBt);
         signUpBt = findViewById(R.id.signUpBt);
+        checkBox = findViewById(R.id.checkBox);
 
 
 
@@ -181,6 +201,17 @@ public class LoginActivity extends AppCompatActivity {
         if (currentUser != null) {
             FirebaseAuth.getInstance().signOut();   //로그아웃
         }
+    }
+
+    //설정 값을 불러오는 함수
+    private void load(){
+        //SharedPreferences 객체.get타입 (저장된이름,기본값)
+        //저장된 이름이 존재하지 않으면 기본값 반환
+        saveLoginData = appData.getBoolean("SAVE_LOGIN_DATA",false);
+        Log.d("===","1. set saveLoginData : "+saveLoginData);
+        email = appData.getString("email","");
+        Log.d("===","1. set email : "+email);
+        password = appData.getString("password","");
     }
 
 }
