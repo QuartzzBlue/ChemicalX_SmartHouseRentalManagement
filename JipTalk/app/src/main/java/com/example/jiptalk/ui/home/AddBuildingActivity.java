@@ -18,6 +18,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.jiptalk.MainActivity;
 import com.example.jiptalk.R;
 import com.example.jiptalk.Util;
 import com.example.jiptalk.Valid;
@@ -33,7 +34,7 @@ import java.util.Map;
 
 public class AddBuildingActivity extends AppCompatActivity {
 
-    private FirebaseAuth mAuth;
+    private FirebaseDatabase database;
     private DatabaseReference buildingRef;
     Valid valid;
     Context nowContext;
@@ -116,14 +117,8 @@ public class AddBuildingActivity extends AppCompatActivity {
 
         util.showProgressDialog(nowContext);
 
-        /*** Firebase Authentication ***/
-        //FirebaseAuth 인스턴스 가져오기
-        mAuth = FirebaseAuth.getInstance();
-        //데이터베이스 레퍼런스 설정
-        buildingRef = FirebaseDatabase.getInstance().getReference();
-
         Map<String,Object> childUpdates = new HashMap<>();
-        childUpdates.put("building/"+ newBuilding.getId(), newBuilding.toMap());
+        childUpdates.put(newBuilding.getId(), newBuilding.toMap());
         buildingRef.updateChildren(childUpdates).addOnSuccessListener(new OnSuccessListener<Void>() {
                                         @Override
                                         public void onSuccess(Void aVoid) {
@@ -131,9 +126,9 @@ public class AddBuildingActivity extends AppCompatActivity {
                                             Toast.makeText(nowContext, "성공적으로 등록되었습니다.", Toast.LENGTH_SHORT).show();
                                             util.hideProgressDialog();
                                             // 액티비티 이동
-//                                            Intent intent = new Intent(getApplicationContext(), SignUpCompleteActivity.class);
-//                                            startActivity(intent);
-//                                            finish();
+                                            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                                            startActivity(intent);
+                                            finish();
                                         }
                                     }).addOnFailureListener(new OnFailureListener() {
                                 @Override
@@ -152,6 +147,11 @@ public class AddBuildingActivity extends AppCompatActivity {
         et_buildingName = findViewById(R.id.tv_add_building_buildingName);
         et_totalUnitCnt = findViewById(R.id.tv_add_building_totalUnitCnt);
         searchBtn = findViewById(R.id.btn_add_building_search);
+
+        database = FirebaseDatabase.getInstance();
+        buildingRef = database.getReference("building");
+
+        appData = getSharedPreferences("appData",MODE_PRIVATE);
 
         nowContext = this; // this = View.getContext();  현재 실행되고 있는 View의 context를 return 하는데 보통은 현재 활성화된 activity의 context가 된다.
         valid = new Valid();

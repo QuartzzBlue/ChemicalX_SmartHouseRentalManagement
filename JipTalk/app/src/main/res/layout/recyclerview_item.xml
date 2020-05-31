@@ -4,12 +4,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="80dp"
-    android:layout_marginStart="2dp"
-    android:layout_marginLeft="2dp"
-    android:layout_marginEnd="2dp"
-    android:layout_marginRight="2dp"
-    android:layout_marginBottom="1dp"
-    app:cardCornerRadius="10dp"
+    android:layout_marginStart="5dp"
+    android:layout_marginLeft="5dp"
+    android:layout_marginTop="5dp"
+    android:layout_marginEnd="5dp"
+    android:layout_marginRight="5dp"
+    android:layout_marginBottom="3dp"
+    app:cardCornerRadius="20dp"
     app:cardElevation="5dp">
 
     <LinearLayout
@@ -18,11 +19,42 @@
         android:orientation="horizontal">
 
         <TextView
-            android:id="@+id/buildingName"
-            android:layout_width="wrap_content"
+            android:id="@+id/tv_rectclerview_buildingName"
+            android:layout_width="240dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
-            android:textSize="20sp" />
+            android:layout_marginLeft="20dp"
+            android:layout_weight="8"
+            android:textColor="@color/black"
+            android:textSize="24sp"
+            tools:text="buildingName" />
+
+        <TextView
+            android:id="@+id/tv_isDelayed"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:background="@drawable/round_button_3"
+            android:gravity="center|center_horizontal|center_vertical"
+            android:paddingLeft="10dp"
+            android:paddingTop="2dp"
+            android:paddingRight="10dp"
+            android:paddingBottom="2dp"
+            android:text="미납"
+            android:textColor="#FFFFFF"
+            android:textSize="16sp" />
+
+        <ImageButton
+            android:id="@+id/btn_recyclerview_buildingDetail"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:layout_gravity="center"
+            android:layout_marginRight="10dp"
+            android:layout_weight="1"
+            android:background="#00000000"
+            android:scaleType="centerInside"
+            app:srcCompat="@drawable/arrow" />
 
     </LinearLayout>
 
