@@ -23,6 +23,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.jiptalk.R;
 import com.example.jiptalk.vo.Building;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -31,8 +33,11 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 
 public class HomeFragment extends Fragment {
 
@@ -44,13 +49,18 @@ public class HomeFragment extends Fragment {
     RecyclerView recyclerView;
     RecyclerView.LayoutManager layoutManager; //어댑터에서 getView 역할을 하는것
     // (뷰홀더 지정. 뷰홀더 : 화면에 표시될 아이템 뷰를 저장하는 객체)
+    MyRecyclerViewAdapter myRecycleViewAdapter;
 
     Map<String,Object> building = new HashMap<>();
     Context nowContext;
 
+    private FirebaseAuth mAuth;
+    FirebaseUser user;
+    String uid;
     FirebaseDatabase firebaseDatabase;
     DatabaseReference databaseReference;
-    ChildEventListener childEventListener;
+
+
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -75,19 +85,21 @@ public class HomeFragment extends Fragment {
 
     public void Initialize(){
 
-        InitDatabase();
+        buildings = new ArrayList<Building>();
+        buildings.add(new Building("해피하우스","경기도 용인시",10));
 
         buildingAddBtn = root.findViewById(R.id.btn_home_buildingAdd);
-        buildings = new ArrayList<>();
-        buildings.add(new Building("진성원룸","경기도 용인시",16));
-        buildings.add(new Building("해피하우스","경기도 용인시",16));
-        buildings.add(new Building("로체팰리스","경기도 용인시",16));
+
+        //database 에서 userid 의 소유 빌딩 목록 불러오기
+        InitDatabase();
 
         recyclerView = root.findViewById(R.id.home_recycler_view);
         recyclerView.setHasFixedSize(true);
         layoutManager = new LinearLayoutManager(getContext().getApplicationContext());
         recyclerView.setLayoutManager(layoutManager);
-        MyRecyclerViewAdapter myRecycleViewAdapter = new MyRecyclerViewAdapter(buildings);
+        myRecycleViewAdapter = new MyRecyclerViewAdapter(buildings);
+
+        // 리사이클러뷰의 아이템 클릭 시 해당 아이템(빌딩) 의 BuildingDetailActivity 로 이동
         myRecycleViewAdapter.setOnItemClickListeer(new MyRecyclerViewAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View v, int position) {
@@ -104,9 +116,52 @@ public class HomeFragment extends Fragment {
     public void InitDatabase(){
 
         firebaseDatabase = FirebaseDatabase.getInstance();
-        databaseReference = firebaseDatabase.getReference("building");
+        databaseReference = firebaseDatabase.getReference("buildings");
+
+        mAuth = FirebaseAuth.getInstance();
+        user = mAuth.getCurrentUser();
+
+
+        uid = user.getUid();
+
+        //데이터베이스이 내용이 변동되면 다음의 콜백 함수 계속 호출
+        //addListenerForSingleValueEvent() : 콜백함수 한번만 호출. 뭐가 자원 낭비 덜할까? 오버헤드아녀?
+        //https://stack07142.tistory.com/282
+        databaseReference.child(uid).addValueEventListener(new ValueEventListener() {
+
+            //ValueEventListener : 해당 지점 하부를 포함한 데이터가 변경 될 때마다 호출
+            //DataSnapshot 이라는 객체를 통해 데이터가 메소드로 전달
+            //getValue() 메소드로 객체 단위로 값 호출
+
+            //ChildEventListner : 목록을 다루는 이벤트 리스너. push()메소드로 저장될 때 발생생
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                buildings.clear();
+                for(DataSnapshot postSnapshot : dataSnapshot.getChildren()){
+                    Building buildingItem = postSnapshot.getValue(Building.class);
+                    buildings.add(buildingItem);
+//                    String key = postSnapshot.getKey();
+//                    Log.d("===","postSnapshot.getKey() : "+key); //건물 key
+//                    HashMap<String,HashMap<String,Building>> buildingInfo = (HashMap<String, HashMap<String, Building>>) postSnapshot.getValue();
+//                    Log.d("===","buildingInfo key Set : "+buildingInfo.keySet().toString());
+//                    Log.d("===","buildingInfo value : "+buildingInfo.values());
+
+                    //buildings.add((Building) buildingInfo.values());
+                }
+                myRecycleViewAdapter.notifyDataSetChanged();
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
 
     }
+
+
 }
 
 class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAdapter.MyViewHolder>{
