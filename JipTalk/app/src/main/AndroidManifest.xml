@@ -6,13 +6,13 @@
 
     <application
         android:allowBackup="true"
-        android:usesCleartextTraffic="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
-        <activity android:name=".ui.setting.SettingAlarmActivity"></activity>
+        android:theme="@style/AppTheme"
+        android:usesCleartextTraffic="true">
+        <activity android:name=".ui.setting.SettingAlarmActivity" />
         <activity android:name=".FindPwdActivity" />
         <activity
             android:name=".FindIdActivity"
@@ -25,8 +25,9 @@
             android:label="회원가입" />
         <activity android:name=".LoginActivity" />
         <activity android:name=".ui.message.MessageDetailActivity" />
-        <activity android:name=".MainActivity"
-            android:label="@string/app_name"/>
+        <activity
+            android:name=".MainActivity"
+            android:label="@string/app_name" />
         <activity
             android:name=".SplashActivity"
             android:label="@string/app_name"
@@ -38,11 +39,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ui.home.AddBuildingActivity"
-            android:label="신규 건물 등록"/>
+        <activity
+            android:name=".ui.home.AddBuildingActivity"
+            android:label="신규 건물 등록" />
         <activity android:name=".ui.home.JusoWebViewActivity" />
-        <activity android:name=".ui.home.BuildingDetailActivity"/>
-
+        <activity android:name=".ui.home.BuildingDetailActivity" />
     </application>
 
 </manifest>
