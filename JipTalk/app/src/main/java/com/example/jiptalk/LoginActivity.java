@@ -32,7 +32,6 @@ public class LoginActivity extends AppCompatActivity {
     CheckBox checkBox;
 
     SharedPreferences appData;
-    private boolean saveLoginData;
     private String email,password;
 
     @Override
@@ -41,15 +40,10 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
 
         appData = getSharedPreferences("appData",MODE_PRIVATE);
-        load();
 
         initialization();
 
         mAuth = FirebaseAuth.getInstance();
-
-        if(saveLoginData){
-            userLogin(email,password);
-        }
 
 
         /*** Firebase Authentication ***/
@@ -83,8 +77,8 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                email = userId.getText().toString();
-                password = userPwd.getText().toString();
+                email = userId.getText().toString().trim();
+                password = userPwd.getText().toString().trim();
                 Log.d("***",email+", "+password);
 
                 if(!isValid(email,password)){
@@ -96,11 +90,11 @@ public class LoginActivity extends AppCompatActivity {
                     return;
                 }
 
+                /*** 자동로그인 설정 ***/
                 SharedPreferences.Editor editor = appData.edit();
                 editor.putBoolean("SAVE_LOGIN_DATA",checkBox.isChecked());
                 editor.putString("email",email);
                 editor.putString("password",password);
-
                 editor.apply();
 
                 userLogin(email,password);
@@ -130,7 +124,7 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
-    private void userLogin (String email, String password){
+    public void userLogin (String email, String password){
 
         mAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
@@ -193,22 +187,12 @@ public class LoginActivity extends AppCompatActivity {
     public void onStart() {
         super.onStart();
 
-        FirebaseUser currentUser = mAuth.getCurrentUser();
-        /*** user 정보 있냐 없냐에 따라 자동 로그인 ? ***/
-        if (currentUser != null) {
-            FirebaseAuth.getInstance().signOut();   //로그아웃
-        }
+//        FirebaseUser currentUser = mAuth.getCurrentUser();
+//        /*** user 정보 있냐 없냐에 따라 자동 로그인 ? ***/
+//        if (currentUser != null) {
+//            FirebaseAuth.getInstance().signOut();   //로그아웃
+//        }
     }
 
-    //설정 값을 불러오는 함수
-    private void load(){
-        //SharedPreferences 객체.get타입 (저장된이름,기본값)
-        //저장된 이름이 존재하지 않으면 기본값 반환
-        saveLoginData = appData.getBoolean("SAVE_LOGIN_DATA",false);
-        Log.d("===","1. set saveLoginData : "+saveLoginData);
-        email = appData.getString("email","");
-        Log.d("===","1. set email : "+email);
-        password = appData.getString("password","");
-    }
 
 }
