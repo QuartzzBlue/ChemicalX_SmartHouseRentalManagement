@@ -4,14 +4,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.os.Handler;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -26,19 +24,32 @@ import com.example.jiptalk.vo.Building;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 public class AddBuildingActivity extends AppCompatActivity {
 
-    private FirebaseDatabase database;
+    private FirebaseDatabase mDatabase;
     private DatabaseReference buildingRef;
+    private FirebaseAuth mAuth;
+    FirebaseUser user;
+    String uid;
+
     Valid valid;
     Context nowContext;
     static final int REQUEST_CODE = 400;
+
+    Date currentTime;
+    SimpleDateFormat yearFormat,monthFormat,dayFormat;
+    String year,month,day;
 
     EditText et_buildingAddress,et_buildingName,et_totalUnitCnt;
     Button searchBtn;
@@ -52,7 +63,7 @@ public class AddBuildingActivity extends AppCompatActivity {
         setContentView(R.layout.activity_add_building);
         initialization();
 
-        //도로명 주소
+        //도로명 주소 웹뷰 액티비티로 이동
         searchBtn.setOnClickListener(new View.OnClickListener(){
 
             @Override
@@ -64,6 +75,7 @@ public class AddBuildingActivity extends AppCompatActivity {
         });
     }
 
+    //도로명 주소 웹뷰 액티비티에서 주소 받아옴
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -81,20 +93,21 @@ public class AddBuildingActivity extends AppCompatActivity {
         return true ;
     }
 
+    //세이브 버튼 클릭 시
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
         switch (item.getItemId()) {
-            /*** 저장 버튼 눌렸을 때 ***/
+
             case R.id.action_save :
 
                 String buildingAddress = et_buildingAddress.getText().toString();
                 String buildingName = et_buildingName.getText().toString();
                 int totalUnitCnt = Integer.parseInt(et_totalUnitCnt.getText().toString());
                 Building newBuilding = new Building(buildingName,buildingAddress,totalUnitCnt);
+
                 //buildingID : userId_buildingname_등록날짜
-                String uid = appData.getString("email","").split("@")[0];
-                newBuilding.setId(uid);
+                newBuilding.setId(uid+"_"+buildingName+"_"+year+month+day);
                 Log.d("===",newBuilding.getId());
 
                 /* 유효성 검사 */
@@ -111,14 +124,15 @@ public class AddBuildingActivity extends AppCompatActivity {
 
     private void createBuilding(final Building newBuilding){
 
-        Log.d("===","createBuilding");
+        Log.d("===","createBuilding : "+newBuilding.getId());
 
         final Util util = new Util();
 
         util.showProgressDialog(nowContext);
 
+        String key = buildingRef.child("buildings").push().getKey();
         Map<String,Object> childUpdates = new HashMap<>();
-        childUpdates.put(newBuilding.getId(), newBuilding.toMap());
+        childUpdates.put("/"+uid+"/"+key, newBuilding.toMap());
         buildingRef.updateChildren(childUpdates).addOnSuccessListener(new OnSuccessListener<Void>() {
                                         @Override
                                         public void onSuccess(Void aVoid) {
@@ -148,13 +162,28 @@ public class AddBuildingActivity extends AppCompatActivity {
         et_totalUnitCnt = findViewById(R.id.tv_add_building_totalUnitCnt);
         searchBtn = findViewById(R.id.btn_add_building_search);
 
-        database = FirebaseDatabase.getInstance();
-        buildingRef = database.getReference("building");
+        mDatabase = FirebaseDatabase.getInstance();
+        buildingRef = mDatabase.getReference("buildings");
+
+        mAuth = FirebaseAuth.getInstance();
+        user = mAuth.getCurrentUser();
 
         appData = getSharedPreferences("appData",MODE_PRIVATE);
 
+        currentTime = Calendar.getInstance().getTime();
+        yearFormat = new SimpleDateFormat("yyyy", Locale.getDefault());
+        monthFormat = new SimpleDateFormat("MM",Locale.getDefault());
+        dayFormat = new SimpleDateFormat("dd",Locale.getDefault());
+
+        year = yearFormat.format(currentTime);
+        month = monthFormat.format(currentTime);
+        day = dayFormat.format(currentTime);
+
         nowContext = this; // this = View.getContext();  현재 실행되고 있는 View의 context를 return 하는데 보통은 현재 활성화된 activity의 context가 된다.
         valid = new Valid();
+
+        user = mAuth.getCurrentUser();
+        uid = user.getUid();
     }
 
     private boolean isValid(Building newBuilding){

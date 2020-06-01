@@ -1,12 +1,13 @@
 package com.example.jiptalk.vo;
 
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Exclude;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.IgnoreExtraProperties;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-
 
 @IgnoreExtraProperties
 public class Building {
@@ -21,6 +22,7 @@ public class Building {
     int unpaidCnt;
     int monthlyIncome;
     ArrayList<Unit> unitList;
+    private DatabaseReference mDatabase;
 
     public Building() {
     }
@@ -31,10 +33,29 @@ public class Building {
         this.unitCnt = unitCnt;
     }
 
+    public Building(String name, String buildingAddress, int unitCnt, int occupiedCnt, int emptyCnt, int paidCnt, int unpaidCnt, int monthlyIncome, ArrayList<Unit> unitList) {
+        this.name = name;
+        this.buildingAddress = buildingAddress;
+        this.unitCnt = unitCnt;
+        this.occupiedCnt = occupiedCnt;
+        this.emptyCnt = emptyCnt;
+        this.paidCnt = paidCnt;
+        this.unpaidCnt = unpaidCnt;
+        this.monthlyIncome = monthlyIncome;
+        this.unitList = unitList;
+    }
+
     public Building(String id, String name, String buildingAddress, int unitCnt, int occupiedCnt, int emptyCnt, int paidCnt, int unpaidCnt, int monthlyIncome, ArrayList<Unit> unitList) {
         this.id = id;
         this.name = name;
         this.buildingAddress = buildingAddress;
+        this.unitCnt = unitCnt;
+        this.occupiedCnt = occupiedCnt;
+        this.emptyCnt = emptyCnt;
+        this.paidCnt = paidCnt;
+        this.unpaidCnt = unpaidCnt;
+        this.monthlyIncome = monthlyIncome;
+        this.unitList = unitList;
     }
 
     public String getId() {
@@ -138,13 +159,14 @@ public class Building {
     public Map<String, Object> toMap() {
         HashMap<String, Object> result = new HashMap<>();
         result.put("name", name);
+        result.put("buildingAddress",buildingAddress);
         result.put("unitCnt", unitCnt);
         result.put("occupiedCnt", occupiedCnt);
         result.put("emptyCnt", emptyCnt);
         result.put("paidCnt", paidCnt);
         result.put("unpaidCnt", unpaidCnt);
         result.put("monthlyIncome",monthlyIncome);
-
+        result.put("unitlist",unitList);
 
         return result;
     }
