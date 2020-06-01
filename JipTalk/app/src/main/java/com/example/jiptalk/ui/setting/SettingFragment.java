@@ -47,8 +47,8 @@ public class SettingFragment extends Fragment {
         infoBt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                intent = new Intent(nowContext, SettingAlarmActivity.class);
-//                startActivity(intent);
+                intent = new Intent(nowContext, SettingUserInfoActivity.class);
+                startActivity(intent);
             }
         });
 
