@@ -106,13 +106,13 @@
     </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/home_recycler_view"
+        android:id="@+id/rv_home"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="15dp" />
 
     <Button
-        android:id="@+id/btn_home_buildingAdd"
+        android:id="@+id/btn_home_addBuilding"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"

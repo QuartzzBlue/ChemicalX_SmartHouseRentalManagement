@@ -1,5 +1,8 @@
 package com.example.jiptalk.vo;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Exclude;
 import com.google.firebase.database.FirebaseDatabase;
@@ -22,7 +25,6 @@ public class Building {
     int unpaidCnt;
     int monthlyIncome;
     ArrayList<Unit> unitList;
-    private DatabaseReference mDatabase;
 
     public Building() {
     }
@@ -56,6 +58,18 @@ public class Building {
         this.unpaidCnt = unpaidCnt;
         this.monthlyIncome = monthlyIncome;
         this.unitList = unitList;
+    }
+
+    protected Building(Parcel in) {
+        id = in.readString();
+        name = in.readString();
+        buildingAddress = in.readString();
+        unitCnt = in.readInt();
+        occupiedCnt = in.readInt();
+        emptyCnt = in.readInt();
+        paidCnt = in.readInt();
+        unpaidCnt = in.readInt();
+        monthlyIncome = in.readInt();
     }
 
     public String getId() {
