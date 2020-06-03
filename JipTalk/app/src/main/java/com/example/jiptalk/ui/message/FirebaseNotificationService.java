@@ -2,37 +2,21 @@ package com.example.jiptalk.ui.message;
 
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
-import android.app.Service;
-import android.content.Intent;
 import android.os.Build;
-import android.os.IBinder;
 import android.util.Log;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
-import androidx.core.app.NotificationManagerCompat;
 
 import com.example.jiptalk.Constant;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public class FirebaseNotificationService extends FirebaseMessagingService {
 
     String TAG = "===";
 
 
-    NotificationManagerCompat notificationManager;
+    NotificationManager notificationManager;
 
     public FirebaseNotificationService() {
     }
@@ -50,7 +34,8 @@ public class FirebaseNotificationService extends FirebaseMessagingService {
         int importance = NotificationManager.IMPORTANCE_LOW;
 
 
-        notificationManager = NotificationManagerCompat.from(this);
+//        notificationManager = NotificationManagerCompat.from(this);
+        notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationChannel mChannel = new NotificationChannel(channelId, channelName, importance);
@@ -59,10 +44,14 @@ public class FirebaseNotificationService extends FirebaseMessagingService {
 
         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this, channelId)
                 .setSmallIcon(android.R.drawable.sym_def_app_icon)
-                .setContentTitle(title)
-                .setContentText(msg)
                 .setAutoCancel(true)
                 .setVibrate(new long[]{1, 1000});
+
+        NotificationCompat.BigTextStyle bigTextStyle = new NotificationCompat.BigTextStyle();
+        bigTextStyle.setBigContentTitle(title);
+        bigTextStyle.bigText(msg);
+
+        mBuilder.setStyle(bigTextStyle);
 
         notificationManager.notify(0, mBuilder.build());
     }
@@ -74,7 +63,6 @@ public class FirebaseNotificationService extends FirebaseMessagingService {
 
         Log.d(TAG, "New Token : " + s);
         Constant.newToken = s;
-
 
 
     }

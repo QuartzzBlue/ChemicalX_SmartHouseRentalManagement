@@ -53,53 +53,41 @@ public class MainActivity extends AppCompatActivity {
         NavigationUI.setupWithNavController(navView, navController);
 
 
-        Constant.userUID = FirebaseAuth.getInstance().getUid();
-
-        Log.d(TAG, "userUID : " + Constant.userUID);
-
         final DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
-
-        if (Constant.newToken != null) {
-            reference.child("user").child(Constant.userUID).addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-                    Constant.token = Constant.newToken;
-                    Log.d(TAG, "token0 : " + Constant.token);
-                    Map map = new HashMap();
-                    map.put("token", Constant.token);
-                    reference.updateChildren(map, new DatabaseReference.CompletionListener() {
-                        @Override
-                        public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
-
-                        }
-                    });
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                }
-            });
-        } else {
-
-            reference.child("user").child(Constant.userUID).addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    HashMap hashMap = (HashMap) dataSnapshot.getValue();
-                    Log.d(TAG, "token0 : " + hashMap.get("token"));
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                }
-            });
+        if (Constant.newToken != null) { // 새로운 토큰 생성할 시 DB에 token 업데이트 및 token static 변수에 값 저장.
+            Constant.token = Constant.newToken;
+            Map map = new HashMap();
+            map.put("token", Constant.token);
+            reference.child("user").child(Constant.userUID).updateChildren(map);
         }
+
+        // DB에서 token 값 가져와서 token static 변수에 값 저장.
+        reference.child("user").child(Constant.userUID).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                HashMap hashMap = (HashMap) dataSnapshot.getValue();
+                Object tokenFromDB = hashMap.get("token");
+                if (tokenFromDB == null) {
+                    tokenFromDB = FirebaseInstanceId.getInstance().getToken();
+                    Map map = new HashMap();
+                    map.put("token", tokenFromDB.toString());
+                    reference.child("user").child(Constant.userUID).updateChildren(map);
+                }
+                Log.d(TAG, "token0 : " + tokenFromDB);
+                Constant.token = tokenFromDB.toString();
+                Constant.category = hashMap.get("category").toString();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
     }
 
     /*** Constant 변수 초기화 ***/
-    public void InitConstants(){
+    public void InitConstants() {
 
         FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
         DatabaseReference databaseReference = firebaseDatabase.getReference("buildings");

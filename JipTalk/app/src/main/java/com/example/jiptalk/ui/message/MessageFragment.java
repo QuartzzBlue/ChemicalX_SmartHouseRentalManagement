@@ -130,7 +130,14 @@ public class MessageFragment extends Fragment {
                             holder.chatLayout.setOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
-                                    Intent intent = new Intent(getContext(), MessageDetailActivity.class);
+                                    Intent intent = null;
+                                    if (Constant.category.equals("집주인")) {
+                                        intent = new Intent(getContext(), LandLordMessageActivity.class);
+                                    } else if (Constant.category.equals("세입자")) {
+                                        intent = new Intent(getContext(), TenantMessageActivity.class);
+
+                                    }
+
                                     intent.putExtra("name", getChatUserName(chatUserUID));
                                     intent.putExtra("clientUID", chatUserUID);
                                     startActivity(intent);
@@ -252,10 +259,16 @@ public class MessageFragment extends Fragment {
                             @Override
                             public void onClick(View v) {
                                 if (clientSelected != null) {
-                                    Intent intent = new Intent(getContext(), MessageDetailActivity.class);
+                                    Intent intent = null;
+                                    if (Constant.category.equals("집주인")) {
+                                        intent = new Intent(getContext(), LandLordMessageActivity.class);
+                                    } else if (Constant.category.equals("세입자")) {
+                                        intent = new Intent(getContext(), TenantMessageActivity.class);
+
+                                    }
                                     intent.putExtra("clientUID", clientList.get(position).getUID() + "");
                                     intent.putExtra("name", clientSelected + "");
-                                    intent.putExtra("token", Constant.token);
+                                    intent.putExtra("token", Constant.token + "");
                                     startActivity(intent);
                                 }
                             }
@@ -440,20 +453,18 @@ public class MessageFragment extends Fragment {
         Calendar cal = Calendar.getInstance(Locale.ENGLISH);
         cal.setTimeInMillis(time);
         String date = null;
-
-        Log.d(TAG, "yesterday : " + DateFormat.format("MMdd", cal.get(cal.DATE) - 1));
+//        Log.d(TAG, "yesterday : " + DateFormat.format("MMdd", cal.get(cal.DATE) - 1));
         long today = System.currentTimeMillis();
-        Log.d(TAG, "today : " + today);
-        Log.d(TAG, "time : " + time);
+//        Log.d(TAG, "today : " + today);
+//        Log.d(TAG, "time : " + time);
         if (DateFormat.format("MMdd", time).equals(DateFormat.format("MMdd", today))) {
             date = DateFormat.format("HH:mm", cal).toString();
-        } else if (DateFormat.format("MMdd", time).equals(DateFormat.format("MMdd", today))) {
-
+        } else if (!DateFormat.format("MMdd", time).equals(DateFormat.format("MMdd", today))) {
             if ((Integer.parseInt(DateFormat.format("MMdd", today).toString()) - Integer.parseInt(DateFormat.format("MMdd", time).toString())) == 1) {
                 return "어제";
+            } else if ((Integer.parseInt(DateFormat.format("MMdd", today).toString()) - Integer.parseInt(DateFormat.format("MMdd", time).toString())) > 1) {
+                return DateFormat.format("MM/dd", time).toString();
             }
-        } else if ((Integer.parseInt(DateFormat.format("MMdd", today).toString()) - Integer.parseInt(DateFormat.format("MMdd", time).toString())) > 1) {
-            return DateFormat.format("MM/dd", time).toString();
         }
         return date;
     }
