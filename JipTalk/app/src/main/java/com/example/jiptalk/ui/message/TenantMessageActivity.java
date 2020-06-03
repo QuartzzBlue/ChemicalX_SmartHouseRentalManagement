@@ -6,7 +6,6 @@ import android.content.Context;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -43,11 +42,10 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
 
-public class LandLordMessageActivity extends AppCompatActivity {
+public class TenantMessageActivity extends AppCompatActivity {
 
     private String TAG = "=== jiptalk.ui.message.LandLordMessageActivity";
 
@@ -62,6 +60,7 @@ public class LandLordMessageActivity extends AppCompatActivity {
     private String currentUserUID;
     private String chatUserName;
     private String chatUserUID;
+    private String category;
     private int currentPage = 1;
     private int itemPos = 0;
     private String lastKey = "";
@@ -97,15 +96,35 @@ public class LandLordMessageActivity extends AppCompatActivity {
         databaseReference = FirebaseDatabase.getInstance().getReference();
 
 
+        currentUserUID = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        databaseReference.child("user").child(currentUserUID).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                User user = dataSnapshot.getValue(User.class);
+                Constant.category = user.getCategory();
+                Log.d(TAG, "category : " + Constant.category);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+//        Constant.category = "임대인";
+        Log.d(TAG, "currentUserUID : " + currentUserUID);
+        /* These data should be saved in Constant class upon successful login.
+
         currentUserUID = Constant.userUID;
+        category = Constant.category;
+        */
+        // Set ActionBar Title to name of the Tenant
 
         chatUserUID = getIntent().getStringExtra("clientUID").toString();
-        token = getIntent().getStringExtra("token").toString();
-        Log.d(TAG, "token : " + token);
 
-        // Set ActionBar Title to name of the Tenant
         chatUserName = getIntent().getStringExtra("name").toString();
+        token = getIntent().getStringExtra("token").toString();
         Log.d(TAG, "chatUserName : " + chatUserName);
+        Log.d(TAG, "token : " + token);
         getSupportActionBar().setTitle(chatUserName);
 
 
@@ -120,6 +139,17 @@ public class LandLordMessageActivity extends AppCompatActivity {
         loadMessages();
 
         frameLayoutMsgDetail = findViewById(R.id.frameLayoutMsgDetail);
+
+
+//        imageViewSendButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                imageViewSendButton.setImageResource(R.drawable.ic_chat_send_hold);
+//                sendMessage();
+//                editTextMessage.setText("");
+//                imageViewSendButton.setImageResource(R.drawable.ic_chat_send);
+//            }
+//        });
 
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -212,6 +242,10 @@ public class LandLordMessageActivity extends AppCompatActivity {
 
 
     public void loadMessages() {
+
+//        DatabaseReference messageRef = databaseReference.child("messages").child(currentUserUID).child(chatUserName);
+//
+//        Query messageQuery = messageRef.limitToLast(currentPage * TOTAL_ITEMS_TO_LOAD);
 
         databaseReference.child("messages").child(currentUserUID).child(chatUserUID).addChildEventListener(new ChildEventListener() {
             @Override
@@ -383,8 +417,6 @@ public class LandLordMessageActivity extends AppCompatActivity {
                 holder.textViewMsgRecieved.setVisibility(View.INVISIBLE);
                 holder.textViewMsgSent.setVisibility(View.VISIBLE);
                 holder.textViewMsgSent.setText(chatData.getMessage());
-                holder.textViewMsgSentTime.setVisibility(View.VISIBLE);
-                holder.textViewMsgSentTime.setText(getDate(chatData.getTime()));
             } else { // Msg received
                 holder.cardView.setVisibility(View.VISIBLE);
                 holder.textViewSenderName.setVisibility(View.VISIBLE);
@@ -392,8 +424,6 @@ public class LandLordMessageActivity extends AppCompatActivity {
                 holder.textViewMsgRecieved.setVisibility(View.VISIBLE);
                 holder.textViewMsgRecieved.setText(chatData.getMessage());
                 holder.textViewMsgSent.setVisibility(View.INVISIBLE);
-                holder.textViewMsgRecievedTime.setVisibility(View.VISIBLE);
-                holder.textViewMsgRecievedTime.setText(getDate(chatData.getTime()));
             }
         }
 
@@ -402,33 +432,11 @@ public class LandLordMessageActivity extends AppCompatActivity {
             return chatDataList.size();
         }
 
-        public String getDate(long time) {
-            Calendar cal = Calendar.getInstance(Locale.ENGLISH);
-            cal.setTimeInMillis(time);
-            String date = null;
-//            Log.d(TAG, "yesterday : " + DateFormat.format("MMdd", cal.get(cal.DATE) - 1));
-            long today = System.currentTimeMillis();
-//            Log.d(TAG, "today : " + today);
-//            Log.d(TAG, "time : " + time);
-            if (DateFormat.format("MMdd", time).equals(DateFormat.format("MMdd", today))) {
-                date = DateFormat.format("HH:mm", cal).toString();
-            } else if (!DateFormat.format("MMdd", time).equals(DateFormat.format("MMdd", today))) {
-                if ((Integer.parseInt(DateFormat.format("MMdd", today).toString()) - Integer.parseInt(DateFormat.format("MMdd", time).toString())) == 1) {
-                    return "어제";
-                } else if ((Integer.parseInt(DateFormat.format("MMdd", today).toString()) - Integer.parseInt(DateFormat.format("MMdd", time).toString())) > 1) {
-                    return DateFormat.format("MM/dd", time).toString();
-                }
-            }
-            return date;
-        }
-
 
         public class ChatDataViewHolder extends RecyclerView.ViewHolder {
             public TextView textViewMsgRecieved;
             public TextView textViewMsgSent;
             public TextView textViewSenderName;
-            public TextView textViewMsgRecievedTime;
-            public TextView textViewMsgSentTime;
             public CardView cardView;
 
 
@@ -437,8 +445,6 @@ public class LandLordMessageActivity extends AppCompatActivity {
                 textViewMsgRecieved = itemView.findViewById(R.id.textViewMsgReceived);
                 textViewMsgSent = itemView.findViewById(R.id.textViewMsgSent);
                 textViewSenderName = itemView.findViewById(R.id.textViewSenderName);
-                textViewMsgRecievedTime = itemView.findViewById(R.id.textViewMsgReceivedTime);
-                textViewMsgSentTime = itemView.findViewById(R.id.textViewMsgSentTime);
                 cardView = itemView.findViewById(R.id.cardViewChat);
 
             }
@@ -455,6 +461,10 @@ public class LandLordMessageActivity extends AppCompatActivity {
             frameLayoutMsgDetail.addView(frameLayoutMsgInputForm);
             initializeView();
 
+        } else if (Constant.category.equals("세입자")) {
+            final LayoutInflater inflater = (LayoutInflater) getApplicationContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            final View frameLayoutMsgInputFormTenant = inflater.inflate(R.layout.layout_message_detail_msg_input_form_tenant, frameLayoutMsgDetail, false);
+            frameLayoutMsgDetail.addView(frameLayoutMsgInputFormTenant);
         }
 
     }
@@ -534,7 +544,7 @@ public class LandLordMessageActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Log.d(TAG, "clicked dark area");
-                Toast.makeText(LandLordMessageActivity.this, "hello?", Toast.LENGTH_SHORT).show();
+                Toast.makeText(TenantMessageActivity.this, "hello?", Toast.LENGTH_SHORT).show();
                 frameLayoutMsgDetail.removeAllViews();
             }
         });
