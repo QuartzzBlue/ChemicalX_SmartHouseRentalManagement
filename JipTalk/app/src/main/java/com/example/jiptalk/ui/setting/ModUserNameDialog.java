@@ -39,4 +39,6 @@ public class ModUserNameDialog extends DialogFragment {
                 });
         return builder.create();
     }
+
+
 }

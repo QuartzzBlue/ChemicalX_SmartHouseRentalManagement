@@ -14,8 +14,9 @@ public class Unit {
     String unitNum;
 
     String leaseType;
-    String userID; // hire
-    String contact;
+    String tenantID; // hire
+    String tenantName;
+    String tenantPhone;
 
     int deposit;
     int mngFee;
@@ -31,12 +32,13 @@ public class Unit {
     public Unit() {
     }
 
-    public Unit(String buildingID, String unitNum, String leaseType, String userID, String contact, int deposit, int mngFee, int monthlyFee, int payDay, String startDate, String endDate, boolean isPaid, boolean isOccupied) {
+    public Unit(String buildingID, String unitNum, String leaseType, String tenantID, String tenantName, String tenantPhone, int deposit, int mngFee, int monthlyFee, int payDay, String startDate, String endDate, boolean isPaid, boolean isOccupied) {
         this.buildingID = buildingID;
         this.unitNum = unitNum;
         this.leaseType = leaseType;
-        this.userID = userID;
-        this.contact = contact;
+        this.tenantID = tenantID;
+        this.tenantName = tenantName;
+        this.tenantPhone = tenantPhone;
         this.deposit = deposit;
         this.mngFee = mngFee;
         this.monthlyFee = monthlyFee;
@@ -71,20 +73,28 @@ public class Unit {
         this.leaseType = leaseType;
     }
 
-    public String getUserID() {
-        return userID;
+    public String getTenantID() {
+        return tenantID;
     }
 
-    public void setUserID(String userID) {
-        this.userID = userID;
+    public void setTenantID(String tenantID) {
+        this.tenantID = tenantID;
     }
 
-    public String getContact() {
-        return contact;
+    public String getTenantName() {
+        return tenantName;
     }
 
-    public void setContact(String contact) {
-        this.contact = contact;
+    public void setTenantName(String tenantName) {
+        this.tenantName = tenantName;
+    }
+
+    public String getTenantPhone() {
+        return tenantPhone;
+    }
+
+    public void setTenantPhone(String tenantPhone) {
+        this.tenantPhone = tenantPhone;
     }
 
     public int getDeposit() {
@@ -157,8 +167,9 @@ public class Unit {
                 "buildingID='" + buildingID + '\'' +
                 ", unitNum='" + unitNum + '\'' +
                 ", leaseType='" + leaseType + '\'' +
-                ", userID='" + userID + '\'' +
-                ", contact='" + contact + '\'' +
+                ", tenantID='" + tenantID + '\'' +
+                ", tenantName='" + tenantName + '\'' +
+                ", tenantPhone='" + tenantPhone + '\'' +
                 ", deposit=" + deposit +
                 ", mngFee=" + mngFee +
                 ", monthlyFee=" + monthlyFee +
@@ -170,14 +181,14 @@ public class Unit {
                 '}';
     }
 
-
     @Exclude
     public Map<String, Object> toMap(){
         HashMap<String, Object> result = new HashMap<>();
         result.put("unitNum", unitNum);
         result.put("leaseType", leaseType);
-        result.put("userID", userID);
-        result.put("contact", contact);
+        result.put("tenantID", tenantID);
+        result.put("tenantName", tenantName);
+        result.put("tenantPhone", tenantPhone);
         result.put("deposit", deposit);
         result.put("mngFee", mngFee);
         result.put("monthlyFee", monthlyFee);

@@ -2,6 +2,7 @@ package com.example.jiptalk.ui.setting;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentManager;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -34,45 +35,73 @@ public class SettingUserInfoActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_setting_user_info);
+        initialization();
 
-        emailTv.setText(currentUser.getEmail());
-
-        modNameBt.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                final ModUserNameDialog modNameDialog = new ModUserNameDialog();
-            }
-        });
-
-
+//        Thread t = new Thread(getPersonalInfo);
+//        Log.w("===", "Thread");
+//        t.start();
+//        Log.w("===", "Thread start");
+//        try {
+//            Log.w("===", "join : before");
+//            t.join();
+//            Log.w("===", "join : after");
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
 
 
     }
 
     private void initialization() {
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        dbRef = FirebaseDatabase.getInstance().getReference("user/"+ user.getUid());
+
+        Log.w("===", "initialization start");
         emailTv = findViewById(R.id.tv_setting_user_info_userEmail);
         nameTv = findViewById(R.id.tv_setting_user_info_userName);
         modPwdBt = findViewById(R.id.bt_setting_user_info_modPassword);
         modPhoneBt = findViewById(R.id.bt_setting_user_info_modPhoneNum);
         modNameBt = findViewById(R.id.image_setting_user_info_modUserName);
-        getPersonalInfo = new getPersonalInfoThread();
+//        emailTv.setText(currentUser.getEmail());
+
+        modNameBt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.w("===", "onClick");
+                FragmentManager fm = getSupportFragmentManager();
+                final ModUserNameDialog modNameDialog = new ModUserNameDialog();
+                modNameDialog.show(fm, "Fragment Tag");
+            }
+        });
+        Log.w("===", "initialization start");
+
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        initialization();
-        Thread t = new Thread(getPersonalInfo);
-        t.start();
-        try {
-            t.join();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        getPersonalInfo();
     }
 
+    private void getPersonalInfo() {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        dbRef = FirebaseDatabase.getInstance().getReference("user/"+ user.getUid());
+        dbRef.addValueEventListener(new ValueEventListener() {  //addValueEventListener : 한 번만 콜백되고 즉시 삭제
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                currentUser = dataSnapshot.getValue(User.class);
+                Log.w("===", "getPersonalInfoThread() : onDataChange");
+                Log.w("===", "getPersonalInfoThread() : " + currentUser.toString());
+                Log.w("===", "getPersonalInfoThread() : " + dataSnapshot.getValue());
+
+                emailTv.setText(currentUser.getEmail());
+                nameTv.setText(currentUser.getName());
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.w("===", "getPersonalInfoThread() : onCancelled", databaseError.toException());
+            }
+        });
+    }
 
     class getPersonalInfoThread implements Runnable {
 
