@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.View;
+import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -11,6 +12,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.jiptalk.R;
 
 public class AddUnitActivity extends AppCompatActivity {
+
+    TextView unitNameTv;
+    TextView unit
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {

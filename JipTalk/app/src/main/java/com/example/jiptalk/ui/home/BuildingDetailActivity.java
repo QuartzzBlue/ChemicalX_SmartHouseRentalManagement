@@ -65,7 +65,7 @@ public class BuildingDetailActivity extends AppCompatActivity {
             }
         });
 
-        // 리사이클러뷰의 아이템 클릭 시 해당 세입자의 TenantDetailActivity 로 이동
+        // 리사이클러뷰의 아이템 클릭 시 호수의 UnitDetailActivity 로 이동
         unitViewAdapter.setOnItemClickListener(new UnitViewAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View v, int position) {
@@ -119,6 +119,8 @@ public class BuildingDetailActivity extends AppCompatActivity {
 
         firebaseDatabase = FirebaseDatabase.getInstance();
         databaseReference = firebaseDatabase.getReference("buildings");
+
+        //db 에서 호수 정보 불러오기
 
 
 
