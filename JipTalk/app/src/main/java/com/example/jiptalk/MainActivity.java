@@ -5,11 +5,13 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.example.jiptalk.ui.message.FirebaseNotificationService;
+import com.example.jiptalk.vo.Building;
 import com.example.jiptalk.vo.User;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -39,6 +41,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        InitConstants();
         BottomNavigationView navView = findViewById(R.id.nav_view);
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
@@ -94,4 +97,40 @@ public class MainActivity extends AppCompatActivity {
             });
         }
     }
+
+    /*** Constant 변수 초기화 ***/
+    public void InitConstants(){
+
+        FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
+        DatabaseReference databaseReference = firebaseDatabase.getReference("buildings");
+
+        FirebaseUser fUser = FirebaseAuth.getInstance().getCurrentUser();
+
+
+        Constant.userUID = fUser.getUid();
+        Constant.userID = fUser.getEmail();
+
+        databaseReference.child(Constant.userUID).addValueEventListener(new ValueEventListener() {
+
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                Log.w("===", "InitConstants() : onDataChange");
+                Constant.buildings = (HashMap<String, Building>) dataSnapshot.getValue();
+//
+//                for(DataSnapshot bdSnapshot : dataSnapshot.getChildren()){
+//                    String bId = bdSnapshot.getKey();
+//                    bdSnapshot.child("units").getValue();
+//                }
+                Log.w("===", "Set Constant.building : " + Constant.buildings.toString());
+                Log.w("===", "InitConstants() : succeed");
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.w("===", "InitConstants() : onCancelled", databaseError.toException());
+            }
+        });
+
+    }
+
 }

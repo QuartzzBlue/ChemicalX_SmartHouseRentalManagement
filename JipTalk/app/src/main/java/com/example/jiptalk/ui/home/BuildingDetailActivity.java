@@ -71,7 +71,7 @@ public class BuildingDetailActivity extends AppCompatActivity {
             public void onItemClick(View v, int position) {
                 // 액티비티 이동
                 Intent intent = new Intent(getApplicationContext(), BuildingDetailActivity.class);
-                intent.putExtra("UserID",units.get(position).getUserID());
+                intent.putExtra("UserID",units.get(position).getTenantID());
                 startActivity(intent);
             }
         });

@@ -55,23 +55,20 @@ public class SettingFragment extends Fragment {
         developersBt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                intent = new Intent(nowContext, SettingAlarmActivity.class);
-//                startActivity(intent);
-
-
+                intent = new Intent(nowContext, SettingDevelopersActivity.class);
+                startActivity(intent);
             }
         });
 
         return viewGroup;
     }
 
-    //프래그먼트와 연결된 액티비티가 onCreate() 작업을ㄹ 완료했을 때 호출됨
+    //프래그먼트와 연결된 액티비티가 onCreate() 작업을 완료했을 때 호출됨
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         mViewModel = ViewModelProviders.of(this).get(SettingViewModel.class);
         // TODO: Use the ViewModel
-
     }
 
     private void initialization() {

@@ -24,7 +24,7 @@ public class Building {
     int paidCnt;
     int unpaidCnt;
     int monthlyIncome;
-    ArrayList<Unit> unitList;
+    HashMap<String, Unit> unitList;
 
     public Building() {
     }
@@ -35,7 +35,7 @@ public class Building {
         this.unitCnt = unitCnt;
     }
 
-    public Building(String name, String buildingAddress, int unitCnt, int occupiedCnt, int emptyCnt, int paidCnt, int unpaidCnt, int monthlyIncome, ArrayList<Unit> unitList) {
+    public Building(String name, String buildingAddress, int unitCnt, int occupiedCnt, int emptyCnt, int paidCnt, int unpaidCnt, int monthlyIncome, HashMap<String, Unit> unitList) {
         this.name = name;
         this.buildingAddress = buildingAddress;
         this.unitCnt = unitCnt;
@@ -47,7 +47,7 @@ public class Building {
         this.unitList = unitList;
     }
 
-    public Building(String id, String name, String buildingAddress, int unitCnt, int occupiedCnt, int emptyCnt, int paidCnt, int unpaidCnt, int monthlyIncome, ArrayList<Unit> unitList) {
+    public Building(String id, String name, String buildingAddress, int unitCnt, int occupiedCnt, int emptyCnt, int paidCnt, int unpaidCnt, int monthlyIncome, HashMap<String, Unit> unitList) {
         this.id = id;
         this.name = name;
         this.buildingAddress = buildingAddress;
@@ -143,11 +143,11 @@ public class Building {
         this.monthlyIncome = monthlyIncome;
     }
 
-    public ArrayList<Unit> getUnitList() {
+    public HashMap<String, Unit> getUnitList() {
         return unitList;
     }
 
-    public void setUnitList(ArrayList<Unit> unitList) {
+    public void setUnitList(HashMap<String, Unit> unitList) {
         this.unitList = unitList;
     }
 

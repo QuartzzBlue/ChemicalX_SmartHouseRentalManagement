@@ -14,7 +14,7 @@ import com.example.jiptalk.R;
 public class AddUnitActivity extends AppCompatActivity {
 
     TextView unitNameTv;
-    TextView unit
+    TextView unit;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -29,6 +29,7 @@ public class AddUnitActivity extends AppCompatActivity {
         getMenuInflater().inflate(R.menu.appbar_action_save, menu) ;
         return true ;
     }
+
 
     public void initialization(){
 
