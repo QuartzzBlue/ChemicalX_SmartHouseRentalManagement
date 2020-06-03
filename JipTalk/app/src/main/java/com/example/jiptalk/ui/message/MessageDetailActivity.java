@@ -38,6 +38,8 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.ValueEventListener;
 
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -85,6 +87,7 @@ public class MessageDetailActivity extends AppCompatActivity {
     String titleClicked = "";
     String dateStartEnd = "";
     String title;
+    String token;
 
 
     @Override
@@ -93,6 +96,7 @@ public class MessageDetailActivity extends AppCompatActivity {
         setContentView(R.layout.activity_message_detail);
 
         databaseReference = FirebaseDatabase.getInstance().getReference();
+
 
         currentUserUID = FirebaseAuth.getInstance().getCurrentUser().getUid();
         databaseReference.child("user").child(currentUserUID).addValueEventListener(new ValueEventListener() {
@@ -120,6 +124,7 @@ public class MessageDetailActivity extends AppCompatActivity {
         chatUserUID = getIntent().getStringExtra("clientUID").toString();
 
         chatUserName = getIntent().getStringExtra("name").toString();
+        token = getIntent().getStringExtra("token").toString();
         Log.d(TAG, "chatUserName : " + chatUserName);
         getSupportActionBar().setTitle(chatUserName);
 
@@ -168,9 +173,9 @@ public class MessageDetailActivity extends AppCompatActivity {
     }
 
 
+
     public void sendMessage() {
         String message = textViewMsgPreview.getText().toString();
-
         if (!TextUtils.isEmpty(message)) {
             final MediaPlayer sendSound = MediaPlayer.create(this, R.raw.light);
             sendSound.start();
@@ -197,6 +202,8 @@ public class MessageDetailActivity extends AppCompatActivity {
             messageUserMap.put(chatUserRef + "/" + pushID, messageMap);
 
 
+
+
             databaseReference.updateChildren(messageUserMap, new DatabaseReference.CompletionListener() {
                 @Override
                 public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
@@ -205,6 +212,17 @@ public class MessageDetailActivity extends AppCompatActivity {
                     }
                 }
             });
+
+
+
+            // push FCM message START
+            PushFCMMessage push = new PushFCMMessage(token, message);
+
+
+
+
+
+            // push FCM message END
 
 
             Map chatAddMap = new HashMap();
