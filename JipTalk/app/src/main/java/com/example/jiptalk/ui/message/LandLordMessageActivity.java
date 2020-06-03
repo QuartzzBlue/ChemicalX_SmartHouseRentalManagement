@@ -38,8 +38,6 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.ValueEventListener;
 
-import org.json.JSONObject;
-
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -126,6 +124,7 @@ public class MessageDetailActivity extends AppCompatActivity {
         chatUserName = getIntent().getStringExtra("name").toString();
         token = getIntent().getStringExtra("token").toString();
         Log.d(TAG, "chatUserName : " + chatUserName);
+        Log.d(TAG, "token : " + token);
         getSupportActionBar().setTitle(chatUserName);
 
 
@@ -173,7 +172,6 @@ public class MessageDetailActivity extends AppCompatActivity {
     }
 
 
-
     public void sendMessage() {
         String message = textViewMsgPreview.getText().toString();
         if (!TextUtils.isEmpty(message)) {
@@ -182,7 +180,7 @@ public class MessageDetailActivity extends AppCompatActivity {
 
 
             String currentUserRef = "messages/" + currentUserUID + "/" + chatUserUID;
-            String chatUserRef = "messages/" + chatUserUID+ "/" + currentUserUID;
+            String chatUserRef = "messages/" + chatUserUID + "/" + currentUserUID;
 
 
             DatabaseReference userMessagePush = databaseReference.child("message").child(currentUserUID).child(chatUserUID).push();
@@ -202,8 +200,6 @@ public class MessageDetailActivity extends AppCompatActivity {
             messageUserMap.put(chatUserRef + "/" + pushID, messageMap);
 
 
-
-
             databaseReference.updateChildren(messageUserMap, new DatabaseReference.CompletionListener() {
                 @Override
                 public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
@@ -214,14 +210,9 @@ public class MessageDetailActivity extends AppCompatActivity {
             });
 
 
-
             // push FCM message START
-            PushFCMMessage push = new PushFCMMessage(token, message);
-
-
-
-
-
+            PushFCMMessageThread pushFCMMessage = new PushFCMMessageThread(token, title, message);
+            new Thread(pushFCMMessage).start();
             // push FCM message END
 
 

@@ -1,5 +1,7 @@
 package com.example.jiptalk.ui.message;
 
+import android.util.Log;
+
 import com.google.firebase.auth.GoogleAuthCredential;
 
 import org.json.JSONObject;
@@ -14,6 +16,7 @@ public class PushFCMMessage {
 
     String token;
     String msg;
+    String TAG = "===";
 
     public PushFCMMessage() {
 
@@ -21,7 +24,12 @@ public class PushFCMMessage {
 
     public PushFCMMessage(String token, String msg) {
 
+        this.token = token;
+        this.msg = msg;
+    }
 
+    public void push() {
+        Log.d(TAG, "test push");
         URL url = null;
         try {
             url = new URL("https://fcm.googleapis.com/fcm/send");
@@ -66,8 +74,6 @@ public class PushFCMMessage {
             System.out.println("Error while writing outputstream| IOException");
             e.printStackTrace();
         }
-
-
     }
 
 
