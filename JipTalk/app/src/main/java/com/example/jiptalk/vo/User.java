@@ -16,6 +16,8 @@ public class User {
     String sex;
     String category;    // 임대인 or 임차인
     Boolean isAlarmOn;
+    String token;
+
 
     public User() {
     }
@@ -38,6 +40,19 @@ public class User {
         this.sex = sex;
         this.category = category;
         this.isAlarmOn = isAlarmOn;
+
+    }
+
+    public User(String UID, String email, String pwd, String phone, String name, String sex, String category, Boolean isAlarmOn, String token) {
+        this.UID = UID;
+        this.email = email;
+        this.pwd = pwd;
+        this.phone = phone;
+        this.name = name;
+        this.sex = sex;
+        this.category = category;
+        this.isAlarmOn = isAlarmOn;
+        this.token = token;
     }
 
     public String getEmail() {
@@ -104,6 +119,15 @@ public class User {
         this.UID = UID;
     }
 
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
+
     @Exclude
     public Map<String, Object> toMap() {
         HashMap<String, Object> result = new HashMap<>();
@@ -128,6 +152,7 @@ public class User {
                 ", sex='" + sex + '\'' +
                 ", category='" + category + '\'' +
                 ", isAlarmOn=" + isAlarmOn +
+                ", token='" + token + '\'' +
                 '}';
     }
 }

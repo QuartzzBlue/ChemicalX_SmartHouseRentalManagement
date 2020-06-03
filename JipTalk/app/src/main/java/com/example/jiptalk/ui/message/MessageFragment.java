@@ -24,6 +24,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.jiptalk.Constant;
 import com.example.jiptalk.R;
 import com.example.jiptalk.vo.MessageVO;
 import com.example.jiptalk.vo.Noti;
@@ -254,6 +255,7 @@ public class MessageFragment extends Fragment {
                                     Intent intent = new Intent(getContext(), MessageDetailActivity.class);
                                     intent.putExtra("clientUID", clientList.get(position).getUID() + "");
                                     intent.putExtra("name", clientSelected + "");
+                                    intent.putExtra("token", Constant.token);
                                     startActivity(intent);
                                 }
                             }
