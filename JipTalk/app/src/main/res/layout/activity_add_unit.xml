@@ -11,18 +11,53 @@
     android:paddingLeft="25dp"
     android:paddingTop="15dp"
     android:paddingRight="25dp"
-    android:paddingBottom="15dp">
+    android:paddingBottom="15dp"
+    android:scrollbars="none">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
 
+        <TextView
+            android:id="@+id/textView30"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:text="계약 호수"
+            android:textColor="@color/black"
+            android:textSize="18sp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/et_add_unit_unitNum"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:editable="false"
+                android:enabled="true"
+                android:textIsSelectable="false" />
+
+            <TextView
+                android:id="@+id/textView51"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="9"
+                android:gravity="center"
+                android:text="호"
+                android:textSize="16sp" />
+        </LinearLayout>
+
 
         <TextView
             android:id="@+id/textView23"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="50dp"
             android:layout_marginBottom="10dp"
             android:text="계약자 이름"
             android:textColor="@color/black"
@@ -35,17 +70,15 @@
             android:orientation="horizontal">
 
             <EditText
-                android:id="@+id/tv_add_unit_unitName"
+                android:id="@+id/et_add_unit_tenantName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:editable="false"
                 android:enabled="true"
-                android:inputType="textPostalAddress"
                 android:textIsSelectable="false" />
 
             <Button
-                android:id="@+id/btn_add_building_search"
+                android:id="@+id/btn_add_unit_isSame"
                 android:layout_width="wrap_content"
                 android:layout_height="38dp"
                 android:layout_gravity="end"
@@ -70,7 +103,7 @@
             android:textSize="18sp" />
 
         <EditText
-            android:id="@+id/tv_add_building_buildingName"
+            android:id="@+id/et_add_unit_tenantPhone"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="textPersonName" />
@@ -86,7 +119,7 @@
             android:textSize="18sp" />
 
         <RadioGroup
-            android:id="@+id/daily_weekly_button_view"
+            android:id="@+id/rg_add_unit_leaseType"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center_horizontal"
@@ -97,7 +130,7 @@
 
 
             <RadioButton
-                android:id="@+id/radio0"
+                android:id="@+id/rb_add_unit_leaseType_monthly"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -113,7 +146,7 @@
                 android:textColor="@color/radio_flat_text_selector" />
 
             <RadioButton
-                android:id="@+id/radio1"
+                android:id="@+id/rb_add_unit_leaseType_fullDeposit"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -128,7 +161,7 @@
                 android:textColor="@color/radio_flat_text_selector" />
 
             <RadioButton
-                android:id="@+id/radio2"
+                android:id="@+id/rb_add_unit_leaseType_fullFee"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"

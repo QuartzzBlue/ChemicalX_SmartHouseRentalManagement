@@ -4,6 +4,11 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
@@ -13,8 +18,12 @@ import com.example.jiptalk.R;
 
 public class AddUnitActivity extends AppCompatActivity {
 
-    TextView unitNameTv;
-    TextView unit;
+    EditText unitNameEt,tenantName,tenantPhoneEt,startDateEt,endDateEt,depositEt,monthlyFeeEt,manageFeeEt,totalFeeEt,payDayEt;
+    ImageButton startDateBtn,endDateBtn;
+    Button isSameBtn;
+    RadioGroup leaseTypeRg,contractRg;
+    RadioButton leaseMonthlyRb,leaseFullDepositRb,leaseFullFeeRb,contract3mRb,contract6mRb,contract1yRb,contract2yRb;
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
