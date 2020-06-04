@@ -29,6 +29,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import com.example.jiptalk.Constant;
 import com.example.jiptalk.R;
 import com.example.jiptalk.vo.User;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -38,6 +39,11 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.messaging.FirebaseMessaging;
+import com.google.firebase.messaging.RemoteMessage;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -85,7 +91,7 @@ public class LandLordMessageActivity extends AppCompatActivity {
     private TimePickerDialog.OnTimeSetListener callbackMethodTimePicker;
     String titleClicked = "";
     String dateStartEnd = "";
-    String title;
+    String subject;
     String token;
 
 
@@ -100,11 +106,11 @@ public class LandLordMessageActivity extends AppCompatActivity {
         currentUserUID = Constant.userUID;
 
         chatUserUID = getIntent().getStringExtra("clientUID").toString();
-        token = getIntent().getStringExtra("token").toString();
+        token = getIntent().getStringExtra("clientToken").toString();
         Log.d(TAG, "token : " + token);
 
         // Set ActionBar Title to name of the Tenant
-        chatUserName = getIntent().getStringExtra("name").toString();
+        chatUserName = getIntent().getStringExtra("clientName").toString();
         Log.d(TAG, "chatUserName : " + chatUserName);
         getSupportActionBar().setTitle(chatUserName);
 
@@ -137,8 +143,32 @@ public class LandLordMessageActivity extends AppCompatActivity {
             }
         });
 
+//        databaseReference.child("chat").child(chatUserUID).child(Constant.userUID).child("seen").setValue(true).addOnFailureListener(new OnFailureListener() {
+//            @Override
+//            public void onFailure(@NonNull Exception e) {
+//                Log.d("CHAT_ERROR", e.getMessage().toString());
+//            }
+//        });
 
-//        getChatFriendSent();
+        databaseReference.child("chat").child(chatUserUID).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                databaseReference.child("chat").child(chatUserUID).child(Constant.userUID).child("seen").setValue(true).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.d("CHAT_ERROR", e.getMessage().toString());
+                    }
+                });
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+
+        getChatFriendSent();
     }
 
 
@@ -163,12 +193,13 @@ public class LandLordMessageActivity extends AppCompatActivity {
             messageMap.put("message", message);
             messageMap.put("time", sendTime);
             messageMap.put("from", currentUserUID);
-            messageMap.put("title", title);
+            messageMap.put("subject", subject);
+            messageMap.put("hasResponsed", false);
+            messageMap.put("response", "");
 
             Map messageUserMap = new HashMap();
             messageUserMap.put(currentUserRef + "/" + pushID, messageMap);
             messageUserMap.put(chatUserRef + "/" + pushID, messageMap);
-
 
             databaseReference.updateChildren(messageUserMap, new DatabaseReference.CompletionListener() {
                 @Override
@@ -181,7 +212,7 @@ public class LandLordMessageActivity extends AppCompatActivity {
 
 
             // push FCM message START
-            PushFCMMessageThread pushFCMMessage = new PushFCMMessageThread(token, title, message);
+            PushFCMMessageThread pushFCMMessage = new PushFCMMessageThread(token, subject, message);
             new Thread(pushFCMMessage).start();
             // push FCM message END
 
@@ -381,10 +412,13 @@ public class LandLordMessageActivity extends AppCompatActivity {
                 holder.cardView.setVisibility(View.INVISIBLE);
                 holder.textViewSenderName.setVisibility(View.INVISIBLE);
                 holder.textViewMsgRecieved.setVisibility(View.INVISIBLE);
+                holder.textViewMsgRecievedTime.setVisibility(View.INVISIBLE);
                 holder.textViewMsgSent.setVisibility(View.VISIBLE);
                 holder.textViewMsgSent.setText(chatData.getMessage());
                 holder.textViewMsgSentTime.setVisibility(View.VISIBLE);
                 holder.textViewMsgSentTime.setText(getDate(chatData.getTime()));
+                holder.buttonPositive.setVisibility(View.GONE);
+                holder.buttonNegative.setVisibility(View.GONE);
             } else { // Msg received
                 holder.cardView.setVisibility(View.VISIBLE);
                 holder.textViewSenderName.setVisibility(View.VISIBLE);
@@ -392,8 +426,11 @@ public class LandLordMessageActivity extends AppCompatActivity {
                 holder.textViewMsgRecieved.setVisibility(View.VISIBLE);
                 holder.textViewMsgRecieved.setText(chatData.getMessage());
                 holder.textViewMsgSent.setVisibility(View.INVISIBLE);
+                holder.textViewMsgSentTime.setVisibility(View.INVISIBLE);
                 holder.textViewMsgRecievedTime.setVisibility(View.VISIBLE);
                 holder.textViewMsgRecievedTime.setText(getDate(chatData.getTime()));
+                holder.buttonPositive.setVisibility(View.VISIBLE);
+                holder.buttonNegative.setVisibility(View.VISIBLE);
             }
         }
 
@@ -430,6 +467,7 @@ public class LandLordMessageActivity extends AppCompatActivity {
             public TextView textViewMsgRecievedTime;
             public TextView textViewMsgSentTime;
             public CardView cardView;
+            public Button buttonPositive, buttonNegative;
 
 
             public ChatDataViewHolder(View itemView) {
@@ -440,6 +478,8 @@ public class LandLordMessageActivity extends AppCompatActivity {
                 textViewMsgRecievedTime = itemView.findViewById(R.id.textViewMsgReceivedTime);
                 textViewMsgSentTime = itemView.findViewById(R.id.textViewMsgSentTime);
                 cardView = itemView.findViewById(R.id.cardViewChat);
+                buttonPositive = itemView.findViewById(R.id.buttonPositive);
+                buttonNegative = itemView.findViewById(R.id.buttonNegative);
 
             }
         }
@@ -548,7 +588,7 @@ public class LandLordMessageActivity extends AppCompatActivity {
                 buttonInsertDateEnd.setVisibility(View.VISIBLE);
                 buttonInsertTime.setVisibility(View.VISIBLE);
                 titleClicked = "appointment";
-                title = "appointment";
+                subject = "약속잡기";
             }
         });
         buttonTitleFee.setOnClickListener(new View.OnClickListener() {
@@ -558,7 +598,7 @@ public class LandLordMessageActivity extends AppCompatActivity {
                 buttonInsertDateStart.setVisibility(View.INVISIBLE);
                 buttonInsertDateEnd.setVisibility(View.INVISIBLE);
                 buttonInsertTime.setVisibility(View.INVISIBLE);
-                title = "fee";
+                subject = "관리비 청구 요청";
             }
         });
 
@@ -569,7 +609,7 @@ public class LandLordMessageActivity extends AppCompatActivity {
                 buttonInsertDateStart.setVisibility(View.INVISIBLE);
                 buttonInsertDateEnd.setVisibility(View.INVISIBLE);
                 buttonInsertTime.setVisibility(View.INVISIBLE);
-                title = "monthlypayment";
+                subject = "월세 청구 요청";
             }
         });
 
@@ -581,7 +621,7 @@ public class LandLordMessageActivity extends AppCompatActivity {
                 buttonInsertDateEnd.setVisibility(View.VISIBLE);
                 titleClicked = "bldgConstruction";
                 buttonInsertTime.setVisibility(View.INVISIBLE);
-                title = "bldgconstruction";
+                subject = "건물공사 공지";
             }
         });
         buttonTitleNoise.setOnClickListener(new View.OnClickListener() {
@@ -591,7 +631,7 @@ public class LandLordMessageActivity extends AppCompatActivity {
                 buttonInsertDateStart.setVisibility(View.INVISIBLE);
                 buttonInsertDateEnd.setVisibility(View.INVISIBLE);
                 buttonInsertTime.setVisibility(View.INVISIBLE);
-                title = "noise";
+                subject = "층간소음 주의";
             }
         });
         buttonTitleRecycle.setOnClickListener(new View.OnClickListener() {
@@ -601,7 +641,7 @@ public class LandLordMessageActivity extends AppCompatActivity {
                 buttonInsertDateStart.setVisibility(View.INVISIBLE);
                 buttonInsertDateEnd.setVisibility(View.INVISIBLE);
                 buttonInsertTime.setVisibility(View.INVISIBLE);
-                title = "recycle";
+                subject = "분리수거";
             }
         });
     }

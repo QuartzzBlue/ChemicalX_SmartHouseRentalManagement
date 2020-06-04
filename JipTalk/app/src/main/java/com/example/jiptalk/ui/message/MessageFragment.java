@@ -1,5 +1,6 @@
 package com.example.jiptalk.ui.message;
 
+import android.app.ActionBar;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -20,6 +21,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -89,6 +91,12 @@ public class MessageFragment extends Fragment {
                              ViewGroup container, Bundle savedInstanceState) {
 
         Log.d(TAG, "Entered MessageFragment onCreateView");
+
+
+        // remove Actionbar
+        ((AppCompatActivity) getActivity()).getSupportActionBar().hide();
+
+
 //        notificationsViewModel = ViewModelProviders.of(this).get(MessageViewModel.class);
         root = inflater.inflate(R.layout.fragment_message, container, false);
 
@@ -135,8 +143,8 @@ public class MessageFragment extends Fragment {
                                         intent = new Intent(getContext(), LandLordMessageActivity.class);
                                     } else if (Constant.category.equals("세입자")) {
                                         intent = new Intent(getContext(), TenantMessageActivity.class);
-
                                     }
+
 
                                     intent.putExtra("name", getChatUserName(chatUserUID));
                                     intent.putExtra("clientUID", chatUserUID);
@@ -157,6 +165,9 @@ public class MessageFragment extends Fragment {
                             mOursMessage.addValueEventListener(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(DataSnapshot dataSnapshot) {
+                                    if (dataSnapshot.getChildrenCount() == 0) {
+                                        return;
+                                    }
                                     final String fromID = dataSnapshot.child("from").getValue(String.class);
                                     final String last_message = dataSnapshot.child("message").getValue(String.class);
                                     final Long message_time = dataSnapshot.child("time").getValue(Long.class);
@@ -232,8 +243,8 @@ public class MessageFragment extends Fragment {
 //        userData = FirebaseDatabase.getInstance().getReference().child("client"); // data should be fetched from client collection
         userData = FirebaseDatabase.getInstance().getReference().child("user"); // let's just get data from user from now.
 
-        userData.addListenerForSingleValueEvent(new ValueEventListener() {
-            //        userData.addValueEventListener(new ValueEventListener() {
+//        userData.addListenerForSingleValueEvent(new ValueEventListener() {
+        userData.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
@@ -243,6 +254,7 @@ public class MessageFragment extends Fragment {
                     User client = userSnapshot.getValue(User.class);
                     client.setUID(userSnapshot.getKey());
                     Log.d(TAG, client.toString());
+                    Log.d(TAG, client.getUID() + "");
                     if (client != null) {
                         clientList.add(client);
                         clientNameList.add(client.getName());
@@ -264,11 +276,11 @@ public class MessageFragment extends Fragment {
                                         intent = new Intent(getContext(), LandLordMessageActivity.class);
                                     } else if (Constant.category.equals("세입자")) {
                                         intent = new Intent(getContext(), TenantMessageActivity.class);
-
                                     }
+                                    Log.d(TAG, "client UID : " + clientList.get(position).getUID());
                                     intent.putExtra("clientUID", clientList.get(position).getUID() + "");
-                                    intent.putExtra("name", clientSelected + "");
-                                    intent.putExtra("token", Constant.token + "");
+                                    intent.putExtra("clientName", clientSelected + "");
+                                    intent.putExtra("clientToken", clientList.get(position).getToken() + "");
                                     startActivity(intent);
                                 }
                             }
