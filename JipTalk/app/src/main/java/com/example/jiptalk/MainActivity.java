@@ -8,6 +8,7 @@ import com.example.jiptalk.ui.message.FirebaseNotificationService;
 import com.example.jiptalk.vo.Building;
 import com.example.jiptalk.vo.User;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
@@ -61,21 +62,29 @@ public class MainActivity extends AppCompatActivity {
             reference.child("user").child(Constant.userUID).updateChildren(map);
         }
 
-        // DB에서 token 값 가져와서 token static 변수에 값 저장.
+        // DB로부터 값을 가져와서 token & category static 변수에 값 저장.
         reference.child("user").child(Constant.userUID).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                HashMap hashMap = (HashMap) dataSnapshot.getValue();
+                final HashMap hashMap = (HashMap) dataSnapshot.getValue();
                 Object tokenFromDB = hashMap.get("token");
-                if (tokenFromDB == null) {
-                    tokenFromDB = FirebaseInstanceId.getInstance().getToken();
-                    Map map = new HashMap();
-                    map.put("token", tokenFromDB.toString());
-                    reference.child("user").child(Constant.userUID).updateChildren(map);
+                if (tokenFromDB == null) { // DB에 token 값이 없는 경우, token 값을 다시 가져와 DB에 저장한다.
+                    FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener(MainActivity.this, new OnSuccessListener<InstanceIdResult>() {
+                        @Override
+                        public void onSuccess(InstanceIdResult instanceIdResult) {
+                            String newToken = instanceIdResult.getToken();
+                            Map map = new HashMap();
+                            map.put("token", newToken);
+                            reference.child("user").child(Constant.userUID).updateChildren(map);
+                            Constant.token = newToken;
+                            Constant.category = hashMap.get("category").toString();
+                        }
+                    });
+                } else {
+                    Log.d(TAG, "token0 : " + tokenFromDB);
+                    Constant.token = tokenFromDB.toString();
+                    Constant.category = hashMap.get("category").toString();
                 }
-                Log.d(TAG, "token0 : " + tokenFromDB);
-                Constant.token = tokenFromDB.toString();
-                Constant.category = hashMap.get("category").toString();
             }
 
             @Override
@@ -109,8 +118,10 @@ public class MainActivity extends AppCompatActivity {
 //                    String bId = bdSnapshot.getKey();
 //                    bdSnapshot.child("units").getValue();
 //                }
-                Log.w("===", "Set Constant.building : " + Constant.buildings.toString());
-                Log.w("===", "InitConstants() : succeed");
+                if (Constant.buildings != null) {
+                    Log.w("===", "Set Constant.building : " + Constant.buildings.toString());
+                    Log.w("===", "InitConstants() : succeed");
+                }
             }
 
             @Override

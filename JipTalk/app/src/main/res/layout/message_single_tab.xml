@@ -119,30 +119,33 @@
         android:visibility="invisible" />
 
     <LinearLayout
+        android:id="@+id/linearLayoutChatReplyButtons"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/textViewMsgSentTime"
-        android:layout_alignEnd="@id/textViewMsgSentTime"
+        android:layout_below="@id/textViewMsgReceivedTime"
+        android:layout_alignStart="@id/textViewMsgReceived"
         android:layout_marginTop="7dp"
         android:orientation="horizontal">
 
         <Button
-            android:id="@+id/button"
+            android:id="@+id/buttonPositive"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="7dp"
+            android:background="@drawable/round_button_1"
+            android:text="네"
+            android:textColor="@color/white"
+            android:textStyle="bold" />
+
+        <Button
+            android:id="@+id/buttonNegative"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="7dp"
             android:background="@drawable/round_button_1"
             android:text="아니요"
-            android:textColor="@color/white" />
-
-        <Button
-            android:id="@+id/button2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="7dp"
-            android:background="@drawable/round_button_1"
-            android:text="네, 알겠습니다."
-            android:textColor="@color/white" />
+            android:textColor="@color/white"
+            android:textStyle="bold" />
     </LinearLayout>
 
 </RelativeLayout>
