@@ -99,7 +99,8 @@ public class MainActivity extends AppCompatActivity {
     public void InitConstants() {
 
         FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
-        DatabaseReference databaseReference = firebaseDatabase.getReference("buildings");
+        DatabaseReference buildingReference = firebaseDatabase.getReference("buildings");
+//        DatabaseReference userReference = firebaseDatabase.getReference("user");
 
         FirebaseUser fUser = FirebaseAuth.getInstance().getCurrentUser();
 
@@ -107,7 +108,7 @@ public class MainActivity extends AppCompatActivity {
         Constant.userUID = fUser.getUid();
         Constant.userID = fUser.getEmail();
 
-        databaseReference.child(Constant.userUID).addValueEventListener(new ValueEventListener() {
+        buildingReference.child(Constant.userUID).addValueEventListener(new ValueEventListener() {
 
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
