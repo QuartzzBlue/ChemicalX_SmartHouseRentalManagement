@@ -215,7 +215,6 @@ public class SignUpActivity extends AppCompatActivity {
 
                     String uid = user.getUid();
 
-
                     Map<String, Object> childUpdates = new HashMap<>();
                     childUpdates.put("user/"+ uid, newUser.toMap());
                     // 업데이트

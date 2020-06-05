@@ -12,7 +12,9 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".ui.message.TenantMessageActivity"></activity>
+        <activity android:name=".ui.setting.ModUserPwdActivity"></activity>
+        <activity android:name=".ui.setting.ModUserPhoneActivity" />
+        <activity android:name=".ui.message.TenantMessageActivity" />
 
         <service
             android:name=".ui.message.FirebaseNotificationService"

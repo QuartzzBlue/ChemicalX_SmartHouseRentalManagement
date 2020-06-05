@@ -3,13 +3,13 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="10dp">
+    android:padding="20dp">
 
     <EditText
-        android:id="@+id/editText3"
+        android:id="@+id/tv_mod_user_name_newUsername"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:ems="10"
-        android:inputType="textPersonName"
-        android:text="Name" />
+        android:hint="이름"
+        android:inputType="textPersonName" />
 </LinearLayout>
