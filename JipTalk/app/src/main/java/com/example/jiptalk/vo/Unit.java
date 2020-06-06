@@ -17,28 +17,60 @@ public class Unit {
     String tenantID; // hire
     String tenantName;
     String tenantPhone;
+    String payerName;
 
-    int deposit;
-    int mngFee;
-    int monthlyFee;
-    int payDay;
+    String deposit;
+    String mngFee;
+    String monthlyFee;
+    String payDay;
 
     String startDate;
     String endDate;
 
-    boolean isPaid;
-    boolean isOccupied;
+    String isPaid;
+    String isOccupied;
 
     public Unit() {
     }
 
-    public Unit(String buildingID, String unitNum, String leaseType, String tenantID, String tenantName, String tenantPhone, int deposit, int mngFee, int monthlyFee, int payDay, String startDate, String endDate, boolean isPaid, boolean isOccupied) {
+    public Unit(String unitNum, String leaseType, String tenantName, String tenantPhone, String payerName, String deposit, String mngFee, String monthlyFee, String payDay, String startDate, String endDate) {
+        this.unitNum = unitNum;
+        this.leaseType = leaseType;
+        this.tenantName = tenantName;
+        this.tenantPhone = tenantPhone;
+        this.payerName = payerName;
+        this.deposit = deposit;
+        this.mngFee = mngFee;
+        this.monthlyFee = monthlyFee;
+        this.payDay = payDay;
+        this.startDate = startDate;
+        this.endDate = endDate;
+    }
+
+    public Unit(String unitNum, String leaseType, String tenantName, String tenantPhone, String payerName, String deposit, String mngFee, String monthlyFee, String payDay, String startDate, String endDate, String isPaid, String isOccupied) {
+        this.unitNum = unitNum;
+        this.leaseType = leaseType;
+        this.tenantName = tenantName;
+        this.tenantPhone = tenantPhone;
+        this.payerName = payerName;
+        this.deposit = deposit;
+        this.mngFee = mngFee;
+        this.monthlyFee = monthlyFee;
+        this.payDay = payDay;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.isPaid = isPaid;
+        this.isOccupied = isOccupied;
+    }
+
+    public Unit(String buildingID, String unitNum, String leaseType, String tenantID, String tenantName, String tenantPhone, String payerName, String deposit, String mngFee, String monthlyFee, String payDay, String startDate, String endDate, String isPaid, String isOccupied) {
         this.buildingID = buildingID;
         this.unitNum = unitNum;
         this.leaseType = leaseType;
         this.tenantID = tenantID;
         this.tenantName = tenantName;
         this.tenantPhone = tenantPhone;
+        this.payerName = payerName;
         this.deposit = deposit;
         this.mngFee = mngFee;
         this.monthlyFee = monthlyFee;
@@ -97,35 +129,43 @@ public class Unit {
         this.tenantPhone = tenantPhone;
     }
 
-    public int getDeposit() {
+    public String getPayerName() {
+        return payerName;
+    }
+
+    public void setPayerName(String payerName) {
+        this.payerName = payerName;
+    }
+
+    public String getDeposit() {
         return deposit;
     }
 
-    public void setDeposit(int deposit) {
+    public void setDeposit(String deposit) {
         this.deposit = deposit;
     }
 
-    public int getMngFee() {
+    public String getMngFee() {
         return mngFee;
     }
 
-    public void setMngFee(int mngFee) {
+    public void setMngFee(String mngFee) {
         this.mngFee = mngFee;
     }
 
-    public int getMonthlyFee() {
+    public String getMonthlyFee() {
         return monthlyFee;
     }
 
-    public void setMonthlyFee(int monthlyFee) {
+    public void setMonthlyFee(String monthlyFee) {
         this.monthlyFee = monthlyFee;
     }
 
-    public int getPayDay() {
+    public String getPayDay() {
         return payDay;
     }
 
-    public void setPayDay(int payDay) {
+    public void setPayDay(String payDay) {
         this.payDay = payDay;
     }
 
@@ -145,40 +185,20 @@ public class Unit {
         this.endDate = endDate;
     }
 
-    public boolean isPaid() {
+    public String getIsPaid() {
         return isPaid;
     }
 
-    public void setPaid(boolean paid) {
-        isPaid = paid;
+    public void setIsPaid(String isPaid) {
+        this.isPaid = isPaid;
     }
 
-    public boolean isOccupied() {
+    public String getIsOccupied() {
         return isOccupied;
     }
 
-    public void setOccupied(boolean occupied) {
-        isOccupied = occupied;
-    }
-
-    @Override
-    public String toString() {
-        return "Unit{" +
-                "buildingID='" + buildingID + '\'' +
-                ", unitNum='" + unitNum + '\'' +
-                ", leaseType='" + leaseType + '\'' +
-                ", tenantID='" + tenantID + '\'' +
-                ", tenantName='" + tenantName + '\'' +
-                ", tenantPhone='" + tenantPhone + '\'' +
-                ", deposit=" + deposit +
-                ", mngFee=" + mngFee +
-                ", monthlyFee=" + monthlyFee +
-                ", payDay=" + payDay +
-                ", startDate='" + startDate + '\'' +
-                ", endDate='" + endDate + '\'' +
-                ", isPaid=" + isPaid +
-                ", isOccupied=" + isOccupied +
-                '}';
+    public void setIsOccupied(String isOccupied) {
+        this.isOccupied = isOccupied;
     }
 
     @Exclude
@@ -189,6 +209,7 @@ public class Unit {
         result.put("tenantID", tenantID);
         result.put("tenantName", tenantName);
         result.put("tenantPhone", tenantPhone);
+        result.put("payerName",payerName);
         result.put("deposit", deposit);
         result.put("mngFee", mngFee);
         result.put("monthlyFee", monthlyFee);
