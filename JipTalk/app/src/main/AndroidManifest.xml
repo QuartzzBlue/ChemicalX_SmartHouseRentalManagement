@@ -12,6 +12,10 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
+        <activity android:name=".ui.setting.ModUserPwdActivity"></activity>
+        <activity android:name=".ui.setting.ModUserPhoneActivity" />
+        <activity android:name=".ui.message.TenantMessageActivity" />
+
         <service
             android:name=".ui.message.FirebaseNotificationService"
             android:enabled="true"
@@ -34,7 +38,7 @@
             android:name=".SignUpActivity"
             android:label="회원가입" />
         <activity android:name=".LoginActivity" />
-        <activity android:name=".ui.message.MessageDetailActivity" />
+        <activity android:name=".ui.message.LandLordMessageActivity" />
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name" />
@@ -54,8 +58,9 @@
             android:label="신규 건물 등록" />
         <activity android:name=".ui.home.JusoWebViewActivity" />
         <activity android:name=".ui.home.BuildingDetailActivity" />
-        <activity android:name=".ui.home.AddUnitActivity"
-            android:label="신규 세대 등록"/>
+        <activity
+            android:name=".ui.home.AddUnitActivity"
+            android:label="신규 세대 등록" />
     </application>
 
 </manifest>

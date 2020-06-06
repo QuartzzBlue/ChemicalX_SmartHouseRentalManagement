@@ -6,6 +6,7 @@ import android.content.Context;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -28,6 +29,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import com.example.jiptalk.Constant;
 import com.example.jiptalk.R;
 import com.example.jiptalk.vo.User;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -37,19 +39,23 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.messaging.FirebaseMessaging;
+import com.google.firebase.messaging.RemoteMessage;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
 
-public class MessageDetailActivity extends AppCompatActivity {
+public class LandLordMessageActivity extends AppCompatActivity {
 
-    private String TAG = "=== jiptalk.ui.message.MessageDetailActivity";
+    private String TAG = "=== jiptalk.ui.message.LandLordMessageActivity";
 
 
     private RecyclerView recyclerView;
@@ -62,7 +68,6 @@ public class MessageDetailActivity extends AppCompatActivity {
     private String currentUserUID;
     private String chatUserName;
     private String chatUserUID;
-    private String category;
     private int currentPage = 1;
     private int itemPos = 0;
     private String lastKey = "";
@@ -86,7 +91,7 @@ public class MessageDetailActivity extends AppCompatActivity {
     private TimePickerDialog.OnTimeSetListener callbackMethodTimePicker;
     String titleClicked = "";
     String dateStartEnd = "";
-    String title;
+    String subject;
     String token;
 
 
@@ -98,33 +103,14 @@ public class MessageDetailActivity extends AppCompatActivity {
         databaseReference = FirebaseDatabase.getInstance().getReference();
 
 
-        currentUserUID = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        databaseReference.child("user").child(currentUserUID).addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                User user = dataSnapshot.getValue(User.class);
-                Constant.category = user.getCategory();
-                Log.d(TAG, "category : " + Constant.category);
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-//        Constant.category = "임대인";
-        Log.d(TAG, "currentUserUID : " + currentUserUID);
-        /* These data should be saved in Constant class upon successful login.
-
         currentUserUID = Constant.userUID;
-        category = Constant.category;
-        */
-        // Set ActionBar Title to name of the Tenant
 
         chatUserUID = getIntent().getStringExtra("clientUID").toString();
+        token = getIntent().getStringExtra("clientToken").toString();
+        Log.d(TAG, "token : " + token);
 
-        chatUserName = getIntent().getStringExtra("name").toString();
-        token = getIntent().getStringExtra("token").toString();
+        // Set ActionBar Title to name of the Tenant
+        chatUserName = getIntent().getStringExtra("clientName").toString();
         Log.d(TAG, "chatUserName : " + chatUserName);
         getSupportActionBar().setTitle(chatUserName);
 
@@ -140,17 +126,6 @@ public class MessageDetailActivity extends AppCompatActivity {
         loadMessages();
 
         frameLayoutMsgDetail = findViewById(R.id.frameLayoutMsgDetail);
-
-
-//        imageViewSendButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                imageViewSendButton.setImageResource(R.drawable.ic_chat_send_hold);
-//                sendMessage();
-//                editTextMessage.setText("");
-//                imageViewSendButton.setImageResource(R.drawable.ic_chat_send);
-//            }
-//        });
 
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -168,10 +143,33 @@ public class MessageDetailActivity extends AppCompatActivity {
             }
         });
 
+//        databaseReference.child("chat").child(chatUserUID).child(Constant.userUID).child("seen").setValue(true).addOnFailureListener(new OnFailureListener() {
+//            @Override
+//            public void onFailure(@NonNull Exception e) {
+//                Log.d("CHAT_ERROR", e.getMessage().toString());
+//            }
+//        });
 
-//        getChatFriendSent();
+        databaseReference.child("chat").child(chatUserUID).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                databaseReference.child("chat").child(chatUserUID).child(Constant.userUID).child("seen").setValue(true).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.d("CHAT_ERROR", e.getMessage().toString());
+                    }
+                });
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+
+        getChatFriendSent();
     }
-
 
 
     public void sendMessage() {
@@ -182,7 +180,7 @@ public class MessageDetailActivity extends AppCompatActivity {
 
 
             String currentUserRef = "messages/" + currentUserUID + "/" + chatUserUID;
-            String chatUserRef = "messages/" + chatUserUID+ "/" + currentUserUID;
+            String chatUserRef = "messages/" + chatUserUID + "/" + currentUserUID;
 
 
             DatabaseReference userMessagePush = databaseReference.child("message").child(currentUserUID).child(chatUserUID).push();
@@ -195,14 +193,13 @@ public class MessageDetailActivity extends AppCompatActivity {
             messageMap.put("message", message);
             messageMap.put("time", sendTime);
             messageMap.put("from", currentUserUID);
-            messageMap.put("title", title);
+            messageMap.put("subject", subject);
+            messageMap.put("hasResponsed", false);
+            messageMap.put("response", "");
 
             Map messageUserMap = new HashMap();
             messageUserMap.put(currentUserRef + "/" + pushID, messageMap);
             messageUserMap.put(chatUserRef + "/" + pushID, messageMap);
-
-
-
 
             databaseReference.updateChildren(messageUserMap, new DatabaseReference.CompletionListener() {
                 @Override
@@ -214,14 +211,9 @@ public class MessageDetailActivity extends AppCompatActivity {
             });
 
 
-
             // push FCM message START
-            PushFCMMessage push = new PushFCMMessage(token, message);
-
-
-
-
-
+            PushFCMMessageThread pushFCMMessage = new PushFCMMessageThread(token, subject, message);
+            new Thread(pushFCMMessage).start();
             // push FCM message END
 
 
@@ -251,10 +243,6 @@ public class MessageDetailActivity extends AppCompatActivity {
 
 
     public void loadMessages() {
-
-//        DatabaseReference messageRef = databaseReference.child("messages").child(currentUserUID).child(chatUserName);
-//
-//        Query messageQuery = messageRef.limitToLast(currentPage * TOTAL_ITEMS_TO_LOAD);
 
         databaseReference.child("messages").child(currentUserUID).child(chatUserUID).addChildEventListener(new ChildEventListener() {
             @Override
@@ -424,8 +412,13 @@ public class MessageDetailActivity extends AppCompatActivity {
                 holder.cardView.setVisibility(View.INVISIBLE);
                 holder.textViewSenderName.setVisibility(View.INVISIBLE);
                 holder.textViewMsgRecieved.setVisibility(View.INVISIBLE);
+                holder.textViewMsgRecievedTime.setVisibility(View.INVISIBLE);
                 holder.textViewMsgSent.setVisibility(View.VISIBLE);
                 holder.textViewMsgSent.setText(chatData.getMessage());
+                holder.textViewMsgSentTime.setVisibility(View.VISIBLE);
+                holder.textViewMsgSentTime.setText(getDate(chatData.getTime()));
+                holder.buttonPositive.setVisibility(View.GONE);
+                holder.buttonNegative.setVisibility(View.GONE);
             } else { // Msg received
                 holder.cardView.setVisibility(View.VISIBLE);
                 holder.textViewSenderName.setVisibility(View.VISIBLE);
@@ -433,6 +426,11 @@ public class MessageDetailActivity extends AppCompatActivity {
                 holder.textViewMsgRecieved.setVisibility(View.VISIBLE);
                 holder.textViewMsgRecieved.setText(chatData.getMessage());
                 holder.textViewMsgSent.setVisibility(View.INVISIBLE);
+                holder.textViewMsgSentTime.setVisibility(View.INVISIBLE);
+                holder.textViewMsgRecievedTime.setVisibility(View.VISIBLE);
+                holder.textViewMsgRecievedTime.setText(getDate(chatData.getTime()));
+                holder.buttonPositive.setVisibility(View.VISIBLE);
+                holder.buttonNegative.setVisibility(View.VISIBLE);
             }
         }
 
@@ -441,12 +439,35 @@ public class MessageDetailActivity extends AppCompatActivity {
             return chatDataList.size();
         }
 
+        public String getDate(long time) {
+            Calendar cal = Calendar.getInstance(Locale.ENGLISH);
+            cal.setTimeInMillis(time);
+            String date = null;
+//            Log.d(TAG, "yesterday : " + DateFormat.format("MMdd", cal.get(cal.DATE) - 1));
+            long today = System.currentTimeMillis();
+//            Log.d(TAG, "today : " + today);
+//            Log.d(TAG, "time : " + time);
+            if (DateFormat.format("MMdd", time).equals(DateFormat.format("MMdd", today))) {
+                date = DateFormat.format("HH:mm", cal).toString();
+            } else if (!DateFormat.format("MMdd", time).equals(DateFormat.format("MMdd", today))) {
+                if ((Integer.parseInt(DateFormat.format("MMdd", today).toString()) - Integer.parseInt(DateFormat.format("MMdd", time).toString())) == 1) {
+                    return "어제";
+                } else if ((Integer.parseInt(DateFormat.format("MMdd", today).toString()) - Integer.parseInt(DateFormat.format("MMdd", time).toString())) > 1) {
+                    return DateFormat.format("MM/dd", time).toString();
+                }
+            }
+            return date;
+        }
+
 
         public class ChatDataViewHolder extends RecyclerView.ViewHolder {
             public TextView textViewMsgRecieved;
             public TextView textViewMsgSent;
             public TextView textViewSenderName;
+            public TextView textViewMsgRecievedTime;
+            public TextView textViewMsgSentTime;
             public CardView cardView;
+            public Button buttonPositive, buttonNegative;
 
 
             public ChatDataViewHolder(View itemView) {
@@ -454,7 +475,11 @@ public class MessageDetailActivity extends AppCompatActivity {
                 textViewMsgRecieved = itemView.findViewById(R.id.textViewMsgReceived);
                 textViewMsgSent = itemView.findViewById(R.id.textViewMsgSent);
                 textViewSenderName = itemView.findViewById(R.id.textViewSenderName);
+                textViewMsgRecievedTime = itemView.findViewById(R.id.textViewMsgReceivedTime);
+                textViewMsgSentTime = itemView.findViewById(R.id.textViewMsgSentTime);
                 cardView = itemView.findViewById(R.id.cardViewChat);
+                buttonPositive = itemView.findViewById(R.id.buttonPositive);
+                buttonNegative = itemView.findViewById(R.id.buttonNegative);
 
             }
         }
@@ -464,16 +489,12 @@ public class MessageDetailActivity extends AppCompatActivity {
 //        buttonInsertDate.setVisibility(View.INVISIBLE);
 //        Toast.makeText(this, "view.getId() : " + view.getId(), Toast.LENGTH_SHORT).show();
 
-        if (Constant.category.equals("임대인")) {
+        if (Constant.category.equals("집주인")) {
             final LayoutInflater inflater = (LayoutInflater) getApplicationContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             final View frameLayoutMsgInputForm = inflater.inflate(R.layout.layout_message_detail_msg_input_form_landlord, frameLayoutMsgDetail, false);
             frameLayoutMsgDetail.addView(frameLayoutMsgInputForm);
             initializeView();
 
-        } else if (Constant.category.equals("임차인")) {
-            final LayoutInflater inflater = (LayoutInflater) getApplicationContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            final View frameLayoutMsgInputFormTenant = inflater.inflate(R.layout.layout_message_detail_msg_input_form_tenant, frameLayoutMsgDetail, false);
-            frameLayoutMsgDetail.addView(frameLayoutMsgInputFormTenant);
         }
 
     }
@@ -553,7 +574,7 @@ public class MessageDetailActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Log.d(TAG, "clicked dark area");
-                Toast.makeText(MessageDetailActivity.this, "hello?", Toast.LENGTH_SHORT).show();
+                Toast.makeText(LandLordMessageActivity.this, "hello?", Toast.LENGTH_SHORT).show();
                 frameLayoutMsgDetail.removeAllViews();
             }
         });
@@ -567,7 +588,7 @@ public class MessageDetailActivity extends AppCompatActivity {
                 buttonInsertDateEnd.setVisibility(View.VISIBLE);
                 buttonInsertTime.setVisibility(View.VISIBLE);
                 titleClicked = "appointment";
-                title = "appointment";
+                subject = "약속잡기";
             }
         });
         buttonTitleFee.setOnClickListener(new View.OnClickListener() {
@@ -577,7 +598,7 @@ public class MessageDetailActivity extends AppCompatActivity {
                 buttonInsertDateStart.setVisibility(View.INVISIBLE);
                 buttonInsertDateEnd.setVisibility(View.INVISIBLE);
                 buttonInsertTime.setVisibility(View.INVISIBLE);
-                title = "fee";
+                subject = "관리비 청구 요청";
             }
         });
 
@@ -588,7 +609,7 @@ public class MessageDetailActivity extends AppCompatActivity {
                 buttonInsertDateStart.setVisibility(View.INVISIBLE);
                 buttonInsertDateEnd.setVisibility(View.INVISIBLE);
                 buttonInsertTime.setVisibility(View.INVISIBLE);
-                title = "monthlypayment";
+                subject = "월세 청구 요청";
             }
         });
 
@@ -600,7 +621,7 @@ public class MessageDetailActivity extends AppCompatActivity {
                 buttonInsertDateEnd.setVisibility(View.VISIBLE);
                 titleClicked = "bldgConstruction";
                 buttonInsertTime.setVisibility(View.INVISIBLE);
-                title = "bldgconstruction";
+                subject = "건물공사 공지";
             }
         });
         buttonTitleNoise.setOnClickListener(new View.OnClickListener() {
@@ -610,7 +631,7 @@ public class MessageDetailActivity extends AppCompatActivity {
                 buttonInsertDateStart.setVisibility(View.INVISIBLE);
                 buttonInsertDateEnd.setVisibility(View.INVISIBLE);
                 buttonInsertTime.setVisibility(View.INVISIBLE);
-                title = "noise";
+                subject = "층간소음 주의";
             }
         });
         buttonTitleRecycle.setOnClickListener(new View.OnClickListener() {
@@ -620,7 +641,7 @@ public class MessageDetailActivity extends AppCompatActivity {
                 buttonInsertDateStart.setVisibility(View.INVISIBLE);
                 buttonInsertDateEnd.setVisibility(View.INVISIBLE);
                 buttonInsertTime.setVisibility(View.INVISIBLE);
-                title = "recycle";
+                subject = "분리수거";
             }
         });
     }

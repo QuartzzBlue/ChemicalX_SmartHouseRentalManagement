@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
 
+import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -29,57 +30,41 @@ public class SettingUserInfoActivity extends AppCompatActivity {
     private ImageView modNameBt;
     private User currentUser;
     private DatabaseReference dbRef;
-    private Runnable getPersonalInfo;
+    private Context nowContext;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_setting_user_info);
+        getPersonalInfo();
         initialization();
-
-//        Thread t = new Thread(getPersonalInfo);
-//        Log.w("===", "Thread");
-//        t.start();
-//        Log.w("===", "Thread start");
-//        try {
-//            Log.w("===", "join : before");
-//            t.join();
-//            Log.w("===", "join : after");
-//        } catch (InterruptedException e) {
-//            e.printStackTrace();
-//        }
-
 
     }
 
     private void initialization() {
 
         Log.w("===", "initialization start");
+        nowContext = this;
         emailTv = findViewById(R.id.tv_setting_user_info_userEmail);
         nameTv = findViewById(R.id.tv_setting_user_info_userName);
         modPwdBt = findViewById(R.id.bt_setting_user_info_modPassword);
         modPhoneBt = findViewById(R.id.bt_setting_user_info_modPhoneNum);
         modNameBt = findViewById(R.id.image_setting_user_info_modUserName);
-//        emailTv.setText(currentUser.getEmail());
 
+        //edit icon 클릭 시
         modNameBt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.w("===", "onClick");
+                Log.w("===", "modNameBt : onClick");
+                //modMameDialog 띄움
                 FragmentManager fm = getSupportFragmentManager();
-                final ModUserNameDialog modNameDialog = new ModUserNameDialog();
-                modNameDialog.show(fm, "Fragment Tag");
+                final ModUserNameDialog modNameDialog = new ModUserNameDialog(nowContext);
+                modNameDialog.show(fm, "modNameDialog show");
             }
         });
-        Log.w("===", "initialization start");
 
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        getPersonalInfo();
-    }
 
     private void getPersonalInfo() {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -103,26 +88,26 @@ public class SettingUserInfoActivity extends AppCompatActivity {
         });
     }
 
-    class getPersonalInfoThread implements Runnable {
-
-        @Override
-        public void run() {
-            dbRef.addValueEventListener(new ValueEventListener() {  //addValueEventListener : 한 번만 콜백되고 즉시 삭제
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    currentUser = dataSnapshot.getValue(User.class);
-                    Log.w("===", "getPersonalInfoThread() : onDataChange");
-                    Log.w("===", "getPersonalInfoThread() : " + currentUser.toString());
-                    Log.w("===", "getPersonalInfoThread() : " + dataSnapshot.getValue());
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-                    Log.w("===", "getPersonalInfoThread() : onCancelled", databaseError.toException());
-                }
-            });
-        }
-
-    }
+//    class getPersonalInfoThread implements Runnable {
+//
+//        @Override
+//        public void run() {
+//            dbRef.addValueEventListener(new ValueEventListener() {  //addValueEventListener : 한 번만 콜백되고 즉시 삭제
+//                @Override
+//                public void onDataChange(DataSnapshot dataSnapshot) {
+//                    currentUser = dataSnapshot.getValue(User.class);
+//                    Log.w("===", "getPersonalInfoThread() : onDataChange");
+//                    Log.w("===", "getPersonalInfoThread() : " + currentUser.toString());
+//                    Log.w("===", "getPersonalInfoThread() : " + dataSnapshot.getValue());
+//                }
+//
+//                @Override
+//                public void onCancelled(@NonNull DatabaseError databaseError) {
+//                    Log.w("===", "getPersonalInfoThread() : onCancelled", databaseError.toException());
+//                }
+//            });
+//        }
+//
+//    }
 }
 

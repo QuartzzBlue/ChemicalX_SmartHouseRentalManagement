@@ -1,5 +1,7 @@
 package com.example.jiptalk.ui.message;
 
+import android.util.Log;
+
 import com.google.firebase.auth.GoogleAuthCredential;
 
 import org.json.JSONObject;
@@ -10,18 +12,27 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-public class PushFCMMessage {
+public class PushFCMMessageThread implements Runnable {
 
     String token;
+    String title;
     String msg;
+    String TAG = "===";
 
-    public PushFCMMessage() {
+    public PushFCMMessageThread() {
 
     }
 
-    public PushFCMMessage(String token, String msg) {
+    public PushFCMMessageThread(String token, String title, String msg) {
 
+        this.token = token;
+        this.title = title;
+        this.msg = msg;
+    }
 
+    @Override
+    public void run() {
+        Log.d(TAG, "test push");
         URL url = null;
         try {
             url = new URL("https://fcm.googleapis.com/fcm/send");
@@ -32,6 +43,7 @@ public class PushFCMMessage {
         HttpURLConnection conn = null;
         try {
             conn = (HttpURLConnection) url.openConnection();
+            Log.d(TAG, (conn == null) + "");
         } catch (IOException e) {
             System.out.println("Error while createing connection with Firebase URL | IOException");
             e.printStackTrace();
@@ -50,13 +62,14 @@ public class PushFCMMessage {
         try {
             JSONObject message = new JSONObject();
             message.put("to",
-                    token);
+                    this.token);
             message.put("priority", "high");
             JSONObject notification = new JSONObject();
-            notification.put("title", "집똑 알림이 왔어요~!");
+            notification.put("title", title);
             notification.put("body", msg);
             message.put("notification", notification);
 
+            Log.d(TAG, "message : " + message.toString());
             // send data to firebase (http method)
             OutputStreamWriter out = new OutputStreamWriter(conn.getOutputStream(), "UTF-8");
             out.write(message.toString());
@@ -66,9 +79,5 @@ public class PushFCMMessage {
             System.out.println("Error while writing outputstream| IOException");
             e.printStackTrace();
         }
-
-
     }
-
-
 }

@@ -6,7 +6,7 @@
     android:orientation="vertical" >
 
     <FrameLayout
-        android:id="@+id/frameLayoutDark"
+        android:id="@+id/frameLayoutDark2"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:alpha="0.7"
@@ -17,7 +17,7 @@
     </FrameLayout>
 
     <FrameLayout
-        android:id="@+id/frameLayoutSendMsgLayout"
+        android:id="@+id/frameLayoutSendMsgLayout2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:clickable="true"
@@ -30,7 +30,7 @@
             android:orientation="vertical">
 
             <TextView
-                android:id="@+id/textViewTitle"
+                android:id="@+id/textViewTitle2"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="주제를 선택하세요"
@@ -52,7 +52,7 @@
                     android:textAlignment="center">
 
                     <FrameLayout
-                        android:id="@+id/frameLayoutTitleChoices"
+                        android:id="@+id/frameLayoutTitleChoices2"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content">
 
@@ -68,7 +68,7 @@
                                 android:orientation="horizontal">
 
                                 <Button
-                                    android:id="@+id/buttonTitleAppointment"
+                                    android:id="@+id/buttonTitleAppointment2"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_margin="5dp"
@@ -78,7 +78,7 @@
                                     android:textColor="@android:color/white" />
 
                                 <Button
-                                    android:id="@+id/buttonTitleFee"
+                                    android:id="@+id/buttonTitleFee2"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_margin="5dp"
@@ -88,7 +88,7 @@
                                     android:textColor="@android:color/white" />
 
                                 <Button
-                                    android:id="@+id/buttonTitleMonthlyPayment"
+                                    android:id="@+id/buttonTitleMonthlyPayment2"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_margin="5dp"
@@ -105,7 +105,7 @@
                                 android:orientation="horizontal">
 
                                 <Button
-                                    android:id="@+id/buttonTitleBldgContruction"
+                                    android:id="@+id/buttonTitleBldgContruction2"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_margin="5dp"
@@ -115,7 +115,7 @@
                                     android:textColor="@android:color/white" />
 
                                 <Button
-                                    android:id="@+id/buttonTitleNoise"
+                                    android:id="@+id/buttonTitleNoise2"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_margin="5dp"
@@ -125,7 +125,7 @@
                                     android:textColor="@android:color/white" />
 
                                 <Button
-                                    android:id="@+id/buttonTitleRecycle"
+                                    android:id="@+id/buttonTitleRecycle2"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_margin="5dp"
@@ -191,7 +191,7 @@
                             <!--                                android:layout_height="wrap_content" />-->
 
                             <DatePicker
-                                android:id="@+id/datePickerRequestDate"
+                                android:id="@+id/datePickerRequestDate2"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content" />
 
@@ -212,14 +212,14 @@
                 android:layout_marginTop="5dp">
 
                 <FrameLayout
-                    android:id="@+id/frameLayoutChat"
+                    android:id="@+id/frameLayoutChat2"
                     android:layout_width="60dp"
                     android:layout_height="60dp"
                     android:layout_weight="1">
 
 
                     <androidx.cardview.widget.CardView
-                        android:id="@+id/cardViewChat"
+                        android:id="@+id/cardViewChat2"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         app:cardBackgroundColor="@color/design_default_color_primary"
@@ -242,7 +242,7 @@
                 </FrameLayout>
 
                 <TextView
-                    android:id="@+id/textViewMsgPreview"
+                    android:id="@+id/textViewMsgPreview2"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentTop="true"
@@ -265,7 +265,7 @@
             </androidx.cardview.widget.CardView>
 
             <Button
-                android:id="@+id/buttonInsertDate_start"
+                android:id="@+id/buttonInsertDate_start2"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
@@ -276,7 +276,7 @@
                 android:visibility="gone" />
 
             <Button
-                android:id="@+id/buttonInsertDate_end"
+                android:id="@+id/buttonInsertDate_end2"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
@@ -287,7 +287,7 @@
                 android:visibility="gone" />
 
             <Button
-                android:id="@+id/buttonInsertTime"
+                android:id="@+id/buttonInsertTime2"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
@@ -298,7 +298,7 @@
                 android:visibility="gone" />
 
             <Button
-                android:id="@+id/buttonSendMsg"
+                android:id="@+id/buttonSendMsg2"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
