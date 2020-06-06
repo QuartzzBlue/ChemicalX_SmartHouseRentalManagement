@@ -11,22 +11,44 @@
     android:paddingLeft="25dp"
     android:paddingTop="15dp"
     android:paddingRight="25dp"
-    android:paddingBottom="15dp">
+    android:paddingBottom="15dp"
+    android:scrollbars="none">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-
         <TextView
-            android:id="@+id/textView23"
+            android:id="@+id/textView30"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="10dp"
-            android:text="계약자 이름"
+            android:text="계약 호수"
             android:textColor="@color/black"
             android:textSize="18sp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/et_add_unit_unitNum"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                />
+
+            <TextView
+                android:id="@+id/textView51"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="9"
+                android:gravity="center"
+                android:text="호"
+                android:textSize="16sp" />
+        </LinearLayout>
 
 
         <LinearLayout
@@ -34,28 +56,77 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
-            <EditText
-                android:id="@+id/tv_add_unit_unitName"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginRight="10dp"
                 android:layout_weight="1"
-                android:editable="false"
-                android:enabled="true"
-                android:inputType="textPostalAddress"
-                android:textIsSelectable="false" />
+                android:orientation="vertical">
 
-            <Button
-                android:id="@+id/btn_add_building_search"
-                android:layout_width="wrap_content"
-                android:layout_height="38dp"
-                android:layout_gravity="end"
-                android:layout_marginRight="5dp"
-                android:background="@drawable/round_btn_ghost"
-                android:paddingStart="5dp"
-                android:paddingEnd="5dp"
-                android:text="입금자 동일"
-                android:textColor="#FFFFFF"
-                android:textSize="16sp" />
+                <TextView
+                    android:id="@+id/textView23"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="50dp"
+                    android:layout_marginBottom="10dp"
+                    android:text="계약자명"
+                    android:textColor="@color/black"
+                    android:textSize="18sp" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <EditText
+                        android:id="@+id/et_add_unit_tenantName"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="10dp"
+                        android:layout_weight="1"
+                        android:enabled="true"
+                        android:textIsSelectable="false" />
+
+                    <Button
+                        android:id="@+id/btn_add_unit_makeSame"
+                        android:layout_width="wrap_content"
+                        android:layout_height="38dp"
+                        android:layout_gravity="end"
+                        android:layout_marginRight="5dp"
+                        android:background="@drawable/round_btn_ghost"
+                        android:paddingStart="5dp"
+                        android:paddingEnd="5dp"
+                        android:text="입금자 동일"
+                        android:textColor="#FFFFFF"
+                        android:textSize="16sp" />
+
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="2"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/textView52"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="50dp"
+                    android:layout_marginBottom="10dp"
+                    android:text="입금자명"
+                    android:textColor="@color/black"
+                    android:textSize="18sp" />
+
+                <EditText
+                    android:id="@+id/et_add_unit_payerName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:inputType="textPersonName" />
+
+            </LinearLayout>
 
         </LinearLayout>
 
@@ -70,7 +141,7 @@
             android:textSize="18sp" />
 
         <EditText
-            android:id="@+id/tv_add_building_buildingName"
+            android:id="@+id/et_add_unit_tenantPhone"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="textPersonName" />
@@ -86,7 +157,7 @@
             android:textSize="18sp" />
 
         <RadioGroup
-            android:id="@+id/daily_weekly_button_view"
+            android:id="@+id/rg_add_unit_leaseType"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center_horizontal"
@@ -97,7 +168,7 @@
 
 
             <RadioButton
-                android:id="@+id/radio0"
+                android:id="@+id/rb_add_unit_leaseType_monthly"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -113,7 +184,7 @@
                 android:textColor="@color/radio_flat_text_selector" />
 
             <RadioButton
-                android:id="@+id/radio1"
+                android:id="@+id/rb_add_unit_leaseType_fullDeposit"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -128,7 +199,7 @@
                 android:textColor="@color/radio_flat_text_selector" />
 
             <RadioButton
-                android:id="@+id/radio2"
+                android:id="@+id/rb_add_unit_leaseType_fullFee"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -165,6 +236,9 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:ems="10"
+                android:focusable="false"
+                android:focusableInTouchMode="false"
+                android:gravity="center"
                 android:inputType="date" />
 
             <ImageView
@@ -173,6 +247,7 @@
                 android:layout_height="30dp"
                 android:layout_gravity="center"
                 android:layout_marginRight="10dp"
+                android:adjustViewBounds="false"
                 android:scaleType="centerInside"
                 app:srcCompat="@drawable/btn_under" />
 
@@ -182,6 +257,9 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:ems="10"
+                android:focusable="false"
+                android:focusableInTouchMode="false"
+                android:gravity="center"
                 android:inputType="date" />
 
             <ImageView
@@ -238,7 +316,7 @@
                 android:textColor="@color/radio_flat_text_selector" />
 
             <RadioButton
-                android:id="@+id/rb_add_uit_contract_1y"
+                android:id="@+id/rb_add_unit_contract_1y"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -253,7 +331,7 @@
                 android:textColor="@color/radio_flat_text_selector" />
 
             <RadioButton
-                android:id="@+id/rb_add_uit_contract_2y"
+                android:id="@+id/rb_add_unit_contract_2y"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -271,10 +349,17 @@
 
 
         <TextView
+            android:id="@+id/tv_add_unit_errMsg"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/colorAccent"
+            android:textSize="16sp" />
+
+        <TextView
             android:id="@+id/textView31"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="50dp"
+            android:layout_marginTop="40dp"
             android:layout_marginBottom="10dp"
             android:text="보증금"
             android:textColor="@color/black"
@@ -286,7 +371,7 @@
             android:orientation="horizontal">
 
             <EditText
-                android:id="@+id/tv_add_unit_deposit"
+                android:id="@+id/et_add_unit_deposit"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"

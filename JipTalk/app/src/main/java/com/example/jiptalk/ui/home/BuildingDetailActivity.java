@@ -2,6 +2,7 @@ package com.example.jiptalk.ui.home;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -10,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -18,12 +20,21 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.jiptalk.Constant;
 import com.example.jiptalk.R;
+import com.example.jiptalk.vo.Building;
 import com.example.jiptalk.vo.Unit;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 
 public class BuildingDetailActivity extends AppCompatActivity {
 
@@ -53,6 +64,7 @@ public class BuildingDetailActivity extends AppCompatActivity {
             public void onClick(View v) {
 
                 Intent intent = new Intent(nowContext, AddUnitActivity.class);
+                intent.putExtra("buildingKey",buildingKey);
                 startActivity(intent);
 
             }
@@ -70,8 +82,8 @@ public class BuildingDetailActivity extends AppCompatActivity {
             @Override
             public void onItemClick(View v, int position) {
                 // 액티비티 이동
-                Intent intent = new Intent(getApplicationContext(), BuildingDetailActivity.class);
-                intent.putExtra("UserID",units.get(position).getTenantID());
+                Intent intent = new Intent(getApplicationContext(), UnitDetailActivity.class);
+                //intent.putExtra("UserID",units.get(position).getTenantID());
                 startActivity(intent);
             }
         });
@@ -99,6 +111,7 @@ public class BuildingDetailActivity extends AppCompatActivity {
         nowContext = this;
 
         initDatabase();
+        load();
 
         recyclerView=findViewById(R.id.rv_building_detail);
         recyclerView.setHasFixedSize(true);
@@ -110,21 +123,42 @@ public class BuildingDetailActivity extends AppCompatActivity {
 
     }
 
+    public void load(){
+        //buildingNameTv.setText(Constant.buildings.get(buildingKey).getName());
+        //java.lang.ClassCastException: java.util.HashMap cannot be cast to com.example.jiptalk.vo.Building 에러! 왜?
+    }
     public void initDatabase(){
 
         units = new ArrayList<>();
 
         buildingKey = getIntent().getStringExtra("buildingKey");
-        Log.d("===","buildingKey : "+buildingKey);
 
         firebaseDatabase = FirebaseDatabase.getInstance();
-        databaseReference = firebaseDatabase.getReference("buildings");
+        databaseReference = firebaseDatabase.getReference("buildings").child(Constant.userUID).child(buildingKey);
 
         //db 에서 호수 정보 불러오기
+        databaseReference.child("units").addValueEventListener(new ValueEventListener() {
 
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
+                units.clear();
 
+                for(DataSnapshot postSnapshot : dataSnapshot.getChildren()){
+                    Unit unitItem = postSnapshot.getValue(Unit.class);
+                    //unitItem.setId(postSnapshot.getKey());
+                    //Log.d("===","buildingItem id : "+postSnapshot.getKey());
+                    units.add(unitItem);
+                }
+                unitViewAdapter.notifyDataSetChanged();
 
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
     }
 }
 
@@ -136,14 +170,22 @@ class UnitViewAdapter extends RecyclerView.Adapter<UnitViewAdapter.MyViewHolder>
     //아이템 뷰를 저장하는 뷰 홀더 클래스
     class MyViewHolder extends RecyclerView.ViewHolder{
 
-        TextView unitNumTv,userIdTv,monthlyFeeTv,isPaid;
+        TextView unitNumTv,userNameTv,monthlyFeeTv,isPaidTv,startDateTv,endDateTv;
+        ProgressBar progressBar;
         ImageButton btn_unitDetail;
 
         //뷰 객체에 대한 참조
         MyViewHolder(final View itemView){
             super(itemView);
-            //folow
+
             btn_unitDetail = itemView.findViewById(R.id.btn_recyclerview_buildingDetail);
+            unitNumTv = itemView.findViewById(R.id.tv_rv_item_unitNum);
+            userNameTv = itemView.findViewById(R.id.tv_rv_unit_userName);
+            monthlyFeeTv = itemView.findViewById(R.id.tv_rv_unit_monthlyFee);
+            isPaidTv = itemView.findViewById(R.id.tv_rv_unit_isPaid);
+            startDateTv = itemView.findViewById(R.id.tv_rv_unit_startDate);
+            endDateTv = itemView.findViewById(R.id.tv_rv_unit_endDate);
+            progressBar = itemView.findViewById(R.id.pb_rv_unit);
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -194,6 +236,50 @@ class UnitViewAdapter extends RecyclerView.Adapter<UnitViewAdapter.MyViewHolder>
     public void onBindViewHolder(@NonNull UnitViewAdapter.MyViewHolder holder, int position) {
         String unitNum = units.get(position).getUnitNum();
         holder.unitNumTv.setText(unitNum);
+        holder.userNameTv.setText(units.get(position).getTenantName());
+        int totalFee = Integer.parseInt(units.get(position).getMonthlyFee())+Integer.parseInt(units.get(position).getMngFee());
+        holder.monthlyFeeTv.setText("월"+totalFee+"원");
+        holder.startDateTv.setText(units.get(position).getStartDate());
+        holder.endDateTv.setText(units.get(position).getEndDate());
+        if(units.get(position).getIsPaid()=="0"){
+            holder.isPaidTv.setText("미납");
+            holder.isPaidTv.setTextColor(Color.RED);
+        }else{
+            holder.isPaidTv.setText("완납");
+            holder.isPaidTv.setTextColor(Color.BLUE);
+        }
+        holder.startDateTv.setText(units.get(position).getStartDate());
+        holder.endDateTv.setText(units.get(position).getEndDate());
+
+        Date startDate,endDate;
+        //날짜 계산
+        Calendar startCalendar = Calendar.getInstance();
+        Calendar endCalendar = Calendar.getInstance();
+        Calendar todayCalendar = Calendar.getInstance();
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy.MM.dd");
+        try {
+            startDate = simpleDateFormat.parse(units.get(position).getStartDate());
+            endDate = simpleDateFormat.parse(units.get(position).getEndDate());
+            startCalendar.setTime(startDate);
+            endCalendar.setTime(endDate);
+
+            //계약기간 일수
+            long time = (endCalendar.getTimeInMillis() - startCalendar.getTimeInMillis())/1000;
+            time = time/86400; //하루는 86400초
+
+            //오늘까지 산 날짜
+            long stayTime = (todayCalendar.getTimeInMillis() - startCalendar.getTimeInMillis())/1000;
+            stayTime = stayTime/86400;
+
+            double rate = (double)stayTime/time*100;
+            holder.progressBar.setProgress((int)rate);
+
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+
+
     }
 
     // getItemCount() - 전체 데이터 갯수 리턴.
@@ -210,3 +296,4 @@ class UnitViewAdapter extends RecyclerView.Adapter<UnitViewAdapter.MyViewHolder>
         this.onItemClickListener = listener;
     }
 }
+

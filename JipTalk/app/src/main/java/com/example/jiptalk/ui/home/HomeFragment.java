@@ -67,6 +67,17 @@ public class HomeFragment extends Fragment {
             }
         });
 
+        // 리사이클러뷰의 아이템 클릭 시 해당 아이템(빌딩) 의 BuildingDetailActivity 로 이동
+        myRecycleViewAdapter.setOnItemClickListener(new MyRecyclerViewAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(View v, int position) {
+                // 액티비티 이동
+                Intent intent = new Intent(getActivity(), BuildingDetailActivity.class);
+                intent.putExtra("buildingKey",buildings.get(position).getId());
+                startActivity(intent);
+            }
+        });
+
         return root;
     }
 
@@ -84,17 +95,6 @@ public class HomeFragment extends Fragment {
         layoutManager = new LinearLayoutManager(getContext().getApplicationContext());
         recyclerView.setLayoutManager(layoutManager);
         myRecycleViewAdapter = new MyRecyclerViewAdapter(buildings);
-
-        // 리사이클러뷰의 아이템 클릭 시 해당 아이템(빌딩) 의 BuildingDetailActivity 로 이동
-        myRecycleViewAdapter.setOnItemClickListener(new MyRecyclerViewAdapter.OnItemClickListener() {
-            @Override
-            public void onItemClick(View v, int position) {
-                // 액티비티 이동
-                Intent intent = new Intent(getActivity(), BuildingDetailActivity.class);
-                intent.putExtra("buildingKey",buildings.get(position).getId());
-                startActivity(intent);
-            }
-        });
         recyclerView.setAdapter(myRecycleViewAdapter);
 
     }
