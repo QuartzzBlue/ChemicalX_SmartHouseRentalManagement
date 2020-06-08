@@ -40,7 +40,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-public class SignUpActivity extends AppCompatActivity {
+public class    SignUpActivity extends AppCompatActivity {
 
     private FirebaseAuth mAuth;
     private DatabaseReference userRef;

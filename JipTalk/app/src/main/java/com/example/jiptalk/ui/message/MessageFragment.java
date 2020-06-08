@@ -1,6 +1,5 @@
 package com.example.jiptalk.ui.message;
 
-import android.app.ActionBar;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -28,8 +27,10 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.jiptalk.Constant;
 import com.example.jiptalk.R;
+import com.example.jiptalk.vo.Building;
 import com.example.jiptalk.vo.MessageVO;
 import com.example.jiptalk.vo.Noti;
+import com.example.jiptalk.vo.Unit;
 import com.example.jiptalk.vo.User;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
@@ -43,6 +44,9 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Locale;
 
 public class MessageFragment extends Fragment {
@@ -84,6 +88,8 @@ public class MessageFragment extends Fragment {
 
     ////
 
+    private ArrayList<String> clientList2 = new ArrayList<>();
+
 
 //    private MessageViewModel notificationsViewModel;
 
@@ -91,6 +97,7 @@ public class MessageFragment extends Fragment {
                              ViewGroup container, Bundle savedInstanceState) {
 
         Log.d(TAG, "Entered MessageFragment onCreateView");
+        initiateClientList();
 
 
         // remove Actionbar
@@ -362,6 +369,20 @@ public class MessageFragment extends Fragment {
         recyclerViewMsg.setAdapter(messageAdapter);
 
         return root;
+    }
+
+
+    public void initiateClientList() {
+
+        Iterator<String> keys = Constant.buildings.keySet().iterator();
+        while (keys.hasNext()) {
+            HashMap<String, Unit> unitHashMap = Constant.buildings.get(keys.next()).getUnitList();
+            Iterator<String> unitKeys = unitHashMap.keySet().iterator();
+            while (unitKeys.hasNext()) {
+                clientList2.add(unitHashMap.get(unitKeys.next()).getTenantName());
+            }
+        }
+        Log.d(TAG, "testtest : " + clientList2.toString());
     }
 
     @Override
