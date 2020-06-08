@@ -71,7 +71,7 @@
             android:background="@drawable/round_button_2"
             android:padding="10dp"
             android:text="비밀번호 변경"
-            android:textSize="24sp" />
+            android:textSize="18sp" />
 
         <Button
             android:id="@+id/bt_setting_user_info_modPhoneNum"
@@ -84,7 +84,7 @@
             android:background="@drawable/round_button_2"
             android:padding="10dp"
             android:text="휴대폰 번호 번경"
-            android:textSize="24sp" />
+            android:textSize="18sp" />
     </LinearLayout>
 
 </LinearLayout>

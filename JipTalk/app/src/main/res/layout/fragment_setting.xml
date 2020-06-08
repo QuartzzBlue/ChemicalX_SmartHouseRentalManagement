@@ -11,22 +11,21 @@
         android:layout_height="match_parent"
         android:orientation="vertical"
         android:paddingLeft="25dp"
+        android:paddingTop="15dp"
         android:paddingRight="25dp"
         android:paddingBottom="15dp">
 
         <ImageView
             android:id="@+id/imageView4"
             android:layout_width="match_parent"
-            android:layout_height="25dp"
+            android:layout_height="59dp"
             android:layout_marginTop="50dp"
             android:layout_marginBottom="80dp"
-            android:layout_weight="0.3"
             android:src="@drawable/logo_medium" />
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="145dp"
-            android:layout_weight="1"
+            android:layout_height="wrap_content"
             android:orientation="vertical">
 
             <Button
@@ -40,8 +39,8 @@
                 android:id="@+id/bt_setting_info"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="45dp"
-                android:layout_marginBottom="45dp"
+                android:layout_marginTop="30dp"
+                android:layout_marginBottom="30dp"
                 android:background="@drawable/round_button_2"
                 android:text="정보 수정" />
 
@@ -49,16 +48,17 @@
                 android:id="@+id/bt_setting_developers"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="45dp"
                 android:background="@drawable/round_button_2"
                 android:text="개발팀 소개" />
         </LinearLayout>
 
         <ImageView
-            android:id="@+id/imageView6"
-            android:layout_width="wrap_content"
-            android:layout_height="30dp"
-            android:layout_weight="1"
-            android:padding="30dp"
-            android:src="@drawable/logo2" />
+            android:id="@+id/imageView3"
+            android:layout_width="match_parent"
+            android:layout_height="64dp"
+            android:layout_marginTop="30dp"
+            android:src="@drawable/logo_madebychemicalx" />
+
     </LinearLayout>
 </FrameLayout>

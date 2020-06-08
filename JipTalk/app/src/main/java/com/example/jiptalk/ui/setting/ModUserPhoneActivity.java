@@ -6,16 +6,23 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.example.jiptalk.Constant;
 import com.example.jiptalk.R;
 import com.example.jiptalk.Valid;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.FirebaseException;
 import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.auth.PhoneAuthProvider;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.concurrent.TimeUnit;
 
@@ -24,7 +31,9 @@ public class ModUserPhoneActivity extends AppCompatActivity {
     private Context nowContext;
     private EditText newPhoneTv, checkTv;
     private Button sendCodeBt, checkBt;
-    private String verificationCode;
+    private String newPhone, verificationCode;
+    private Valid valid;
+    private boolean isVerified = false; //인증여부
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,20 +44,51 @@ public class ModUserPhoneActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.appbar_action_complete, menu) ;
+        return true ;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        switch (item.getItemId()) {
+
+            /*** 확인 버튼 눌렸을 때 ***/
+            case R.id.action_complete :
+                Log.w("===", "ModUserPhoneActivitiy : save button clicked");
+
+                if(isVerified == false){
+                    Log.w("===", "ModUserPhoneActivitiy : save failed");
+                    Toast.makeText(nowContext, "휴대폰 번호 인증을 진행해 주세요.",
+                            Toast.LENGTH_SHORT).show();
+                    return true;
+                }
+
+                updateUserPhone(newPhone);
+
+                return true ;
+            default :
+                return super.onOptionsItemSelected(item) ;
+        }
+    }
+
     private void initialize() {
         nowContext = this;
         newPhoneTv = findViewById(R.id.tv_mod_user_phone_newPhone);
         checkTv = findViewById(R.id.tv_mod_user_phone_check);
         sendCodeBt = findViewById(R.id.bt_mod_user_phone_send);
         checkBt = findViewById(R.id.bt_mod_user_phone_check);
+        valid = new Valid();
 
         /*** 인증 코드 전송 ***/
         sendCodeBt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Log.w("===", "ModUserPhoneActivity : sendCodeBt clicked");
-                String newPhone = newPhoneTv.getText().toString().trim();
-                Valid valid = new Valid();
+                newPhone = newPhoneTv.getText().toString().trim();
+
 
                 if (!valid.isNotBlank(newPhone) || !valid.isValidPhone(newPhone)){
                     Toast.makeText(nowContext, "전화번호를 정확히 입력해 주세요.", Toast.LENGTH_SHORT).show();
@@ -71,8 +111,10 @@ public class ModUserPhoneActivity extends AppCompatActivity {
                 String rCode = checkTv.getText().toString().trim();
 
                 if(rCode.equals(verificationCode)){
-                    Toast.makeText(nowContext, "인증되었습니다.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(nowContext, "인증되었습니다. 확인을 눌러주세요.", Toast.LENGTH_SHORT).show();
                     Log.w("===", "ModUserPhoneActivity : code verified");
+                    newPhoneTv.setEnabled(false);
+                    isVerified = true;
                 }else{
                     Toast.makeText(nowContext, "인증에 실패했습니다.", Toast.LENGTH_SHORT).show();
                     Log.w("===", "ModUserPhoneActivity : code verification failed");
@@ -131,5 +173,25 @@ public class ModUserPhoneActivity extends AppCompatActivity {
             checkTv.requestFocus();
         }
     };
+
+    private void updateUserPhone(String newPhone){
+
+        DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference("user/" + Constant.userUID + "/phone");
+        dbRef.setValue(newPhone)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d("===", "updateUserPhone : onSuccess");
+                        Toast.makeText(nowContext, "번호가 성공적으로 변경되었습니다.", Toast.LENGTH_LONG).show();
+                        finish();
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.d("===", "updateUserPhone : onFailure");
+                        Toast.makeText(nowContext, "번호 변경에 실패하였습니다. 다시 시도해 주세요.", Toast.LENGTH_LONG).show();
+                    }
+                });
+    }
 
 }

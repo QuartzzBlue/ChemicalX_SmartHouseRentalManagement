@@ -5,7 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
 
 import android.content.Context;
-import android.os.AsyncTask;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -38,7 +38,6 @@ public class SettingUserInfoActivity extends AppCompatActivity {
         setContentView(R.layout.activity_setting_user_info);
         getPersonalInfo();
         initialization();
-
     }
 
     private void initialization() {
@@ -51,7 +50,7 @@ public class SettingUserInfoActivity extends AppCompatActivity {
         modPhoneBt = findViewById(R.id.bt_setting_user_info_modPhoneNum);
         modNameBt = findViewById(R.id.image_setting_user_info_modUserName);
 
-        //edit icon 클릭 시
+        //edit icon
         modNameBt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -60,6 +59,26 @@ public class SettingUserInfoActivity extends AppCompatActivity {
                 FragmentManager fm = getSupportFragmentManager();
                 final ModUserNameDialog modNameDialog = new ModUserNameDialog(nowContext);
                 modNameDialog.show(fm, "modNameDialog show");
+            }
+        });
+
+        //핸드폰번호 변경
+        modPhoneBt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.w("===", "modPhoneBt : onClick");
+                Intent intent = new Intent(nowContext, ModUserPhoneActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        //비밀번호 변경
+        modPwdBt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.w("===", "modPwdBt : onClick");
+                Intent intent = new Intent(nowContext, CheckUserPwdActivity.class);
+                startActivity(intent);
             }
         });
 
