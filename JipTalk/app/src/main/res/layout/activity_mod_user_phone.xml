@@ -34,13 +34,13 @@
 
         <Button
             android:id="@+id/bt_mod_user_phone_send"
-            android:layout_width="wrap_content"
+            android:layout_width="113dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:background="@drawable/round_button_1"
             android:text="휴대폰 번호 인증"
             android:textColor="@color/white"
-            android:textSize="18sp" />
+            android:textSize="14sp" />
     </LinearLayout>
 
     <TextView
@@ -72,7 +72,7 @@
             android:background="@drawable/round_button_1"
             android:text="확인"
             android:textColor="@color/white"
-            android:textSize="18sp" />
+            android:textSize="14sp" />
     </LinearLayout>
 
 </LinearLayout>

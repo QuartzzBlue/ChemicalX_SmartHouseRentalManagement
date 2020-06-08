@@ -13,6 +13,7 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
         <activity android:name=".ui.setting.ModUserPwdActivity"></activity>
+        <activity android:name=".ui.setting.CheckUserPwdActivity" />
         <activity android:name=".ui.setting.ModUserPhoneActivity" />
         <activity android:name=".ui.message.TenantMessageActivity" />
 
@@ -58,10 +59,10 @@
             android:label="신규 건물 등록" />
         <activity android:name=".ui.home.JusoWebViewActivity" />
         <activity android:name=".ui.home.BuildingDetailActivity" />
-        <activity android:name=".ui.home.AddUnitActivity"
-            android:label="신규 세대 등록"/>
-        <activity android:name=".ui.home.UnitDetailActivity"/>
-
+        <activity
+            android:name=".ui.home.AddUnitActivity"
+            android:label="신규 세대 등록" />
+        <activity android:name=".ui.home.UnitDetailActivity" />
     </application>
 
 </manifest>
