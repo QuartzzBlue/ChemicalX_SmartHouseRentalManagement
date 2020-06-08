@@ -38,6 +38,7 @@
                     android:id="@+id/textView48"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="13dp"
                     android:lineSpacingExtra="8sp"
                     android:singleLine="false"
                     android:text="하이라이트"
@@ -48,8 +49,10 @@
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="2px"
+                    android:layout_marginLeft="20dp"
                     android:layout_marginTop="5dp"
-                    android:layout_marginBottom="10dp"
+                    android:layout_marginRight="20dp"
+                    android:layout_marginBottom="30dp"
                     android:background="@color/colorGhost" />
 
                 <LinearLayout
