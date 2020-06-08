@@ -13,17 +13,22 @@ import androidx.fragment.app.FragmentPagerAdapter;
 import androidx.fragment.app.FragmentStatePagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
+import com.example.jiptalk.Constant;
 import com.example.jiptalk.R;
+import com.example.jiptalk.vo.Unit;
 import com.google.android.material.tabs.TabItem;
 import com.google.android.material.tabs.TabLayout;
 
 public class UnitDetailActivity extends AppCompatActivity {
 
-    private TextView nameTv;
+    private TextView unitNumTv;
     private TabLayout tabLayout;
     private TabItem tab1,tab2,tab3;
     private ViewPager viewPager;
     private MyFragmentPagerAdapter myFragmentPagerAdapter;
+
+    private String unitKey,buildingKey;
+    private String buildingName,unitNum;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -34,7 +39,7 @@ public class UnitDetailActivity extends AppCompatActivity {
 
     }
     private void initialization(){
-        nameTv = findViewById(R.id.tv_unit_detail_name);
+        unitNumTv = findViewById(R.id.tv_unit_detail_unitNum);
         tabLayout = findViewById(R.id.tl_unit_detail);
 
         viewPager = findViewById(R.id.vp_unit_detail);
@@ -60,6 +65,22 @@ public class UnitDetailActivity extends AppCompatActivity {
             }
         });
 
+        getData();
+
+
+    }
+
+    public void setData(){
+        unitNumTv.setText(buildingName+" "+unitNum + "호");
+    }
+
+    public void getData(){
+
+        Unit unit =  Constant.buildings.get(Constant.nowBuildingKey).getUnits().get(Constant.nowUnitKey);
+        buildingName = Constant.buildings.get(Constant.nowBuildingKey).getName();
+        unitNum = unit.getUnitNum();
+
+        setData();
 
     }
 

@@ -10,7 +10,7 @@ import java.util.Map;
 @IgnoreExtraProperties
 public class Unit {
 
-    String buildingID;
+    String unitID;
     String unitNum;
 
     String leaseType;
@@ -81,7 +81,7 @@ public class Unit {
     }
 
     public Unit(String buildingID, String unitNum, String leaseType, String tenantID, String tenantName, String tenantPhone, String payerName, String deposit, String mngFee, String monthlyFee, String payDay, String startDate, String endDate, String isPaid, String isOccupied) {
-        this.buildingID = buildingID;
+        this.unitID = buildingID;
         this.unitNum = unitNum;
         this.leaseType = leaseType;
         this.tenantID = tenantID;
@@ -98,12 +98,12 @@ public class Unit {
         this.isOccupied = isOccupied;
     }
 
-    public String getBuildingID() {
-        return buildingID;
+    public String getUnitID() {
+        return unitID;
     }
 
-    public void setBuildingID(String buildingID) {
-        this.buildingID = buildingID;
+    public void setUnitID(String unitID) {
+        this.unitID = unitID;
     }
 
     public String getUnitNum() {

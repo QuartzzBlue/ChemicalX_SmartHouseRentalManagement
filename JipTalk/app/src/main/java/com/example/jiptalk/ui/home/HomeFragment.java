@@ -53,14 +53,6 @@ public class HomeFragment extends Fragment {
     // (뷰홀더 지정. 뷰홀더 : 화면에 표시될 아이템 뷰를 저장하는 객체)
     MyRecyclerViewAdapter myRecycleViewAdapter;
 
-    private FirebaseAuth mAuth;
-    FirebaseUser user;
-    String uid;
-    FirebaseDatabase firebaseDatabase;
-    DatabaseReference databaseReference;
-
-
-
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         homeViewModel =
@@ -81,20 +73,6 @@ public class HomeFragment extends Fragment {
             }
         });
 
-        // 리사이클러뷰의 아이템 클릭 시 해당 아이템(빌딩) 의 BuildingDetailActivity 로 이동
-        myRecycleViewAdapter.setOnItemClickListener(new MyRecyclerViewAdapter.OnItemClickListener() {
-            @Override
-            public void onItemClick(View v, int position) {
-                // 액티비티 이동
-                Intent intent = new Intent(getActivity(), BuildingDetailActivity.class);
-                intent.putExtra("buildingKey",buildings.get(position).getId());
-                startActivity(intent);
-            }
-        });
-
-
-
-
         return root;
     }
 
@@ -108,17 +86,26 @@ public class HomeFragment extends Fragment {
         recyclerView.setHasFixedSize(true);
         layoutManager = new LinearLayoutManager(getContext().getApplicationContext());
         recyclerView.setLayoutManager(layoutManager);
+
+    }
+
+    public void setAdapter(){
         myRecycleViewAdapter = new MyRecyclerViewAdapter(buildings);
         recyclerView.setAdapter(myRecycleViewAdapter);
 
+        // 리사이클러뷰의 아이템 클릭 시 해당 아이템(빌딩) 의 BuildingDetailActivity 로 이동
+        myRecycleViewAdapter.setOnItemClickListener(new MyRecyclerViewAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(View v, int position) {
+                // 액티비티 이동
+                Intent intent = new Intent(getActivity(), BuildingDetailActivity.class);
+                //intent.putExtra("buildingKey",buildings.get(position).getId());
+                Constant.nowBuildingKey = buildings.get(position).getId();
+                startActivity(intent);
+            }
+        });
     }
 
-    public void load(){
-        Log.d("===",Constant.buildings.toString());
-        Collection<Building> collection = Constant.buildings.values();
-        buildings = (ArrayList<Building>) collection.stream().collect(Collectors.<Building>toList());
-
-    }
 
     public void setToken(){
         final DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
@@ -162,48 +149,48 @@ public class HomeFragment extends Fragment {
 
     }
 
-    public void InitDatabase(){
-
-        firebaseDatabase = FirebaseDatabase.getInstance();
-        databaseReference = firebaseDatabase.getReference("buildings");
-
-        mAuth = FirebaseAuth.getInstance();
-        user = mAuth.getCurrentUser();
-
-
-        uid = user.getUid();
-
-        //데이터베이스이 내용이 변동되면 다음의 콜백 함수 계속 호출
-        //addListenerForSingleValueEvent() : 콜백함수 한번만 호출. 뭐가 자원 낭비 덜할까? 오버헤드아녀?
-        //https://stack07142.tistory.com/282
-        databaseReference.child(uid).addValueEventListener(new ValueEventListener() {
-
-            //ValueEventListener : 해당 지점 하부를 포함한 데이터가 변경 될 때마다 호출
-            //DataSnapshot 이라는 객체를 통해 데이터가 메소드로 전달
-            //getValue() 메소드로 객체 단위로 값 호출
-
-            //ChildEventListner : 목록을 다루는 이벤트 리스너. push()메소드로 저장될 때 발생생
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-                buildings.clear();
-
-                for(DataSnapshot postSnapshot : dataSnapshot.getChildren()){
-                    Building buildingItem = postSnapshot.getValue(Building.class);
-                    buildingItem.setId(postSnapshot.getKey());
-                    buildings.add(buildingItem);
-                }
-                myRecycleViewAdapter.notifyDataSetChanged();
-
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-
-    }
+//    public void InitDatabase(){
+//
+//        firebaseDatabase = FirebaseDatabase.getInstance();
+//        databaseReference = firebaseDatabase.getReference("buildings");
+//
+//        mAuth = FirebaseAuth.getInstance();
+//        user = mAuth.getCurrentUser();
+//
+//
+//        uid = user.getUid();
+//
+//        //데이터베이스이 내용이 변동되면 다음의 콜백 함수 계속 호출
+//        //addListenerForSingleValueEvent() : 콜백함수 한번만 호출. 뭐가 자원 낭비 덜할까? 오버헤드아녀?
+//        //https://stack07142.tistory.com/282
+//        databaseReference.child(uid).addValueEventListener(new ValueEventListener() {
+//
+//            //ValueEventListener : 해당 지점 하부를 포함한 데이터가 변경 될 때마다 호출
+//            //DataSnapshot 이라는 객체를 통해 데이터가 메소드로 전달
+//            //getValue() 메소드로 객체 단위로 값 호출
+//
+//            //ChildEventListner : 목록을 다루는 이벤트 리스너. push()메소드로 저장될 때 발생생
+//            @Override
+//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//
+//                buildings.clear();
+//
+//                for(DataSnapshot postSnapshot : dataSnapshot.getChildren()){
+//                    Building buildingItem = postSnapshot.getValue(Building.class);
+//                    buildingItem.setId(postSnapshot.getKey());
+//                    buildings.add(buildingItem);
+//                }
+//                myRecycleViewAdapter.notifyDataSetChanged();
+//
+//            }
+//
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError databaseError) {
+//
+//            }
+//        });
+//
+//    }
 
 
 
@@ -225,19 +212,31 @@ public class HomeFragment extends Fragment {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 Log.w("===", "InitConstants() : onDataChange");
-                Constant.buildings = (HashMap<String, Building>) dataSnapshot.getValue();
+                //Constant.buildings = (HashMap<String, Building>) dataSnapshot.getValue();
 //
 //                for(DataSnapshot bdSnapshot : dataSnapshot.getChildren()){
 //                    String bId = bdSnapshot.getKey();
 //                    bdSnapshot.child("units").getValue();
 //                }
+
+                buildings.clear();
+
+                for(DataSnapshot postSnapshot : dataSnapshot.getChildren()){
+                    Log.d("===","postSnapshot : "+postSnapshot.toString());
+                    Building buildingItem = postSnapshot.getValue(Building.class);
+                    buildingItem.setId(postSnapshot.getKey());
+                    buildings.add(buildingItem);
+                    Constant.buildings.put(postSnapshot.getKey(),buildingItem);
+                    Log.d("===","buildingItem : "+buildingItem.toString());
+                }
+
                 if (Constant.buildings != null) {
                     Log.w("===", "Set Constant.building : " + Constant.buildings.toString());
                     Log.w("===", "InitConstants() : succeed");
                 }
 
                 setToken();
-                load();
+                setAdapter();
             }
 
             @Override
@@ -252,7 +251,7 @@ public class HomeFragment extends Fragment {
 
 class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAdapter.MyViewHolder>{
 
-    private ArrayList<Building> buildings = null;
+    private ArrayList<Building> buildings;
     private OnItemClickListener onItemClickListener=null;
 
     //아이템 뷰를 저장하는 뷰 홀더 클래스
@@ -316,6 +315,7 @@ class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAdapter.M
     // onBindViewHolder() - position에 해당하는 데이터를 뷰홀더의 아이템뷰에 표시.
     @Override
     public void onBindViewHolder(@NonNull MyRecyclerViewAdapter.MyViewHolder holder, int position) {
+
         String buildingName = buildings.get(position).getName();
         holder.buildingName.setText(buildingName);
     }
