@@ -24,7 +24,7 @@ public class Building {
     int paidCnt;
     int unpaidCnt;
     int monthlyIncome;
-    HashMap<String, Unit> unitList;
+    HashMap<String, Unit> units = new HashMap<>();
 
     public Building() {
     }
@@ -44,7 +44,7 @@ public class Building {
         this.paidCnt = paidCnt;
         this.unpaidCnt = unpaidCnt;
         this.monthlyIncome = monthlyIncome;
-        this.unitList = unitList;
+        this.units = unitList;
     }
 
     public Building(String id, String name, String buildingAddress, int unitCnt, int occupiedCnt, int emptyCnt, int paidCnt, int unpaidCnt, int monthlyIncome, HashMap<String, Unit> unitList) {
@@ -57,19 +57,7 @@ public class Building {
         this.paidCnt = paidCnt;
         this.unpaidCnt = unpaidCnt;
         this.monthlyIncome = monthlyIncome;
-        this.unitList = unitList;
-    }
-
-    protected Building(Parcel in) {
-        id = in.readString();
-        name = in.readString();
-        buildingAddress = in.readString();
-        unitCnt = in.readInt();
-        occupiedCnt = in.readInt();
-        emptyCnt = in.readInt();
-        paidCnt = in.readInt();
-        unpaidCnt = in.readInt();
-        monthlyIncome = in.readInt();
+        this.units = unitList;
     }
 
     public String getId() {
@@ -143,12 +131,12 @@ public class Building {
         this.monthlyIncome = monthlyIncome;
     }
 
-    public HashMap<String, Unit> getUnitList() {
-        return unitList;
+    public HashMap<String, Unit> getUnits() {
+        return units;
     }
 
-    public void setUnitList(HashMap<String, Unit> unitList) {
-        this.unitList = unitList;
+    public void setUnits(HashMap<String, Unit> units) {
+        this.units = units;
     }
 
     @Override
@@ -165,7 +153,7 @@ public class Building {
                 ", unpaidCnt=" + unpaidCnt +
                 ", monthlyIncome=" + monthlyIncome +
 
-                ", unitList=" + unitList +
+                ", units=" + units +
                 '}';
     }
 
@@ -180,7 +168,7 @@ public class Building {
         result.put("paidCnt", paidCnt);
         result.put("unpaidCnt", unpaidCnt);
         result.put("monthlyIncome",monthlyIncome);
-        result.put("unitlist",unitList);
+        result.put("units",units);
 
         return result;
     }

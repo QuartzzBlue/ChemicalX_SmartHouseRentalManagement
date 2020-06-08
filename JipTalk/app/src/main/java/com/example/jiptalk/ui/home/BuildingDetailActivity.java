@@ -34,7 +34,11 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Set;
 
 public class BuildingDetailActivity extends AppCompatActivity {
 
@@ -48,9 +52,6 @@ public class BuildingDetailActivity extends AppCompatActivity {
     RecyclerView.LayoutManager layoutManager;
     UnitViewAdapter unitViewAdapter;
     Context nowContext;
-
-    FirebaseDatabase firebaseDatabase;
-    DatabaseReference databaseReference;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -78,17 +79,6 @@ public class BuildingDetailActivity extends AppCompatActivity {
             }
         });
 
-        // 리사이클러뷰의 아이템 클릭 시 호수의 UnitDetailActivity 로 이동
-        unitViewAdapter.setOnItemClickListener(new UnitViewAdapter.OnItemClickListener() {
-            @Override
-            public void onItemClick(View v, int position) {
-                // 액티비티 이동
-                Intent intent = new Intent(getApplicationContext(), UnitDetailActivity.class);
-                //intent.putExtra("UserID",units.get(position).getTenantID());
-                startActivity(intent);
-            }
-        });
-
     }
 
     /* AppBar 에 정보 버튼 추가 */
@@ -111,8 +101,12 @@ public class BuildingDetailActivity extends AppCompatActivity {
         editBtn=findViewById(R.id.btn_building_detail_edit);
         nowContext = this;
 
-        initDatabase();
-        load();
+        getData();
+
+
+    }
+
+    public void setAdapter(){
 
         recyclerView=findViewById(R.id.rv_building_detail);
         recyclerView.setHasFixedSize(true);
@@ -122,13 +116,23 @@ public class BuildingDetailActivity extends AppCompatActivity {
         unitViewAdapter = new UnitViewAdapter(units);
         recyclerView.setAdapter(unitViewAdapter);
 
+        // 리사이클러뷰의 아이템 클릭 시 호수의 UnitDetailActivity 로 이동
+        unitViewAdapter.setOnItemClickListener(new UnitViewAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(View v, int position) {
+                // 액티비티 이동
+                Intent intent = new Intent(getApplicationContext(), UnitDetailActivity.class);
+                //intent.putExtra("unitKey",units.get(position).getUnitID());
+                Constant.nowUnitKey = units.get(position).getUnitID();
+                startActivity(intent);
+            }
+        });
+
     }
 
-    public void load(){
+    public void setData(){
 
-
-        //buildingNameTv.setText(Constant.buildings.get(buildingKey).getName());
-        //java.lang.ClassCastException: java.util.HashMap cannot be cast to com.example.jiptalk.vo.Building 에러! 왜?
+        buildingNameTv.setText(buildingName+"");
         monthIncomeTv.setText(monthIncome+"");
         unpaidCntTv.setText(unpaidCnt+"");
         paidCntTv.setText(paidCnt+"");
@@ -138,81 +142,74 @@ public class BuildingDetailActivity extends AppCompatActivity {
         unitCntTv.setText(unitCnt+"");
 
     }
-    public void initDatabase(){
+
+    public void getData(){
 
         units = new ArrayList<>();
 
-        buildingKey = getIntent().getStringExtra("buildingKey");
+        Building building = Constant.buildings.get(Constant.nowBuildingKey);
 
-        firebaseDatabase = FirebaseDatabase.getInstance();
-        databaseReference = firebaseDatabase.getReference("buildings").child(Constant.userUID).child(buildingKey);
+        Log.d("===","buildingKey"+buildingKey);
 
-        //db 에서 호수 정보 불러오기
-        databaseReference.child("units").addValueEventListener(new ValueEventListener() {
+        buildingName = building.getName();
+        unitCnt = building.getUnitCnt();
 
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+        HashMap<String,Unit> unitList = building.getUnits();
 
-                units.clear();
+        Set<String> keys = unitList.keySet();
 
-                for(DataSnapshot postSnapshot : dataSnapshot.getChildren()){
-                    Unit unitItem = postSnapshot.getValue(Unit.class);
-                    //unitItem.setId(postSnapshot.getKey());
-                    //Log.d("===","buildingItem id : "+postSnapshot.getKey());
+        for(String key : keys){
+            Unit unitItem = unitList.get(key);
+            unitItem.setUnitID(key);
 
-                    if(unitItem.getIsPaid().equals("1")){
-                        //건물당 월 수납금, 여태 낸거까지 계산해야하는데...
-                        monthIncome += Integer.parseInt(unitItem.getMonthlyFee())+Integer.parseInt(unitItem.getMngFee());
-                        paidCnt++;
+            //입금 확인 function 만들어 getIsPaid 를 0 또는 1 로 바꿔주기
 
-                    }else if (unitItem.getIsPaid().equals("0")){
-                        unpaidCnt++;
-                    }
+            if(unitItem.getIsPaid().equals("1")){
 
-                    //임대중
-                    if(unitItem.getIsOccupied().equals("1")){
-                        occupiedCnt++;
-                    }
-                    emptyCnt = unitCnt-occupiedCnt;
+                monthIncome += Integer.parseInt(unitItem.getMonthlyFee())+Integer.parseInt(unitItem.getMngFee());
+                paidCnt++;
 
-                    //계약 만료 예정 cnt. 2달 이내
-                    Calendar endCalendar = Calendar.getInstance();
-                    Calendar todayCalendar = Calendar.getInstance();
-                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy.MM.dd");
-                    try {
-                        Date endDate = simpleDateFormat.parse(unitItem.getEndDate());
-                        endCalendar.setTime(endDate);
+            }else if (unitItem.getIsPaid().equals("0")){
+                unpaidCnt++;
+            }
 
-                        //계약기간 일수
-                        long expireDay = (endCalendar.getTimeInMillis() - todayCalendar.getTimeInMillis())/1000;
-                        expireDay /= 86400; //하루는 86400초
+            //임대중
+            if(unitItem.getIsOccupied().equals("1")){
+                occupiedCnt++;
+            }
 
-                        if(expireDay<60){
-                            expireCnt++;
-                        }
+            //계약 만료 예정 cnt. 2달 이내
+            Calendar endCalendar = Calendar.getInstance();
+            Calendar todayCalendar = Calendar.getInstance();
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy.MM.dd");
+            try {
+                Date endDate = simpleDateFormat.parse(unitItem.getEndDate());
+                endCalendar.setTime(endDate);
 
-                    } catch (ParseException e) {
-                        e.printStackTrace();
-                    }
+                //계약기간 일수
+                long expireDay = (endCalendar.getTimeInMillis() - todayCalendar.getTimeInMillis())/1000;
+                expireDay /= 86400; //하루는 86400초
 
-                    units.add(unitItem);
+                if(expireDay<60){
+                    expireCnt++;
                 }
-                unitViewAdapter.notifyDataSetChanged();
-                unitCnt =units.size();
 
+            } catch (ParseException e) {
+                e.printStackTrace();
             }
+            units.add(unitItem);
+        }
+        emptyCnt = unitCnt-occupiedCnt;
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
+        setData();
+        setAdapter();
 
-            }
-        });
     }
 }
 
 class UnitViewAdapter extends RecyclerView.Adapter<UnitViewAdapter.MyViewHolder>{
 
-    private ArrayList<Unit> units = null;
+    private ArrayList<Unit> units;
     private OnItemClickListener onItemClickListener=null;
 
     //아이템 뷰를 저장하는 뷰 홀더 클래스

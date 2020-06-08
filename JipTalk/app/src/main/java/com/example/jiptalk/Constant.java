@@ -14,8 +14,10 @@ public class Constant {
     public static String userName;
     public static String token;
     public static String newToken;
+    public static String nowBuildingKey;
+    public static String nowUnitKey;
 
-    public static HashMap<String, Building> buildings;
+    public static HashMap<String, Building> buildings = new HashMap<>();
     public static ArrayList<User> myClientList;
 
 
