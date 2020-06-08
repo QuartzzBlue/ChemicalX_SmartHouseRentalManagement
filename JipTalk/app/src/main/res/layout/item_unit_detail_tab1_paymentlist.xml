@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="50dp">
+
+    <TextView
+        android:id="@+id/tv_unit_detail_tab1_paymentlist_payDay"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:textSize="18sp"
+        tools:text="05.29" />
+
+    <TextView
+        android:id="@+id/tv_unit_detail_tab1_paymentlist_payerName"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:layout_weight="3"
+        android:gravity="center"
+        android:textColor="@color/black"
+        android:textSize="20sp"
+        tools:text="최여진" />
+
+    <TextView
+        android:id="@+id/tv_unit_detail_tab1_paymentlist_money"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:layout_weight="3"
+        android:gravity="center"
+        android:textColor="@color/colorPrimary"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        tools:text="380,000" />
+
+</LinearLayout>

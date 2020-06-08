@@ -22,11 +22,14 @@
         tools:text="해피하우스 104호" />
 
     <com.google.android.material.tabs.TabLayout
-        android:id="@+id/tb_unit_detail"
+        android:id="@+id/tl_unit_detail"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
         app:tabIndicatorColor="@color/colorPrimary"
-        app:tabIndicatorFullWidth="false">
+        app:tabIndicatorFullWidth="false"
+        app:tabSelectedTextColor="@color/colorPrimary"
+        app:tabTextColor="@color/black">
 
         <com.google.android.material.tabs.TabItem
             android:id="@+id/ti_unit_detail_history"
@@ -45,7 +48,15 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="비고" />
+
     </com.google.android.material.tabs.TabLayout>
+
+    <androidx.viewpager.widget.ViewPager
+        android:id="@+id/vp_unit_detail"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+    </androidx.viewpager.widget.ViewPager>
 
 
 </LinearLayout>

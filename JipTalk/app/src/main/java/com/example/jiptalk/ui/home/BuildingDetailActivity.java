@@ -38,7 +38,8 @@ import java.util.Date;
 
 public class BuildingDetailActivity extends AppCompatActivity {
 
-    String buildingKey;
+    int expireCnt,monthIncome,paidCnt,unpaidCnt,occupiedCnt,emptyCnt,unitCnt;
+    String buildingKey,buildingName;
     ArrayList<Unit> units;
 
     TextView buildingNameTv,expireCntTv,monthIncomeTv,unpaidCntTv,paidCntTv,occupiedCntTv,emptyCntTv,unitCntTv;
@@ -124,8 +125,18 @@ public class BuildingDetailActivity extends AppCompatActivity {
     }
 
     public void load(){
+
+
         //buildingNameTv.setText(Constant.buildings.get(buildingKey).getName());
         //java.lang.ClassCastException: java.util.HashMap cannot be cast to com.example.jiptalk.vo.Building 에러! 왜?
+        monthIncomeTv.setText(monthIncome+"");
+        unpaidCntTv.setText(unpaidCnt+"");
+        paidCntTv.setText(paidCnt+"");
+        occupiedCntTv.setText(occupiedCnt+"");
+        expireCntTv.setText(expireCnt+"");
+        emptyCntTv.setText(emptyCnt+"");
+        unitCntTv.setText(unitCnt+"");
+
     }
     public void initDatabase(){
 
@@ -148,9 +159,46 @@ public class BuildingDetailActivity extends AppCompatActivity {
                     Unit unitItem = postSnapshot.getValue(Unit.class);
                     //unitItem.setId(postSnapshot.getKey());
                     //Log.d("===","buildingItem id : "+postSnapshot.getKey());
+
+                    if(unitItem.getIsPaid().equals("1")){
+                        //건물당 월 수납금, 여태 낸거까지 계산해야하는데...
+                        monthIncome += Integer.parseInt(unitItem.getMonthlyFee())+Integer.parseInt(unitItem.getMngFee());
+                        paidCnt++;
+
+                    }else if (unitItem.getIsPaid().equals("0")){
+                        unpaidCnt++;
+                    }
+
+                    //임대중
+                    if(unitItem.getIsOccupied().equals("1")){
+                        occupiedCnt++;
+                    }
+                    emptyCnt = unitCnt-occupiedCnt;
+
+                    //계약 만료 예정 cnt. 2달 이내
+                    Calendar endCalendar = Calendar.getInstance();
+                    Calendar todayCalendar = Calendar.getInstance();
+                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy.MM.dd");
+                    try {
+                        Date endDate = simpleDateFormat.parse(unitItem.getEndDate());
+                        endCalendar.setTime(endDate);
+
+                        //계약기간 일수
+                        long expireDay = (endCalendar.getTimeInMillis() - todayCalendar.getTimeInMillis())/1000;
+                        expireDay /= 86400; //하루는 86400초
+
+                        if(expireDay<60){
+                            expireCnt++;
+                        }
+
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+
                     units.add(unitItem);
                 }
                 unitViewAdapter.notifyDataSetChanged();
+                unitCnt =units.size();
 
             }
 
@@ -238,7 +286,7 @@ class UnitViewAdapter extends RecyclerView.Adapter<UnitViewAdapter.MyViewHolder>
         holder.unitNumTv.setText(unitNum);
         holder.userNameTv.setText(units.get(position).getTenantName());
         int totalFee = Integer.parseInt(units.get(position).getMonthlyFee())+Integer.parseInt(units.get(position).getMngFee());
-        holder.monthlyFeeTv.setText("월"+totalFee+"원");
+        holder.monthlyFeeTv.setText("월 "+totalFee+" 원");
         holder.startDateTv.setText(units.get(position).getStartDate());
         holder.endDateTv.setText(units.get(position).getEndDate());
         if(units.get(position).getIsPaid()=="0"){

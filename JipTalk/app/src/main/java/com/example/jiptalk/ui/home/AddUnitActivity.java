@@ -77,6 +77,17 @@ public class AddUnitActivity extends AppCompatActivity {
             }
         });
 
+        manageFeeEt.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if(!hasFocus){
+                    if(monthlyFeeEt.getText().toString().length() !=0 && manageFeeEt.getText().toString().length()!=0){
+                        totalFeeEt.setText(Integer.parseInt(monthlyFeeEt.getText().toString())+Integer.parseInt(manageFeeEt.getText().toString())+"");
+                    }
+                }
+            }
+        });
+
     }
 
     /* AppBar 에 세이브 버튼 추가 */
@@ -111,7 +122,8 @@ public class AddUnitActivity extends AppCompatActivity {
                 contractRb = findViewById(contractRg.getCheckedRadioButtonId());
                 String contract = contractRb.getText().toString();
 
-                Unit newUnit = new Unit(unitNum, leaseType, tenantName, tenantPhone, payerName, deposit, manageFee, monthlyFee, payDay, startDate, endDate);
+//                Unit newUnit = new Unit(unitNum, leaseType, tenantName, tenantPhone, payerName, deposit, manageFee, monthlyFee, payDay, startDate, endDate);
+                Unit newUnit = new Unit(unitNum, leaseType, tenantName, tenantPhone, payerName, deposit, manageFee, monthlyFee, payDay, startDate, endDate,"-1","1");
 
                 /* 유효성 검사 */
                 if (!isValid(newUnit)) return false;
@@ -170,13 +182,17 @@ public class AddUnitActivity extends AppCompatActivity {
 
     public void initDatePickerListener() {
 
-        startDateCalendar = Calendar.getInstance(TimeZone.getDefault());
+        startDateCalendar = Calendar.getInstance();
+        endDateCalendar = Calendar.getInstance();
 
         callbackMethodDatePicker = new DatePickerDialog.OnDateSetListener() {
             @Override
             public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
                 if (dateFlag.equals("start")) {
                     startDateEt.setText(year + "." + (month + 1) + "." + dayOfMonth);
+                    startDateCalendar.set(year,month,dayOfMonth);
+                    endDateCalendar.setTime(startDateCalendar.getTime());
+
                 } else if (dateFlag.equals("end")) {
                     endDateEt.setText(year + "." + (month + 1) + "." + dayOfMonth);
                 }
@@ -188,7 +204,6 @@ public class AddUnitActivity extends AppCompatActivity {
             public void onClick(View v) {
                 dateFlag = "start";
                 DatePickerDialog dialog = new DatePickerDialog(nowContext, callbackMethodDatePicker, startDateCalendar.get(Calendar.YEAR), startDateCalendar.get(Calendar.MONTH), startDateCalendar.get(Calendar.DAY_OF_MONTH));
-                endDateCalendar = startDateCalendar;
                 dialog.show();
             }
         });
@@ -197,8 +212,7 @@ public class AddUnitActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 dateFlag = "end";
-                Calendar calendar = Calendar.getInstance(TimeZone.getDefault());
-                DatePickerDialog dialog = new DatePickerDialog(nowContext, callbackMethodDatePicker, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), Calendar.DAY_OF_MONTH);
+                DatePickerDialog dialog = new DatePickerDialog(nowContext, callbackMethodDatePicker, endDateCalendar.get(Calendar.YEAR), endDateCalendar.get(Calendar.MONTH), endDateCalendar.get(Calendar.DAY_OF_MONTH));
                 dialog.show();
             }
         });
@@ -217,6 +231,8 @@ public class AddUnitActivity extends AppCompatActivity {
 
                 if (checkedId == R.id.rb_add_unit_contract_3m) {
                     endDateCalendar.add(Calendar.MONTH, 3);
+                    Log.d("===","startDate : " +startDateCalendar.getTime());
+
                 } else if (contractRg.getCheckedRadioButtonId() == R.id.rb_add_unit_contract_6m) {
                     endDateCalendar.add(Calendar.MONTH, 6);
                 } else if (contractRg.getCheckedRadioButtonId() == R.id.rb_add_unit_contract_1y) {
@@ -230,7 +246,7 @@ public class AddUnitActivity extends AppCompatActivity {
                 endDateEt.setText(simpleDateFormat.format(endDateCalendar.getTime()));
 
                 //왜 안먹지..?
-                endDateCalendar = startDateCalendar;
+                endDateCalendar.setTime(startDateCalendar.getTime());
 
             }
         });
@@ -267,7 +283,7 @@ public class AddUnitActivity extends AppCompatActivity {
                 Toast.makeText(nowContext, "성공적으로 등록되었습니다.", Toast.LENGTH_SHORT).show();
                 util.hideProgressDialog();
                 // 액티비티 이동
-                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                Intent intent = new Intent(getApplicationContext(),BuildingDetailActivity.class);
                 startActivity(intent);
                 finish();
             }

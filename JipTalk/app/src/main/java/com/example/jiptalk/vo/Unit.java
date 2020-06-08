@@ -63,6 +63,23 @@ public class Unit {
         this.isOccupied = isOccupied;
     }
 
+    public Unit(String unitNum, String leaseType, String tenantID, String tenantName, String tenantPhone, String payerName, String deposit, String mngFee, String monthlyFee, String payDay, String startDate, String endDate, String isPaid, String isOccupied) {
+        this.unitNum = unitNum;
+        this.leaseType = leaseType;
+        this.tenantID = tenantID;
+        this.tenantName = tenantName;
+        this.tenantPhone = tenantPhone;
+        this.payerName = payerName;
+        this.deposit = deposit;
+        this.mngFee = mngFee;
+        this.monthlyFee = monthlyFee;
+        this.payDay = payDay;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.isPaid = isPaid;
+        this.isOccupied = isOccupied;
+    }
+
     public Unit(String buildingID, String unitNum, String leaseType, String tenantID, String tenantName, String tenantPhone, String payerName, String deposit, String mngFee, String monthlyFee, String payDay, String startDate, String endDate, String isPaid, String isOccupied) {
         this.buildingID = buildingID;
         this.unitNum = unitNum;
