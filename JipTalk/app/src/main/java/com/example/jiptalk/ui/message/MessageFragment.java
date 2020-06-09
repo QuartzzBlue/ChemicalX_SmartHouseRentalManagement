@@ -48,6 +48,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Locale;
+import java.util.Map;
 
 public class MessageFragment extends Fragment {
 
@@ -376,7 +377,7 @@ public class MessageFragment extends Fragment {
 
         Iterator<String> keys = Constant.buildings.keySet().iterator();
         while (keys.hasNext()) {
-            HashMap<String, Unit> unitHashMap = Constant.buildings.get(keys.next()).getUnitList();
+            Map<String, Unit> unitHashMap = Constant.buildings.get(keys.next()).getUnits();
             Iterator<String> unitKeys = unitHashMap.keySet().iterator();
             while (unitKeys.hasNext()) {
                 clientList2.add(unitHashMap.get(unitKeys.next()).getTenantName());

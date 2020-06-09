@@ -24,15 +24,16 @@ public class Building {
     int paidCnt;
     int unpaidCnt;
     int monthlyIncome;
-    HashMap<String, Unit> units = new HashMap<>();
+    Map<String, Unit> units = new HashMap<>();
 
     public Building() {
     }
 
-    public Building(String name, String buildingAddress, int unitCnt) {
+    public Building(String name, String buildingAddress, int unitCnt,Map<String,Unit> units) {
         this.name = name;
         this.buildingAddress = buildingAddress;
         this.unitCnt = unitCnt;
+        this.units = units;
     }
 
     public Building(String name, String buildingAddress, int unitCnt, int occupiedCnt, int emptyCnt, int paidCnt, int unpaidCnt, int monthlyIncome, HashMap<String, Unit> unitList) {
@@ -131,7 +132,7 @@ public class Building {
         this.monthlyIncome = monthlyIncome;
     }
 
-    public HashMap<String, Unit> getUnits() {
+    public Map<String, Unit> getUnits() {
         return units;
     }
 

@@ -104,7 +104,7 @@ public class AddBuildingActivity extends AppCompatActivity {
                 String buildingAddress = et_buildingAddress.getText().toString();
                 String buildingName = et_buildingName.getText().toString();
                 int totalUnitCnt = Integer.parseInt(et_totalUnitCnt.getText().toString());
-                Building newBuilding = new Building(buildingName,buildingAddress,totalUnitCnt);
+                Building newBuilding = new Building(buildingName,buildingAddress,totalUnitCnt,null);
 
                 //buildingID : userId_buildingname_등록날짜
                 newBuilding.setId(uid+"_"+buildingName+"_"+year+month+day);
@@ -133,6 +133,7 @@ public class AddBuildingActivity extends AppCompatActivity {
         String key = buildingRef.child("buildings").push().getKey();
         Map<String,Object> childUpdates = new HashMap<>();
         childUpdates.put("/"+uid+"/"+key, newBuilding.toMap());
+        //Log.d("");
         buildingRef.updateChildren(childUpdates).addOnSuccessListener(new OnSuccessListener<Void>() {
                                         @Override
                                         public void onSuccess(Void aVoid) {
