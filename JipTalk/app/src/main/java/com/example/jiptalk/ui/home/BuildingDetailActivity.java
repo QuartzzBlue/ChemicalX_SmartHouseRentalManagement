@@ -38,6 +38,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
 
 public class BuildingDetailActivity extends AppCompatActivity {
@@ -154,7 +155,7 @@ public class BuildingDetailActivity extends AppCompatActivity {
         buildingName = building.getName();
         unitCnt = building.getUnitCnt();
 
-        HashMap<String,Unit> unitList = building.getUnits();
+        Map<String,Unit> unitList = building.getUnits();
 
         Set<String> keys = unitList.keySet();
 
