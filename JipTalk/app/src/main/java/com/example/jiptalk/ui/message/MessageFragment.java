@@ -378,6 +378,7 @@ public class MessageFragment extends Fragment {
         Iterator<String> keys = Constant.buildings.keySet().iterator();
         while (keys.hasNext()) {
             Map<String, Unit> unitHashMap = Constant.buildings.get(keys.next()).getUnits();
+
             Iterator<String> unitKeys = unitHashMap.keySet().iterator();
             while (unitKeys.hasNext()) {
                 clientList2.add(unitHashMap.get(unitKeys.next()).getTenantName());
