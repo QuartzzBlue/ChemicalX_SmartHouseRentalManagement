@@ -293,7 +293,7 @@ class UnitViewAdapter extends RecyclerView.Adapter<UnitViewAdapter.MyViewHolder>
         holder.monthlyFeeTv.setText("월 "+totalFee+" 원");
         holder.startDateTv.setText(units.get(position).getStartDate());
         holder.endDateTv.setText(units.get(position).getEndDate());
-        if(units.get(position).getIsPaid()=="0"){
+        if(units.get(position).getIsPaid().equals("-1")){
             holder.isPaidTv.setText("미납");
             holder.isPaidTv.setTextColor(Color.RED);
         }else{

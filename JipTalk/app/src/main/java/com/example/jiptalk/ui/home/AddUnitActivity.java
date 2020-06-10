@@ -1,11 +1,17 @@
 package com.example.jiptalk.ui.home;
 
+import android.Manifest;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.hardware.camera2.CameraCaptureSession;
+import android.hardware.camera2.CameraDevice;
+import android.hardware.camera2.CaptureRequest;
 import android.os.Bundle;
 import android.util.Log;
+import android.util.Size;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -23,6 +29,8 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import com.example.jiptalk.Constant;
 import com.example.jiptalk.MainActivity;
@@ -47,7 +55,7 @@ public class AddUnitActivity extends AppCompatActivity {
 
     EditText unitNumEt, tenantNameEt, payerNameEt, tenantPhoneEt, startDateEt, endDateEt, depositEt, monthlyFeeEt, manageFeeEt, totalFeeEt, payDayEt;
     ImageView startDateBtn, endDateBtn;
-    Button makeSameBtn;
+    Button makeSameBtn,cameraBtn;
     RadioGroup leaseTypeRg, contractRg;
     RadioButton leaseTypeRb, contractRb, leaseTypeRbMonthly, leaseTypeRbFullDeposit, leaseTypeRbFullFee, contractRb3m, contractRb6m, contractRb1y, contractRb2y;
     TextView errMsgtv;
@@ -85,6 +93,14 @@ public class AddUnitActivity extends AppCompatActivity {
                         totalFeeEt.setText(Integer.parseInt(monthlyFeeEt.getText().toString())+Integer.parseInt(manageFeeEt.getText().toString())+"");
                     }
                 }
+            }
+        });
+
+        cameraBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getApplicationContext(), CameraActivity.class);
+                startActivity(intent);
             }
         });
 
@@ -137,7 +153,6 @@ public class AddUnitActivity extends AppCompatActivity {
         }
     }
 
-
     public void initialization() {
 
         unitNumEt = findViewById(R.id.et_add_unit_unitNum);
@@ -155,6 +170,8 @@ public class AddUnitActivity extends AppCompatActivity {
         startDateBtn = findViewById(R.id.btn_add_unit_startDate);
         endDateBtn = findViewById(R.id.btn_add_unit_endDate);
         makeSameBtn = findViewById(R.id.btn_add_unit_makeSame);
+        cameraBtn = findViewById(R.id.btn_moveToCamera);
+
 
         leaseTypeRg = findViewById(R.id.rg_add_unit_leaseType);
         contractRg = findViewById(R.id.rg_add_unit_contract);
@@ -173,6 +190,7 @@ public class AddUnitActivity extends AppCompatActivity {
 
         mDatabase = FirebaseDatabase.getInstance();
         unitRef = mDatabase.getReference("buildings").child(Constant.userUID).child(Constant.nowBuildingKey);
+
 
         initDatePickerListener();
 
