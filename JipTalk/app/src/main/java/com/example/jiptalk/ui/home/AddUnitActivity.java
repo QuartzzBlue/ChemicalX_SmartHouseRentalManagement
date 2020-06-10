@@ -167,13 +167,12 @@ public class AddUnitActivity extends AppCompatActivity {
         contractRb2y = findViewById(R.id.rb_add_unit_contract_2y);
 
         errMsgtv = findViewById(R.id.tv_add_unit_errMsg);
-
         nowContext = this;
 
         buildingKey = getIntent().getStringExtra("buildingKey");
 
         mDatabase = FirebaseDatabase.getInstance();
-        unitRef = mDatabase.getReference("buildings").child(Constant.userUID).child(buildingKey).child("units");
+        unitRef = mDatabase.getReference("buildings").child(Constant.userUID).child(Constant.nowBuildingKey);
 
         initDatePickerListener();
 
@@ -273,9 +272,9 @@ public class AddUnitActivity extends AppCompatActivity {
         util.showProgressDialog(nowContext);
 
         Log.d("===",Constant.userUID);
-        String key = unitRef.push().getKey();
+        String key = unitRef.child("units").push().getKey();
         Map<String, Object> childUpdates = new HashMap<>();
-        childUpdates.put(key, newUnit.toMap());
+        childUpdates.put("/units/" + key, newUnit.toMap());
         unitRef.updateChildren(childUpdates).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {

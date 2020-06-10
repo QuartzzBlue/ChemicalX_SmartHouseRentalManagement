@@ -47,9 +47,9 @@ public class BuildingDetailActivity extends AppCompatActivity {
     String buildingKey,buildingName;
     ArrayList<Unit> units;
 
-    TextView buildingNameTv,expireCntTv,monthIncomeTv,unpaidCntTv,paidCntTv,occupiedCntTv,emptyCntTv,unitCntTv;
+    TextView buildingNameTv,expireCntTv,monthIncomeTv,unpaidCntTv,paidCntTv,occupiedCntTv,emptyCntTv,unitCntTv, emptyView;
     Button addUnitBtn,editBtn;
-    RecyclerView recyclerView;
+    private RecyclerView recyclerView;
     RecyclerView.LayoutManager layoutManager;
     UnitViewAdapter unitViewAdapter;
     Context nowContext;
@@ -61,13 +61,17 @@ public class BuildingDetailActivity extends AppCompatActivity {
 
         initialization();
 
+        if(units.size() == 0){
+            Log.w("===", "BuildingDetailActivity : no Units");
+            recyclerView.setVisibility(View.GONE);
+            emptyView.setVisibility(View.VISIBLE);
+        }
+
         addUnitBtn.setOnClickListener(new View.OnClickListener(){
 
             @Override
             public void onClick(View v) {
-
                 Intent intent = new Intent(nowContext, AddUnitActivity.class);
-                intent.putExtra("buildingKey",buildingKey);
                 startActivity(intent);
 
             }
@@ -100,6 +104,8 @@ public class BuildingDetailActivity extends AppCompatActivity {
         expireCntTv = findViewById(R.id.tv_building_detail_expireCnt);
         addUnitBtn = findViewById(R.id.btn_building_detail_addUnit);
         editBtn=findViewById(R.id.btn_building_detail_edit);
+        recyclerView = findViewById(R.id.rv_building_detail);
+        emptyView = findViewById(R.id.tv_building_detail_emptyView);
         nowContext = this;
 
         getData();
@@ -150,8 +156,6 @@ public class BuildingDetailActivity extends AppCompatActivity {
 
         Building building = Constant.buildings.get(Constant.nowBuildingKey);
 
-        Log.d("===","buildingKey"+buildingKey);
-
         buildingName = building.getName();
         unitCnt = building.getUnitCnt();
 
@@ -201,6 +205,7 @@ public class BuildingDetailActivity extends AppCompatActivity {
             units.add(unitItem);
         }
         emptyCnt = unitCnt-occupiedCnt;
+
 
         setData();
         setAdapter();
@@ -281,6 +286,7 @@ class UnitViewAdapter extends RecyclerView.Adapter<UnitViewAdapter.MyViewHolder>
     @Override
     public void onBindViewHolder(@NonNull UnitViewAdapter.MyViewHolder holder, int position) {
         String unitNum = units.get(position).getUnitNum();
+
         holder.unitNumTv.setText(unitNum);
         holder.userNameTv.setText(units.get(position).getTenantName());
         int totalFee = Integer.parseInt(units.get(position).getMonthlyFee())+Integer.parseInt(units.get(position).getMngFee());
@@ -297,7 +303,7 @@ class UnitViewAdapter extends RecyclerView.Adapter<UnitViewAdapter.MyViewHolder>
         holder.startDateTv.setText(units.get(position).getStartDate());
         holder.endDateTv.setText(units.get(position).getEndDate());
 
-        Date startDate,endDate;
+        Date startDate, endDate;
         //날짜 계산
         Calendar startCalendar = Calendar.getInstance();
         Calendar endCalendar = Calendar.getInstance();

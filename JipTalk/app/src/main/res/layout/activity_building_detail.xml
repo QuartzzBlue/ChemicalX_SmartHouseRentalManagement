@@ -2,10 +2,10 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     android:paddingLeft="25dp"
     android:paddingEnd="25dp"
     android:paddingBottom="15dp"
-    android:orientation="vertical"
     android:scrollbars="vertical">
 
     <TextView
@@ -216,13 +216,20 @@
         android:layout_marginTop="15dp"
         android:layout_weight="9" />
 
+    <TextView
+        android:id="@+id/tv_building_detail_emptyView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="내용이 없습니다.\n신규 호수를 추가해 주세요."
+        android:visibility="gone" />
+
     <Button
         android:id="@+id/btn_building_detail_addUnit"
         android:layout_width="wrap_content"
-        android:layout_height="0dp"
+        android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_marginTop="20dp"
-        android:layout_weight="1"
         android:background="@drawable/round_button_1"
         android:paddingLeft="20dp"
         android:paddingRight="20dp"
