@@ -12,6 +12,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
+
         <activity android:name=".ui.setting.ModUserPwdActivity"></activity>
         <activity android:name=".ui.setting.CheckUserPwdActivity" />
         <activity android:name=".ui.setting.ModUserPhoneActivity" />
@@ -63,6 +64,15 @@
             android:name=".ui.home.AddUnitActivity"
             android:label="신규 세대 등록" />
         <activity android:name=".ui.home.UnitDetailActivity" />
+
+        <receiver android:name=".SmsReceiver" android:exported="true">
+            <intent-filter>
+                <action android:name="com.google.android.gms.auth.api.phone.SMS_RETRIEVED"/>
+            </intent-filter>
+        </receiver>
+
     </application>
+
+
 
 </manifest>
