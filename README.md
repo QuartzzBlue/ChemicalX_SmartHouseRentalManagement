@@ -1,9 +1,10 @@
 # ChemicalX_SmartHouseRentalManagement
-@JHM9191 @yeonjini @QuartzzBlue
+[@JHM9191](https://github.com/JHM9191) [@yeonjini](https://github.com/yeojini) [@QuartzzBlue](https://github.com/QuartzzBlue)
 
-Subtitle: Android Native App Project about Smart House Rental Management
+## Android Native App Project about Smart House Rental Management
 
-Tech Used: 
-- FirebaseAuth
-- FCM
-- etc.
+* Tech Used: 
+  - FirebaseAuth
+  - Firebase Realtime DB
+  - FCM
+  - etc.
