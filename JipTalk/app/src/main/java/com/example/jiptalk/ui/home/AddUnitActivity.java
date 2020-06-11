@@ -10,6 +10,9 @@ import android.hardware.camera2.CameraCaptureSession;
 import android.hardware.camera2.CameraDevice;
 import android.hardware.camera2.CaptureRequest;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.Layout;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.util.Size;
 import android.view.Menu;
@@ -20,6 +23,7 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
@@ -44,6 +48,8 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -53,6 +59,7 @@ import java.util.TimeZone;
 
 public class AddUnitActivity extends AppCompatActivity {
 
+    LinearLayout monthlyFeeLo;
     EditText unitNumEt, tenantNameEt, payerNameEt, tenantPhoneEt, startDateEt, endDateEt, depositEt, monthlyFeeEt, manageFeeEt, totalFeeEt, payDayEt;
     ImageView startDateBtn, endDateBtn;
     Button makeSameBtn,cameraBtn;
@@ -69,6 +76,7 @@ public class AddUnitActivity extends AppCompatActivity {
     DatabaseReference unitRef;
     Valid valid;
     Context nowContext;
+    NumberFormat myFormatter;
 
 
     @Override
@@ -85,13 +93,43 @@ public class AddUnitActivity extends AppCompatActivity {
             }
         });
 
+        //보증금 EditText
+        depositEt.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if(!hasFocus){
+                    if(depositEt.getText().toString().length() == 0) depositEt.setText("0");
+                }
+                else{
+                    if(depositEt.getText().toString().equals("0")) depositEt.setText("");
+                }
+            }
+        });
+
+        //관리비 EditText
+        manageFeeEt.addTextChangedListener(textWatcher);
         manageFeeEt.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
                 if(!hasFocus){
-                    if(monthlyFeeEt.getText().toString().length() !=0 && manageFeeEt.getText().toString().length()!=0){
-                        totalFeeEt.setText(Integer.parseInt(monthlyFeeEt.getText().toString())+Integer.parseInt(manageFeeEt.getText().toString())+"");
-                    }
+                    if(manageFeeEt.getText().toString().length() == 0) manageFeeEt.setText("0");
+                }
+                else{
+                    if(manageFeeEt.getText().toString().equals("0")) manageFeeEt.setText("");
+                }
+            }
+        });
+
+        //월세 EditText
+        monthlyFeeEt.addTextChangedListener(textWatcher);
+        monthlyFeeEt.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if(!hasFocus){
+                    if(monthlyFeeEt.getText().toString().length() == 0) monthlyFeeEt.setText("0");
+                }
+                else{
+                    if(monthlyFeeEt.getText().toString().equals("0")) monthlyFeeEt.setText("");
                 }
             }
         });
@@ -101,6 +139,20 @@ public class AddUnitActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent = new Intent(getApplicationContext(), CameraActivity.class);
                 startActivity(intent);
+            }
+        });
+
+        leaseTypeRg.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                if(checkedId == R.id.rb_add_unit_leaseType_monthly) {   //월세
+                    monthlyFeeLo.setVisibility(View.VISIBLE);
+                }else if(checkedId == R.id.rb_add_unit_leaseType_fullDeposit) {   //전세
+                    monthlyFeeLo.setVisibility(View.GONE);
+                }else {  //선납
+                    monthlyFeeLo.setVisibility(View.VISIBLE);
+                }
+                initializeLeaseOptions();
             }
         });
 
@@ -155,6 +207,7 @@ public class AddUnitActivity extends AppCompatActivity {
 
     public void initialization() {
 
+        monthlyFeeLo = findViewById(R.id.layout_add_unit_monthlyFee);
         unitNumEt = findViewById(R.id.et_add_unit_unitNum);
         tenantNameEt = findViewById(R.id.et_add_unit_tenantName);
         payerNameEt = findViewById(R.id.et_add_unit_payerName);
@@ -183,6 +236,8 @@ public class AddUnitActivity extends AppCompatActivity {
         contractRb1y = findViewById(R.id.rb_add_unit_contract_1y);
         contractRb2y = findViewById(R.id.rb_add_unit_contract_2y);
 
+        myFormatter = NumberFormat.getInstance(Locale.getDefault());
+
         errMsgtv = findViewById(R.id.tv_add_unit_errMsg);
         nowContext = this;
 
@@ -196,6 +251,31 @@ public class AddUnitActivity extends AppCompatActivity {
 
 
     }
+    private final TextWatcher textWatcher = new TextWatcher() {
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+        }
+
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+            int monthlyFee, manageFee;
+            if(monthlyFeeEt.getText().toString().trim().equals("")){
+                monthlyFee = 0;
+            }else{
+                monthlyFee = Integer.parseInt(monthlyFeeEt.getText().toString());
+            }
+            if(manageFeeEt.getText().toString().trim().equals("")){
+                manageFee = 0;
+            }else{
+                manageFee = Integer.parseInt(manageFeeEt.getText().toString());
+            }
+            int totalFee = monthlyFee + manageFee;
+            totalFeeEt.setText(myFormatter.format(totalFee));
+        }
+
+        @Override
+        public void afterTextChanged(Editable s) {}
+    };
 
     public void initDatePickerListener() {
 
@@ -239,7 +319,7 @@ public class AddUnitActivity extends AppCompatActivity {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 if (startDateEt.getText().toString().equals("")) {
-                    errMsgtv.setText("시작 날짜를 선택해 주세요!");
+                    errMsgtv.setText("시작 날짜를 선택해 주세요.");
                     return;
                 } else {
                     //왜 안먹지..?
@@ -257,6 +337,7 @@ public class AddUnitActivity extends AppCompatActivity {
                 } else if (contractRg.getCheckedRadioButtonId() == R.id.rb_add_unit_contract_2y) {
                     endDateCalendar.add(Calendar.YEAR, 2);
                 }
+                endDateCalendar.add(Calendar.DATE, -1);
 
                 String myFormat = "yyyy.MM.dd";
                 SimpleDateFormat simpleDateFormat = new SimpleDateFormat(myFormat, Locale.KOREA);
@@ -268,6 +349,13 @@ public class AddUnitActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    private void initializeLeaseOptions(){
+        depositEt.setText("0");
+        monthlyFeeEt.setText("0");
+        manageFeeEt.setText("0");
+        totalFeeEt.setText("0");
     }
 
     private boolean isValid(Unit newUnit) {
