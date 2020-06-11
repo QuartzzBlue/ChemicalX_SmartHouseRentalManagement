@@ -359,7 +359,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@color/colorAccent"
-            android:textSize="16sp" />
+            android:textSize="12sp" />
 
         <TextView
             android:id="@+id/textView31"
@@ -381,7 +381,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:inputType="numberSigned" />
+                android:inputType="numberSigned"
+                android:text="0" />
 
             <TextView
                 android:id="@+id/textView37"
@@ -391,38 +392,47 @@
                 android:gravity="center"
                 android:text="원"
                 android:textSize="16sp" />
+
         </LinearLayout>
 
-        <TextView
-            android:id="@+id/textView33"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="50dp"
-            android:layout_marginBottom="10dp"
-            android:text="월세"
-            android:textColor="@color/black"
-            android:textSize="18sp" />
-
         <LinearLayout
+            android:id="@+id/layout_add_unit_monthlyFee"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="horizontal">
-
-            <EditText
-                android:id="@+id/et_add_unit_monthlyFee"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:inputType="numberSigned" />
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
             <TextView
-                android:id="@+id/textView50"
+                android:id="@+id/textView33"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="50dp"
+                android:layout_marginBottom="10dp"
+                android:text="월세"
+                android:textColor="@color/black"
+                android:textSize="18sp" />
+
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_weight="9"
-                android:gravity="center"
-                android:text="원"
-                android:textSize="16sp" />
+                android:orientation="horizontal">
+
+                <EditText
+                    android:id="@+id/et_add_unit_monthlyFee"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:inputType="numberSigned"
+                    android:text="0" />
+
+                <TextView
+                    android:id="@+id/textView50"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="9"
+                    android:gravity="center"
+                    android:text="원"
+                    android:textSize="16sp" />
+            </LinearLayout>
         </LinearLayout>
 
         <TextView
@@ -445,7 +455,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:inputType="numberSigned" />
+                android:inputType="numberSigned"
+                android:text="0" />
 
             <TextView
                 android:id="@+id/textView49"
@@ -465,7 +476,8 @@
             android:layout_marginBottom="10dp"
             android:text="월 입금액"
             android:textColor="@color/black"
-            android:textSize="18sp" />
+            android:textSize="18sp"
+            android:textStyle="bold" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -477,7 +489,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:inputType="numberSigned" />
+                android:enabled="false"
+                android:inputType="numberSigned"
+                android:text="0" />
 
             <TextView
                 android:id="@+id/textView43"
