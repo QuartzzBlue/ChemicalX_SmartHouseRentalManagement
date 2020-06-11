@@ -18,12 +18,9 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.jiptalk.Constant;
-import com.example.jiptalk.MainActivity;
 import com.example.jiptalk.R;
 import com.example.jiptalk.vo.Building;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -33,11 +30,9 @@ import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.Set;
 
 public class HomeFragment extends Fragment {
 
@@ -60,14 +55,15 @@ public class HomeFragment extends Fragment {
         root = inflater.inflate(R.layout.fragment_home, container, false);
 
         initialization();
+        setToken();
+        getData();
 
-        InitConstants();
-
+        // Add New Building Btn
         buildingAddBtn.setOnClickListener(new View.OnClickListener(){
 
             @Override
             public void onClick(View v) {
-                // 액티비티 이동
+                // Move to AddBuildingActivity.class
                 Intent intent = new Intent(getActivity(), AddBuildingActivity.class);
                 startActivity(intent);
             }
@@ -149,103 +145,17 @@ public class HomeFragment extends Fragment {
 
     }
 
-//    public void InitDatabase(){
-//
-//        firebaseDatabase = FirebaseDatabase.getInstance();
-//        databaseReference = firebaseDatabase.getReference("buildings");
-//
-//        mAuth = FirebaseAuth.getInstance();
-//        user = mAuth.getCurrentUser();
-//
-//
-//        uid = user.getUid();
-//
-//        //데이터베이스이 내용이 변동되면 다음의 콜백 함수 계속 호출
-//        //addListenerForSingleValueEvent() : 콜백함수 한번만 호출. 뭐가 자원 낭비 덜할까? 오버헤드아녀?
-//        //https://stack07142.tistory.com/282
-//        databaseReference.child(uid).addValueEventListener(new ValueEventListener() {
-//
-//            //ValueEventListener : 해당 지점 하부를 포함한 데이터가 변경 될 때마다 호출
-//            //DataSnapshot 이라는 객체를 통해 데이터가 메소드로 전달
-//            //getValue() 메소드로 객체 단위로 값 호출
-//
-//            //ChildEventListner : 목록을 다루는 이벤트 리스너. push()메소드로 저장될 때 발생생
-//            @Override
-//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//
-//                buildings.clear();
-//
-//                for(DataSnapshot postSnapshot : dataSnapshot.getChildren()){
-//                    Building buildingItem = postSnapshot.getValue(Building.class);
-//                    buildingItem.setId(postSnapshot.getKey());
-//                    buildings.add(buildingItem);
-//                }
-//                myRecycleViewAdapter.notifyDataSetChanged();
-//
-//            }
-//
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError databaseError) {
-//
-//            }
-//        });
-//
-//    }
+    private void getData() {
+        Set<String> keySet = Constant.buildings.keySet();
+        for(String key : keySet){
+            Building buildingItem = Constant.buildings.get(key);
+            buildingItem.setId(key);
+            buildings.add(buildingItem);
+        }
 
-
-
-    /*** Constant 변수 초기화 ***/
-    public void InitConstants() {
-
-        FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
-        DatabaseReference buildingReference = firebaseDatabase.getReference("buildings");
-//        DatabaseReference userReference = firebaseDatabase.getReference("user");
-
-        FirebaseUser fUser = FirebaseAuth.getInstance().getCurrentUser();
-
-
-        Constant.userUID = fUser.getUid();
-        Constant.userID = fUser.getEmail();
-
-        buildingReference.child(Constant.userUID).addValueEventListener(new ValueEventListener() {
-
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                Log.w("===", "InitConstants() : onDataChange");
-                //Constant.buildings = (HashMap<String, Building>) dataSnapshot.getValue();
-//
-//                for(DataSnapshot bdSnapshot : dataSnapshot.getChildren()){
-//                    String bId = bdSnapshot.getKey();
-//                    bdSnapshot.child("units").getValue();
-//                }
-
-                buildings.clear();
-
-                for(DataSnapshot postSnapshot : dataSnapshot.getChildren()){
-                    Log.d("===","postSnapshot : "+postSnapshot.toString());
-                    Building buildingItem = postSnapshot.getValue(Building.class);
-                    buildingItem.setId(postSnapshot.getKey());
-                    buildings.add(buildingItem);
-                    Constant.buildings.put(postSnapshot.getKey(),buildingItem);
-                    Log.d("===","buildingItem : "+buildingItem.toString());
-                }
-
-                if (Constant.buildings != null) {
-                    Log.w("===", "Set Constant.building : " + Constant.buildings.toString());
-                    Log.w("===", "InitConstants() : succeed");
-                }
-
-                setToken();
-                setAdapter();
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                Log.w("===", "InitConstants() : onCancelled", databaseError.toException());
-            }
-        });
-
+        setAdapter();
     }
+
 
 }
 
@@ -336,42 +246,3 @@ class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAdapter.M
 
 
 }
-
-
-
-//class MyPagerAdapter extends FragmentPagerAdapter {
-//    private static int NUM_ITEMS = 3;
-//
-//    public MyPagerAdapter(FragmentManager fragmentManager) {
-//        super(fragmentManager);
-//    }
-//
-//    // Returns total number of pages
-//    @Override
-//    public int getCount() {
-//        return NUM_ITEMS;
-//    }
-//
-//    // Returns the fragment to display for that page
-//    @Override
-//    public Fragment getItem(int position) {
-//        switch (position) {
-//            case 0:
-//
-//                return Chart1Fragment.newInstance(0, "Page # 1");
-//            case 1:
-//                return Chart2Fragment.newInstance(1, "Page # 2");
-//            case 2:
-//                return Chart3Fragment.newInstance(2, "Page # 3");
-//            default:
-//                return null;
-//        }
-//    }
-//
-//    // Returns the page title for the top indicator
-//    @Override
-//    public CharSequence getPageTitle(int position) {
-//        return "Page " + position;
-//    }
-//}
-
