@@ -1,5 +1,7 @@
 package com.example.jiptalk.ui.message;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
@@ -12,6 +14,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AccelerateInterpolator;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.FrameLayout;
@@ -430,7 +433,7 @@ public class TenantMessageActivity extends AppCompatActivity {
         }
 
         @Override
-        public void onBindViewHolder(@NonNull ChatDataAdapter.ChatDataViewHolder holder, int position) {
+        public void onBindViewHolder(@NonNull final ChatDataAdapter.ChatDataViewHolder holder, int position) {
 
             ChatDataDTO chatData = chatDataList.get(position);
             String from = chatData.getFrom();
@@ -460,10 +463,24 @@ public class TenantMessageActivity extends AppCompatActivity {
                 holder.textViewMsgRecievedTime.setText(getDate(chatData.getTime()));
                 holder.buttonPositive.setVisibility(View.VISIBLE);
                 holder.buttonNegative.setVisibility(View.VISIBLE);
-
-
-
             }
+
+            holder.buttonPositive.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(final View v) {
+                    v.animate().alpha(0)
+                            .setDuration(600)
+                            .setInterpolator(new AccelerateInterpolator())
+                            .setListener(new AnimatorListenerAdapter() {
+                                @Override
+                                public void onAnimationEnd(Animator animation) {
+                                    v.setVisibility(View.GONE);
+                                    holder.buttonNegative.setVisibility(View.GONE);
+                                }
+                            })
+                            .start();
+                }
+            });
         }
 
         @Override
