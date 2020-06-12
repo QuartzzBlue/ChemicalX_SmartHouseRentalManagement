@@ -8,3 +8,4 @@
   - Firebase Realtime DB
   - FCM
   - etc.
+  - OCR
