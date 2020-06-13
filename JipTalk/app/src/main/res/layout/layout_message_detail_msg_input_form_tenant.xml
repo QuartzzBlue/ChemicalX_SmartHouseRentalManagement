@@ -264,38 +264,48 @@
 
             </androidx.cardview.widget.CardView>
 
-            <Button
-                android:id="@+id/buttonInsertDate_start2"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
-                android:background="@drawable/btn_selectable"
-                android:text="시작 날짜 입력하기"
-                android:textColor="@android:color/white"
-                android:textStyle="bold"
-                android:visibility="gone" />
+                android:orientation="horizontal">
 
-            <Button
-                android:id="@+id/buttonInsertDate_end2"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
-                android:background="@drawable/btn_selectable"
-                android:text="종료 날짜 입력하기"
-                android:textColor="@android:color/white"
-                android:textStyle="bold"
-                android:visibility="gone" />
+                <Button
+                    android:id="@+id/buttonInsertDate_start2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/btn_selectable"
+                    android:text="시작 날짜"
+                    android:textColor="@android:color/white"
+                    android:textStyle="bold"
+                    android:visibility="gone" />
 
-            <Button
-                android:id="@+id/buttonInsertTime2"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
-                android:background="@drawable/btn_selectable"
-                android:text="시간 입력하기"
-                android:textColor="@android:color/white"
-                android:textStyle="bold"
-                android:visibility="gone" />
+                <Button
+                    android:id="@+id/buttonInsertDate_end2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/btn_selectable"
+                    android:text="종료 날짜"
+                    android:textColor="@android:color/white"
+                    android:textStyle="bold"
+                    android:visibility="gone" />
+
+                <Button
+                    android:id="@+id/buttonInsertTime2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/btn_selectable"
+                    android:text="시간"
+                    android:textColor="@android:color/white"
+                    android:textStyle="bold"
+                    android:visibility="gone" />
+
+            </LinearLayout>
 
             <Button
                 android:id="@+id/buttonSendMsg2"
