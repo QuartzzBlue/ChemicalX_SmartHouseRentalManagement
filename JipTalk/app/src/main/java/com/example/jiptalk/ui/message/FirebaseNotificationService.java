@@ -29,6 +29,7 @@ public class FirebaseNotificationService extends FirebaseMessagingService {
         String msg = remoteMessage.getNotification().getBody();
 
 
+        Log.d(TAG, "FCM message recieved : " + title + ", " + msg);
         String channelId = "channel";
         String channelName = "Channel_name";
         int importance = NotificationManager.IMPORTANCE_LOW;

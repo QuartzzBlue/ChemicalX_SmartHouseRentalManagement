@@ -1,5 +1,7 @@
 package com.example.jiptalk.ui.message;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
@@ -11,6 +13,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AccelerateInterpolator;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.FrameLayout;
@@ -190,6 +193,7 @@ public class LandLordMessageActivity extends AppCompatActivity {
             Map sendTime = ServerValue.TIMESTAMP;
 
             Map messageMap = new HashMap();
+            messageMap.put("key", pushID);
             messageMap.put("message", message);
             messageMap.put("time", sendTime);
             messageMap.put("from", currentUserUID);
@@ -403,9 +407,9 @@ public class LandLordMessageActivity extends AppCompatActivity {
         }
 
         @Override
-        public void onBindViewHolder(@NonNull ChatDataAdapter.ChatDataViewHolder holder, int position) {
+        public void onBindViewHolder(@NonNull final ChatDataAdapter.ChatDataViewHolder holder, int position) {
 
-            ChatDataDTO chatData = chatDataList.get(position);
+            final ChatDataDTO chatData = chatDataList.get(position);
             String from = chatData.getFrom();
 
             if (from.equals(currentUserUID)) { // Msg sent by me
@@ -429,9 +433,123 @@ public class LandLordMessageActivity extends AppCompatActivity {
                 holder.textViewMsgSentTime.setVisibility(View.INVISIBLE);
                 holder.textViewMsgRecievedTime.setVisibility(View.VISIBLE);
                 holder.textViewMsgRecievedTime.setText(getDate(chatData.getTime()));
-                holder.buttonPositive.setVisibility(View.VISIBLE);
-                holder.buttonNegative.setVisibility(View.VISIBLE);
+                holder.buttonPositive.setVisibility(View.GONE);
+                holder.buttonNegative.setVisibility(View.GONE);
+                Log.d(TAG, "chatData.getResponse() : " + chatData.getResponse());
+                if (chatData.getResponse().equals("")) {
+                    holder.buttonPositive.setVisibility(View.VISIBLE);
+                    holder.buttonNegative.setVisibility(View.VISIBLE);
+                }
             }
+
+
+            holder.buttonPositive.setOnClickListener(new View.OnClickListener() {
+
+                @Override
+                public void onClick(final View v) {
+                    v.animate().alpha(0)
+                            .setDuration(600)
+                            .setInterpolator(new AccelerateInterpolator())
+                            .setListener(new AnimatorListenerAdapter() {
+                                @Override
+                                public void onAnimationEnd(Animator animation) {
+                                    v.setVisibility(View.GONE);
+                                    holder.buttonNegative.setVisibility(View.GONE);
+                                }
+                            })
+                            .start();
+
+                    String response = "네 알겠습니다^^";
+                    chatData.setResponse(response);
+                    updateMessage(chatData, response);
+                }
+            });
+
+
+            holder.buttonNegative.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(final View v) {
+                    v.animate().alpha(0)
+                            .setDuration(600)
+                            .setInterpolator(new AccelerateInterpolator())
+                            .setListener(new AnimatorListenerAdapter() {
+                                @Override
+                                public void onAnimationEnd(Animator animation) {
+                                    v.setVisibility(View.GONE);
+                                    holder.buttonPositive.setVisibility(View.GONE);
+                                }
+                            })
+                            .start();
+
+                    String response = "연락 드리겠습니다^^";
+                    chatData.setResponse(response);
+                    updateMessage(chatData, response);
+                }
+            });
+        }
+
+        public void updateMessage(ChatDataDTO chatData, String response) {
+            // update respond to current message
+            String currentUserRef = "messages/" + currentUserUID + "/" + chatUserUID;
+            String chatUserRef = "messages/" + chatUserUID + "/" + currentUserUID;
+            Map messageMap = new HashMap();
+            messageMap.put("key", chatData.getKey());
+            messageMap.put("message", chatData.getMessage());
+            messageMap.put("time", chatData.getTime());
+            messageMap.put("from", chatData.getFrom());
+            messageMap.put("subject", chatData.getSubject());
+            messageMap.put("hasResponsed", true);
+            messageMap.put("response", response);
+
+            Map messageUserMap = new HashMap();
+            messageUserMap.put(currentUserRef + "/" + chatData.getKey(), messageMap);
+            messageUserMap.put(chatUserRef + "/" + chatData.getKey(), messageMap);
+
+            databaseReference.updateChildren(messageUserMap, new DatabaseReference.CompletionListener() {
+                @Override
+                public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
+                    if (databaseError != null) {
+                        Log.d(TAG, databaseError.getMessage().toString());
+                    }
+                }
+            });
+
+            // send response message
+            final MediaPlayer sendSound = MediaPlayer.create(getApplicationContext(), R.raw.light);
+            sendSound.start();
+
+            DatabaseReference userMessagePush = databaseReference.child("message").child(currentUserUID).child(chatUserUID).push();
+
+            String pushID = userMessagePush.getKey();
+            Map sendTime = ServerValue.TIMESTAMP;
+            Map responseMessageMap = new HashMap();
+            responseMessageMap.put("key", pushID);
+            responseMessageMap.put("message", response);
+            responseMessageMap.put("time", sendTime);
+            responseMessageMap.put("from", currentUserUID);
+            responseMessageMap.put("subject", chatData.getSubject());
+            responseMessageMap.put("hasResponsed", true);
+            responseMessageMap.put("response", response);
+
+            Map responseMessageUserMap = new HashMap();
+            responseMessageUserMap.put(currentUserRef + "/" + pushID, responseMessageMap);
+            responseMessageUserMap.put(chatUserRef + "/" + pushID, responseMessageMap);
+
+            databaseReference.updateChildren(responseMessageUserMap, new DatabaseReference.CompletionListener() {
+                @Override
+                public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
+                    if (databaseError != null) {
+                        Log.d(TAG, databaseError.getMessage().toString());
+                    }
+                }
+            });
+
+
+            Log.d(TAG, "send FCM token : " + token);
+            // push FCM message START
+            PushFCMMessageThread pushFCMMessage = new PushFCMMessageThread(token, chatData.getSubject(), response);
+            new Thread(pushFCMMessage).start();
+            // push FCM message END
         }
 
         @Override
@@ -646,15 +764,23 @@ public class LandLordMessageActivity extends AppCompatActivity {
         });
     }
 
+    int sYear, sMonth, sDay;
+    int eYear, eMonth, eDay;
+
     public void initializeDatePickerListenr() {
         callbackMethodDatePicker = new DatePickerDialog.OnDateSetListener() {
             @Override
             public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
 
                 if (dateStartEnd.equals("start")) {
-                    textViewMsgPreview.setText("안녕하세요 집주인 입니다. \n" + year + "년 " + month + "월 " + dayOfMonth + "일 ~ 0000년 00월 00일 공사가 있습니다.\n소음에 양해부탁드립니다.");
+                    sYear = year;
+                    sMonth = month;
+                    sDay = dayOfMonth;
+                    textViewMsgPreview.setText("안녕하세요 집주인 입니다. \n" + year + "년 " + month + "월 " + dayOfMonth + "일 ~ "
+                            + eYear + "년 " + eMonth + "월 " + eDay + "일 공사가 있습니다.\n소음에 양해부탁드립니다.");
                 } else if (dateStartEnd.equals("end")) {
-                    textViewMsgPreview.setText("안녕하세요 집주인 입니다. \n" + year + "년 " + month + "월 " + dayOfMonth + "일 ~ 0000년 00월 00일 공사가 있습니다.\n소음에 양해부탁드립니다.");
+                    textViewMsgPreview.setText("안녕하세요 집주인 입니다. \n" + sYear + "년 " + sMonth + "월 " + sDay + "일 ~ "
+                            + year + "년 " + month + "월 " + dayOfMonth + "일 공사가 있습니다.\n소음에 양해부탁드립니다.");
                 }
             }
         };
