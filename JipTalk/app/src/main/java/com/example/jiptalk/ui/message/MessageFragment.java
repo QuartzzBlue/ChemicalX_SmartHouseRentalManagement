@@ -132,7 +132,7 @@ public class MessageFragment extends Fragment {
 
         messageAdapter = new FirebaseRecyclerAdapter<MessageVO, MessageViewHolder>(messageOptions) {
             @Override
-            protected void onBindViewHolder(@NonNull final MessageViewHolder holder, int position, @NonNull MessageVO model) {
+            protected void onBindViewHolder(@NonNull final MessageViewHolder holder, int position, @NonNull final MessageVO model) {
                 final String chatUserUID = getRef(position).getKey();
                 Log.d(TAG, "chatUserUID : " + chatUserUID);
                 DatabaseReference mRootChat = rootRef.child("chat");
@@ -154,8 +154,9 @@ public class MessageFragment extends Fragment {
                                     }
 
 
-                                    intent.putExtra("name", getChatUserName(chatUserUID));
+                                    intent.putExtra("clientName", getChatUserName(chatUserUID));
                                     intent.putExtra("clientUID", chatUserUID);
+                                    intent.putExtra("clientToken", model.getToken());
                                     startActivity(intent);
                                 }
                             });

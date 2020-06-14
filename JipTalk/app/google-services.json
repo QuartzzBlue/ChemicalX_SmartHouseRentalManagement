@@ -15,6 +15,22 @@
       },
       "oauth_client": [
         {
+          "client_id": "144052869690-03ipn6luuod0tb27o0qqbdgr6pngh0m9.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.jiptalk",
+            "certificate_hash": "3b4e428060aa9f5c43789332029ec4ceacd65cb2"
+          }
+        },
+        {
+          "client_id": "144052869690-jg9qk6kt9rjd3ihp0b4oi09f76gsvi9s.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.jiptalk",
+            "certificate_hash": "60df150b8a8fe293fe6380d9b66f23984e6c00b3"
+          }
+        },
+        {
           "client_id": "144052869690-imjo0dsurjigkdcn3d01hu33hdqpbqc2.apps.googleusercontent.com",
           "client_type": 3
         }
