@@ -42,8 +42,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.ValueEventListener;
-import com.wx.wheelview.adapter.ArrayWheelAdapter;
-import com.wx.wheelview.widget.WheelView;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -52,6 +50,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
+
+import stfalcon.universalpickerdialog.UniversalPickerDialog;
 
 public class TenantMessageActivity extends AppCompatActivity {
 
@@ -86,8 +86,7 @@ public class TenantMessageActivity extends AppCompatActivity {
     private Button buttonInsertDateStart, buttonInsertDateEnd, buttonInsertTime, buttonSendMsg, buttonRepairItem;
 
 
-    private FrameLayout frameLayoutMsgDetail, frameLayoutRepairItems;
-    private WheelView wheelViewRepairItems;
+    private FrameLayout frameLayoutMsgDetail;
 
     private DatePickerDialog.OnDateSetListener callbackMethodDatePicker;
     private TimePickerDialog.OnTimeSetListener callbackMethodTimePicker;
@@ -129,10 +128,6 @@ public class TenantMessageActivity extends AppCompatActivity {
         loadMessages();
 
         frameLayoutMsgDetail = findViewById(R.id.frameLayoutMsgDetail);
-
-        frameLayoutRepairItems = findViewById(R.id.frameLayoutRepairItems);
-        wheelViewRepairItems = findViewById(R.id.wheelViewRepairItems);
-
 
 //        imageViewSendButton.setOnClickListener(new View.OnClickListener() {
 //            @Override
@@ -701,8 +696,6 @@ public class TenantMessageActivity extends AppCompatActivity {
     }
 
     public void initializeChoicesListener() {
-        frameLayoutRepairItems = findViewById(R.id.frameLayoutRepairItems);
-        wheelViewRepairItems = findViewById(R.id.wheelViewRepairItems);
         frameLayoutDark.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -733,58 +726,49 @@ public class TenantMessageActivity extends AppCompatActivity {
         repairItemList.add("세면대");
         repairItemList.add("현관문");
         repairItemList.add("창문");
-        repairItemList.add("세면대");
-        repairItemList.add("현관문");
-        repairItemList.add("창문");
-        repairItemList.add("세면대");
-        repairItemList.add("현관문");
-        repairItemList.add("창문");
-        repairItemList.add("세면대");
-        repairItemList.add("현관문");
-        repairItemList.add("창문");
-        repairItemList.add("세면대");
-        repairItemList.add("현관문");
-        repairItemList.add("창문");
-        repairItemList.add("세면대");
-        repairItemList.add("현관문");
-        repairItemList.add("창문");
-        wheelViewRepairItems.setWheelAdapter(new ArrayWheelAdapter(getApplicationContext()));
-        wheelViewRepairItems.setSkin(WheelView.Skin.Common);
 
-        wheelViewRepairItems.setWheelData(repairItemList);
-        wheelViewRepairItems.setOnWheelItemSelectedListener(new WheelView.OnWheelItemSelectedListener() {
-            @Override
-            public void onItemSelected(int position, Object o) {
-                Log.d(TAG, "onItemSelected");
-                Toast.makeText(TenantMessageActivity.this, repairItemList.get(position), Toast.LENGTH_SHORT).show();
-                Log.d(TAG, "repairItem : " + repairItemList.get(position));
-                frameLayoutRepairItems.setVisibility(View.GONE);
-            }
+        repairItemList.add("세면대");
+        repairItemList.add("현관문");
+        repairItemList.add("창문");
+        repairItemList.add("세면대");
+        repairItemList.add("현관문");
+        repairItemList.add("창문");
+        repairItemList.add("세면대");
+        repairItemList.add("현관문");
+        repairItemList.add("창문");
+        repairItemList.add("세면대");
+        repairItemList.add("현관문");
+        repairItemList.add("창문");
+        repairItemList.add("세면대");
+        repairItemList.add("현관문");
+        repairItemList.add("창문");
 
-        });
 
-        wheelViewRepairItems.setOnWheelItemClickListener(new WheelView.OnWheelItemClickListener() {
-            @Override
-            public void onItemClick(int position, Object o) {
-                Log.d(TAG, "onItemClick");
-                Toast.makeText(TenantMessageActivity.this, repairItemList.get(position), Toast.LENGTH_SHORT).show();
-                Log.d(TAG, "repairItem : " + repairItemList.get(position));
-                frameLayoutRepairItems.setVisibility(View.GONE);
-            }
-        });
         buttonTitleRepair.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                buttonSendMsg.setEnabled(true);
                 linearLayoutDate.setVisibility(View.GONE);
-
                 textViewMsgPreview.setText("안녕하세요 세입자 입니다. \n0000가 고장났습니다. \n수리 바랍니다.");
                 subject = "repairment";
                 buttonRepairItem.setVisibility(View.VISIBLE);
                 buttonRepairItem.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        frameLayoutRepairItems.setVisibility(View.VISIBLE);
-
+                        Log.d(TAG, "Clicked repair list button");
+//                        new UniversalPickerDialog.Builder(v.getContext())
+//                                .setTitle("TEST")
+//                                .setListener(new UniversalPickerDialog.OnPickListener() {
+//                                    @Override
+//                                    public void onPick(int[] selectedValues, int key) {
+//                                        new UniversalPickerDialog.Input(0, list),
+//                                        new UniversalPickerDialog.Input(2, array)
+//                                    }
+//                                })
+//                                .setInputs(
+//
+//                                )
+//                                .show();
 
                     }
                 });
