@@ -24,6 +24,7 @@ public class PushFCMMessageThread implements Runnable {
     }
 
     public PushFCMMessageThread(String token, String title, String msg) {
+        Log.d(TAG, "token of the recipient : " + token);
 
         this.token = token;
         this.title = title;

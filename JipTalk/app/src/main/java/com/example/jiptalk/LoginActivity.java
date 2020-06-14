@@ -142,6 +142,7 @@ public class LoginActivity extends AppCompatActivity {
 
                             /* Version 업데이트 되면서 굳이 콜백함수 안 쓰고 바로 user 정보 불러와서 해결하는듯 */
                             FirebaseUser user = mAuth.getCurrentUser();
+                            Constant.userUID = mAuth.getUid();
 
                             // 액티비티 이동
                             Intent intent = new Intent(nowContext, MainActivity.class);
