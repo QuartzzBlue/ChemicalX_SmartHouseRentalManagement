@@ -209,23 +209,36 @@
                         android:id="@+id/signUpSexRg"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginTop="3dp"
                         android:orientation="horizontal">
 
                         <RadioButton
                             android:id="@+id/radioButton4"
-                            android:layout_width="match_parent"
+                            android:layout_width="84dp"
                             android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:background="@drawable/radio_flat_selector"
+                            android:button="@android:color/transparent"
                             android:checked="true"
+                            android:paddingTop="3dp"
+                            android:paddingBottom="3dp"
                             android:text="남성"
-                            android:textColorHighlight="@color/colorPrimary"
-                            android:textColorLink="@color/colorPrimary"
+                            android:textAlignment="center"
+                            android:textColor="@color/radio_flat_text_selector"
                             android:textSize="16sp" />
 
                         <RadioButton
                             android:id="@+id/radioButton3"
-                            android:layout_width="match_parent"
+                            android:layout_width="83dp"
                             android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:background="@drawable/radio_flat_selector"
+                            android:button="@android:color/transparent"
+                            android:paddingTop="3dp"
+                            android:paddingBottom="3dp"
                             android:text="여성"
+                            android:textAlignment="center"
+                            android:textColor="@color/radio_flat_text_selector"
                             android:textSize="16sp" />
 
                     </RadioGroup>
@@ -252,28 +265,105 @@
                 android:id="@+id/signUpCategoryRg"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:layout_marginTop="3dp"
                 android:orientation="horizontal">
 
                 <RadioButton
-                    android:id="@+id/radioButton6"
+                    android:id="@+id/rb_sign_up_landlord"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
+                    android:background="@drawable/radio_flat_selector"
+                    android:button="@android:color/transparent"
                     android:checked="true"
+                    android:paddingTop="3dp"
+                    android:paddingBottom="3dp"
                     android:text="임대인"
+                    android:textAlignment="center"
+                    android:textColor="@color/radio_flat_text_selector"
                     android:textColorHighlight="@color/colorPrimary"
                     android:textColorLink="@color/colorPrimary"
                     android:textSize="16sp" />
 
                 <RadioButton
-                    android:id="@+id/radioButton5"
+                    android:id="@+id/rb_sign_up_tenant"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
+                    android:background="@drawable/radio_flat_selector"
+                    android:button="@android:color/transparent"
+                    android:paddingTop="3dp"
+                    android:paddingBottom="3dp"
                     android:text="세입자"
+                    android:textAlignment="center"
+                    android:textColor="@color/radio_flat_text_selector"
                     android:textSize="16sp" />
 
             </RadioGroup>
+
+            <TextView
+                android:id="@+id/textView55"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="12sp" />
+
+            <LinearLayout
+                android:id="@+id/layout_sign_up_accountInfo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="visible">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <TextView
+                        android:id="@+id/textView57"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="계좌 정보"
+                        android:textColor="@color/black"
+                        android:textSize="18sp" />
+
+                    <TextView
+                        android:id="@+id/textView76"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="  (선택 항목)" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <Spinner
+                        android:id="@+id/spin_sign_up_bankName"
+                        android:layout_width="192dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="3" />
+
+                    <EditText
+                        android:id="@+id/et_sign_up_depositor"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="3"
+                        android:ems="10"
+                        android:hint="예금주명"
+                        android:inputType="textPersonName" />
+
+                </LinearLayout>
+
+                <EditText
+                    android:id="@+id/et_sign_up_accountNum"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="4"
+                    android:ems="10"
+                    android:hint="계좌번호"
+                    android:inputType="numberSigned" />
+            </LinearLayout>
 
         </LinearLayout>
     </ScrollView>

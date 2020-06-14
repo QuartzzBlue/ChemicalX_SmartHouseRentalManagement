@@ -9,15 +9,20 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
+import android.text.Layout;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -36,26 +41,28 @@ import com.google.firebase.auth.PhoneAuthProvider;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import java.lang.reflect.Array;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-public class    SignUpActivity extends AppCompatActivity {
+public class SignUpActivity extends AppCompatActivity {
 
     private FirebaseAuth mAuth;
     private DatabaseReference userRef;
     protected ProgressDialog mProgressDialog = null;
     private boolean isValidPhone, isValidPwd, isCheckedPwd = false;   // 전화번호 인증, 비밀번호 유효성 및 확인
     private String mVerificationCode; // 전화번호 인증번호
+    private Valid valid;
+    private Context nowContext;
 
-    Valid valid;
-
-    Context nowContext;
-    EditText idTv, pwdTv, phoneTv, nameTv, pwdCheckTv, phoneCheckTv;
+    EditText idEt, pwdEt, phoneEt, nameEt, pwdCheckEt, phoneCheckEt, depositorEt, accountNumEt;
     TextView pwdValidTv, pwdCheckValidTv;
-
+    Spinner bankSpinner;
+    RadioGroup categoryRg;
     RadioButton checkedSexRgbt, checkedCategoryRgbt;
     Button phoneAuthBt, phoneAuthCheckBt;
+    LinearLayout accountInfoLo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,7 +72,7 @@ public class    SignUpActivity extends AppCompatActivity {
         initialization();
 
         /*** 비밀번호 형식 유효성 체크 ***/
-        pwdTv.addTextChangedListener(new TextWatcher() {
+        pwdEt.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
 
@@ -87,13 +94,13 @@ public class    SignUpActivity extends AppCompatActivity {
         });
 
         /*** 비밀번호 일치 확인 ***/
-        pwdCheckTv.addTextChangedListener(new TextWatcher() {
+        pwdCheckEt.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                String tempPwd = pwdTv.getText().toString();
+                String tempPwd = pwdEt.getText().toString();
                 if(!s.toString().equals(tempPwd)){
                     pwdCheckValidTv.setText("비밀번호가 일치하지 않습니다.");
                     pwdCheckValidTv.setTextColor(ContextCompat.getColor(nowContext, R.color.danger));
@@ -116,7 +123,7 @@ public class    SignUpActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                String phoneNumber = phoneTv.getText().toString();
+                String phoneNumber = phoneEt.getText().toString();
 
                 if(!valid.isNotBlank(phoneNumber) || !valid.isValidPhone(phoneNumber)){
                     Log.d("===", "createAccount: phone is not valid ");
@@ -135,19 +142,30 @@ public class    SignUpActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Log.d("===", "phoneAuthCheckBt : clicked");
-                String tmpCode = phoneCheckTv.getText().toString().trim();
+                String tmpCode = phoneCheckEt.getText().toString().trim();
                 if(tmpCode.equals(mVerificationCode)){
                     Log.d("===", "phoneAuthentication:succeed");
                     Toast.makeText(nowContext, "핸드폰 번호가 성공적으로 인증되었습니다.",
                             Toast.LENGTH_SHORT).show();
                     isValidPhone = true;
-                    phoneTv.setEnabled(false);
+                    phoneEt.setEnabled(false);
                     return;
                 }else{
                     Log.d("===", "phoneAuthentication:failed");
                     Toast.makeText(nowContext, "인증번호가 일치하지 않습니다.",
                             Toast.LENGTH_SHORT).show();
                     return;
+                }
+            }
+        });
+
+        categoryRg.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                if(checkedId == R.id.rb_sign_up_landlord) { //임대인
+                    accountInfoLo.setVisibility(View.VISIBLE);
+                }else{  //세입자
+                    accountInfoLo.setVisibility(View.GONE);
                 }
             }
         });
@@ -168,13 +186,20 @@ public class    SignUpActivity extends AppCompatActivity {
             /*** 저장 버튼 눌렸을 때 ***/
             case R.id.action_save :
 
-                String email = idTv.getText().toString();
-                String password = pwdTv.getText().toString();
-                String phone = phoneTv.getText().toString();
-                String name = nameTv.getText().toString();
-                String sex = checkedSexRgbt.getText().toString();
-                String category = checkedCategoryRgbt.getText().toString();
-                User newUser = new User(email, phone, name, null, null, null, sex, category, true, null);
+                String email = idEt.getText().toString().trim();
+                String password = pwdEt.getText().toString().trim();
+                String phone = phoneEt.getText().toString().trim();
+                String name = nameEt.getText().toString().trim();
+                String sex = checkedSexRgbt.getText().toString().trim();
+                String category = checkedCategoryRgbt.getText().toString().trim();
+                String depositor = depositorEt.getText().toString().trim();
+                String accountNum = accountNumEt.getText().toString().trim();
+                String bank = bankSpinner.getSelectedItem().toString();
+                if(bank.equals("선택하세요")){
+                    bank = null;
+                }
+
+                User newUser = new User(email, phone, name, depositor, bank, accountNum, sex, category, true, null);
 
                 /* 유효성 검사 */
                 if(!isValid(newUser)) return false;
@@ -306,20 +331,22 @@ public class    SignUpActivity extends AppCompatActivity {
 //            mVerificationCode = verificationId;
 //            mResendToken = token;
 
-            phoneCheckTv.requestFocus();
+            phoneCheckEt.requestFocus();
             // ...
         }
     };
     private void initialization(){
-        idTv = findViewById(R.id.signUpIdTv);
-        pwdTv = findViewById(R.id.signUpPwdTv);
-        phoneTv = findViewById(R.id.signUpPhoneTv);
-        nameTv = findViewById(R.id.signUpNameTv);
-        pwdCheckTv = findViewById(R.id.signUpPwdCheckTv);
-        phoneCheckTv = findViewById(R.id.signUpPhoneCheckTv);
+        idEt = findViewById(R.id.signUpIdTv);
+        pwdEt = findViewById(R.id.signUpPwdTv);
+        phoneEt = findViewById(R.id.signUpPhoneTv);
+        nameEt = findViewById(R.id.signUpNameTv);
+        pwdCheckEt = findViewById(R.id.signUpPwdCheckTv);
+        phoneCheckEt = findViewById(R.id.signUpPhoneCheckTv);
+        accountNumEt = findViewById(R.id.et_sign_up_accountNum);
+        depositorEt = findViewById(R.id.et_sign_up_depositor);
 
         RadioGroup sexRg = findViewById(R.id.signUpSexRg);
-        RadioGroup categoryRg = findViewById(R.id.signUpCategoryRg);
+        categoryRg = findViewById(R.id.signUpCategoryRg);
         checkedSexRgbt = findViewById(sexRg.getCheckedRadioButtonId());
         checkedCategoryRgbt = findViewById(categoryRg.getCheckedRadioButtonId());
 
@@ -328,8 +355,15 @@ public class    SignUpActivity extends AppCompatActivity {
         pwdValidTv = findViewById(R.id.signUpPwdValidTv);
         pwdCheckValidTv = findViewById(R.id.signUpPwdCheckValidTv);
 
+        accountInfoLo = findViewById(R.id.layout_sign_up_accountInfo);
         nowContext = this; // this = View.getContext();  현재 실행되고 있는 View의 context를 return 하는데 보통은 현재 활성화된 activity의 context가 된다.
         valid = new Valid();
+
+        // bank spinner에 arrays.xml 안에 있는 banklist 연결
+        bankSpinner = findViewById(R.id.spin_sign_up_bankName);
+        ArrayAdapter bankAdapter = ArrayAdapter.createFromResource(nowContext, R.array.bank_list, android.R.layout.simple_spinner_item);
+        bankAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        bankSpinner.setAdapter(bankAdapter);
     }
 
     private boolean isValid(User newUser){
@@ -338,14 +372,14 @@ public class    SignUpActivity extends AppCompatActivity {
             Log.d("===", "createAccount: email is not valid ");
             Toast.makeText(nowContext, "이메일이 올바르지 않습니다.",
                     Toast.LENGTH_SHORT).show();
-            idTv.requestFocus();
+            idEt.requestFocus();
             return false;
         }
         if (!isValidPwd){
             Log.d("===", "createAccount: password is not valid ");
             Toast.makeText(nowContext, "비밀번호가 올바르지 않습니다.",
                     Toast.LENGTH_SHORT).show();
-            pwdTv.requestFocus();
+            pwdEt.requestFocus();
             return false;
         }
 
@@ -353,7 +387,7 @@ public class    SignUpActivity extends AppCompatActivity {
             Log.d("===", "createAccount: password not equal");
             Toast.makeText(nowContext, "비밀번호가 일치하지 않습니다.",
                     Toast.LENGTH_SHORT).show();
-            pwdTv.requestFocus();
+            pwdEt.requestFocus();
             return false;
         }
 
@@ -361,7 +395,7 @@ public class    SignUpActivity extends AppCompatActivity {
             Log.d("===", "createAccount: phone Auth required");
             Toast.makeText(nowContext, "휴대폰 번호 인증을 진행해주세요.",
                     Toast.LENGTH_SHORT).show();
-            phoneTv.requestFocus();
+            phoneEt.requestFocus();
             return false;
         }
 
@@ -369,7 +403,7 @@ public class    SignUpActivity extends AppCompatActivity {
             Log.d("===", "createAccount: name is not valid ");
             Toast.makeText(nowContext, "이름을 입력해 주세요.",
                     Toast.LENGTH_SHORT).show();
-            nameTv.requestFocus();
+            nameEt.requestFocus();
             return false;
         }
 //        if(!valid.isNotBlank(newUser.getPhone()) || !valid.isValidPhone(newUser.getPhone())){
