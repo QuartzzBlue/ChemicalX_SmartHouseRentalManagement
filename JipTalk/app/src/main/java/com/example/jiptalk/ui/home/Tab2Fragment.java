@@ -24,4 +24,8 @@ public class Tab2Fragment extends Fragment {
         return view;
     }
 
+    private void initialize() {
+
+    }
+
 }

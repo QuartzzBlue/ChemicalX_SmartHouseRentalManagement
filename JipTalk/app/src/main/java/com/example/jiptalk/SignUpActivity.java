@@ -45,7 +45,7 @@ public class    SignUpActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private DatabaseReference userRef;
     protected ProgressDialog mProgressDialog = null;
-    private boolean isValidPhone = false;   // 전화번호 인증 여부 확인
+    private boolean isValidPhone, isValidPwd, isCheckedPwd = false;   // 전화번호 인증, 비밀번호 유효성 및 확인
     private String mVerificationCode; // 전화번호 인증번호
 
     Valid valid;
@@ -71,12 +71,14 @@ public class    SignUpActivity extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if(!valid.isValidPwd(s.toString())){
+                if(!valid.isNotBlank(s.toString()) || !valid.isValidPwd(s.toString())){
                     pwdValidTv.setText("형식에 맞지 않는 비밀번호입니다.");
                     pwdValidTv.setTextColor(ContextCompat.getColor(nowContext, R.color.danger));
+                    isValidPwd = false;
                 }else{
                     pwdValidTv.setText("가능한 비밀번호입니다.");
                     pwdValidTv.setTextColor(ContextCompat.getColor(nowContext, R.color.success));
+                    isValidPwd = true;
                 }
             }
 
@@ -95,9 +97,11 @@ public class    SignUpActivity extends AppCompatActivity {
                 if(!s.toString().equals(tempPwd)){
                     pwdCheckValidTv.setText("비밀번호가 일치하지 않습니다.");
                     pwdCheckValidTv.setTextColor(ContextCompat.getColor(nowContext, R.color.danger));
+                    isCheckedPwd = false;
                 }else{
                     pwdCheckValidTv.setText("비밀번호가 일치합니다.");
                     pwdCheckValidTv.setTextColor(ContextCompat.getColor(nowContext, R.color.success));
+                    isCheckedPwd = true;
                 }
             }
 
@@ -170,13 +174,13 @@ public class    SignUpActivity extends AppCompatActivity {
                 String name = nameTv.getText().toString();
                 String sex = checkedSexRgbt.getText().toString();
                 String category = checkedCategoryRgbt.getText().toString();
-                User newUser = new User(email, password, phone, name, sex, category, true);
+                User newUser = new User(email, phone, name, null, null, null, sex, category, true, null);
 
                 /* 유효성 검사 */
                 if(!isValid(newUser)) return false;
 
                 /* 유효성 검사 끝나면 인증 & DB 삽입*/
-                createUser(newUser);
+                createUser(newUser, password);
 
                 return true ;
             default :
@@ -184,7 +188,7 @@ public class    SignUpActivity extends AppCompatActivity {
         }
     }
 
-    private void createUser(final User newUser){
+    private void createUser(final User newUser, String pwd){
 
         final Util util = new Util();
 
@@ -197,7 +201,7 @@ public class    SignUpActivity extends AppCompatActivity {
         userRef = FirebaseDatabase.getInstance().getReference();
 
         //[Authentification] Email로 유저 생성
-        mAuth.createUserWithEmailAndPassword(newUser.getEmail(), newUser.getPwd())
+        mAuth.createUserWithEmailAndPassword(newUser.getEmail(), pwd)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
@@ -337,7 +341,7 @@ public class    SignUpActivity extends AppCompatActivity {
             idTv.requestFocus();
             return false;
         }
-        if (!valid.isNotBlank(newUser.getPwd()) || !valid.isValidPwd(newUser.getPwd())){
+        if (!isValidPwd){
             Log.d("===", "createAccount: password is not valid ");
             Toast.makeText(nowContext, "비밀번호가 올바르지 않습니다.",
                     Toast.LENGTH_SHORT).show();
@@ -345,7 +349,7 @@ public class    SignUpActivity extends AppCompatActivity {
             return false;
         }
 
-        if(!newUser.getPwd().equals(pwdCheckTv.getText().toString())){
+        if(!isCheckedPwd){
             Log.d("===", "createAccount: password not equal");
             Toast.makeText(nowContext, "비밀번호가 일치하지 않습니다.",
                     Toast.LENGTH_SHORT).show();
