@@ -32,6 +32,7 @@ import com.example.jiptalk.Valid;
 import com.example.jiptalk.vo.Unit;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -53,6 +54,7 @@ public class AddUnitActivity extends AppCompatActivity {
     RadioButton leaseTypeRb, contractRb, leaseTypeRbMonthly, leaseTypeRbFullDeposit, leaseTypeRbFullFee, contractRb3m, contractRb6m, contractRb1y, contractRb2y;
     TextView errMsgTv;
     Calendar startDateCalendar, endDateCalendar;
+    View mainView;
 
     String dateFlag = "";
     String buildingKey;
@@ -174,14 +176,11 @@ public class AddUnitActivity extends AppCompatActivity {
                 leaseTypeRb = findViewById(leaseTypeRg.getCheckedRadioButtonId());
                 String leaseType = leaseTypeRb.getText().toString();
 
-                contractRb = findViewById(contractRg.getCheckedRadioButtonId());
-                String contract = contractRb.getText().toString();
-
 //                Unit newUnit = new Unit(unitNum, leaseType, tenantName, tenantPhone, payerName, deposit, manageFee, monthlyFee, payDay, startDate, endDate);
-                Unit newUnit = new Unit(unitNum, leaseType, tenantName, tenantPhone, payerName, deposit, manageFee, monthlyFee, payDay, startDate, endDate,"-1","1");
-
+                Unit newUnit = new Unit(unitNum, leaseType, tenantName, tenantPhone, payerName, deposit, manageFee, monthlyFee, payDay, startDate, endDate,"0","1");
+                Log.v("===","unit created : "+newUnit.toString());
                 /* 유효성 검사 */
-                if (!isValid(newUnit)) return false;
+                //if (!isValid(newUnit)) return false;
 
                 /* 유효성 검사 끝나면 인증 & DB 삽입*/
                 createUnit(newUnit);
@@ -194,6 +193,8 @@ public class AddUnitActivity extends AppCompatActivity {
 
     public void initialization() {
         util = new Util();
+
+        mainView = findViewById(R.id.sv_add_unit);
 
         monthlyFeeLo = findViewById(R.id.layout_add_unit_monthlyFee);
         unitNumEt = findViewById(R.id.et_add_unit_unitNum);
@@ -215,7 +216,6 @@ public class AddUnitActivity extends AppCompatActivity {
 
         //기능 구현 후 보이게
         cameraBtn.setVisibility(View.INVISIBLE);
-
 
         leaseTypeRg = findViewById(R.id.rg_add_unit_leaseType);
         contractRg = findViewById(R.id.rg_add_unit_contract);
@@ -242,7 +242,6 @@ public class AddUnitActivity extends AppCompatActivity {
 
 
         initDatePickerListener();
-
 
     }
 
@@ -355,12 +354,18 @@ public class AddUnitActivity extends AppCompatActivity {
 
     private boolean isValid(Unit newUnit) {
 
-//        if(!valid.isNotBlank(newUnit.getUnitNum()||!valid.isNotBlank(newUnit.getTenantName())||!valid.isNotBlank(newUnit.getPayerName()||!valid.isNotBlank(newUnit.getTenantPhone()))){
-//            Log.d("===", "createBuilding : not valid value" );
-//            Toast.makeText(nowContext, "빈칸을 모두 채워주세요",
-//                    Toast.LENGTH_SHORT).show();
-//            return false;
-//        }
+        Log.d("===", String.valueOf(newUnit.getUnitNum().equals("")));
+
+        if(!valid.isNotBlank(newUnit.getUnitNum()))
+//                ||!valid.isNotBlank(newUnit.getTenantName())||!valid.isNotBlank(newUnit.getPayerName())
+//                ||!valid.isNotBlank(newUnit.getTenantPhone())||!valid.isNotBlank(newUnit.getStartDate())||!valid.isNotBlank(newUnit.getEndDate())
+//                ||!valid.isNotBlank(newUnit.getPayDay()))
+        {
+            Log.d("===", "createBuilding : not valid value" );
+            //Snackbar.make(mainView,"빈칸을 모두 채워주세요",Snackbar.LENGTH_SHORT).show();
+            //Toast.makeText(nowContext, "빈칸을 모두 채워주세요",Toast.LENGTH_SHORT).show();
+            return false;
+        }
         return true;
     }
 
@@ -399,6 +404,7 @@ public class AddUnitActivity extends AppCompatActivity {
 
 
     }
+
 }
 
 class NumberTextWatcher implements TextWatcher{
@@ -440,4 +446,3 @@ class NumberTextWatcher implements TextWatcher{
 
     }
 }
-
