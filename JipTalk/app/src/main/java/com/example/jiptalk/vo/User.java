@@ -10,45 +10,44 @@ import java.util.Map;
 public class User {
     String UID;
     String email;
-    String pwd;
     String phone;
     String name;
+    String depositor;  // 예금자명
+    String bank;    // 은행
+    String accountNum; //  계좌번호
     String sex;
     String category;    // 임대인 or 임차인
     Boolean isAlarmOn;
     String token;
 
 
-    public User() {
-    }
+    public User() {}
 
     public User(String UID) {
         this.UID = UID;
     }
 
-    public User(String email, String pwd) {
+    public User(String email, String phone, String name, String depositor, String bank, String accountNum, String sex, String category, Boolean isAlarmOn, String token) {
         this.email = email;
-        this.pwd = pwd;
-    }
-
-
-    public User(String email, String pwd, String phone, String name, String sex, String category, Boolean isAlarmOn) {
-        this.email = email;
-        this.pwd = pwd;
         this.phone = phone;
         this.name = name;
+        this.depositor = depositor;
+        this.bank = bank;
+        this.accountNum = accountNum;
         this.sex = sex;
         this.category = category;
         this.isAlarmOn = isAlarmOn;
-
+        this.token = token;
     }
 
-    public User(String UID, String email, String pwd, String phone, String name, String sex, String category, Boolean isAlarmOn, String token) {
+    public User(String UID, String email, String phone, String name, String depositor, String bank, String accountNum, String sex, String category, Boolean isAlarmOn, String token) {
         this.UID = UID;
         this.email = email;
-        this.pwd = pwd;
         this.phone = phone;
         this.name = name;
+        this.depositor = depositor;
+        this.bank = bank;
+        this.accountNum = accountNum;
         this.sex = sex;
         this.category = category;
         this.isAlarmOn = isAlarmOn;
@@ -61,14 +60,6 @@ public class User {
 
     public void setEmail(String email) {
         this.email = email;
-    }
-
-    public String getPwd() {
-        return pwd;
-    }
-
-    public void setPwd(String pwd) {
-        this.pwd = pwd;
     }
 
     public String getPhone() {
@@ -86,6 +77,18 @@ public class User {
     public void setName(String name) {
         this.name = name;
     }
+
+    public String getDepositor() { return depositor; }
+
+    public void setDepositor(String depositor) { this.depositor = depositor; }
+
+    public String getBank() { return bank; }
+
+    public void setBank(String bank) { this.bank = bank; }
+
+    public String getAccountNum() { return accountNum; }
+
+    public void setAccountNum(String accountNum) { this.accountNum = accountNum; }
 
     public String getSex() {
         return sex;
@@ -119,7 +122,6 @@ public class User {
         this.UID = UID;
     }
 
-
     public String getToken() {
         return token;
     }
@@ -128,13 +130,16 @@ public class User {
         this.token = token;
     }
 
+
     @Exclude
     public Map<String, Object> toMap() {
         HashMap<String, Object> result = new HashMap<>();
         result.put("email", email);
-        result.put("pwd", pwd);
         result.put("phone", phone);
         result.put("name", name);
+        result.put("depositor", depositor);
+        result.put("bank", bank);
+        result.put("accountNum", accountNum);
         result.put("sex", sex);
         result.put("category", category);
         result.put("isAlarmOn", isAlarmOn);
@@ -146,9 +151,11 @@ public class User {
         return "User{" +
                 "UID='" + UID + '\'' +
                 ", email='" + email + '\'' +
-                ", pwd='" + pwd + '\'' +
                 ", phone='" + phone + '\'' +
                 ", name='" + name + '\'' +
+                ", depositor='" + depositor + '\'' +
+                ", bank='" + bank + '\'' +
+                ", accountNum='" + accountNum + '\'' +
                 ", sex='" + sex + '\'' +
                 ", category='" + category + '\'' +
                 ", isAlarmOn=" + isAlarmOn +
