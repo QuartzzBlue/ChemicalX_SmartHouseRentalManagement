@@ -18,6 +18,7 @@ import android.view.animation.AccelerateInterpolator;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
@@ -41,6 +42,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.ValueEventListener;
+import com.wx.wheelview.adapter.ArrayWheelAdapter;
+import com.wx.wheelview.widget.WheelView;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -76,14 +79,15 @@ public class TenantMessageActivity extends AppCompatActivity {
 
 
     private FrameLayout frameLayoutDark, frameLayoutSendMsgLayout, frameLayoutTitleChoices, frameLayoutCalendar;
-    private Button buttonTitleAppointment, buttonTitleFee, buttonTitleMonthlyPayment,
+    private Button buttonTitleAppointment, buttonTitleRepair, buttonTitleMonthlyPayment,
             buttonTitleBldgConstruction, buttonTitleNoise, buttonTitleRecycle;
-
+    private LinearLayout linearLayoutDate;
     private TextView textViewMsgPreview;
-    private Button buttonInsertDateStart, buttonInsertDateEnd, buttonInsertTime, buttonSendMsg;
+    private Button buttonInsertDateStart, buttonInsertDateEnd, buttonInsertTime, buttonSendMsg, buttonRepairItem;
 
 
-    private FrameLayout frameLayoutMsgDetail;
+    private FrameLayout frameLayoutMsgDetail, frameLayoutRepairItems;
+    private WheelView wheelViewRepairItems;
 
     private DatePickerDialog.OnDateSetListener callbackMethodDatePicker;
     private TimePickerDialog.OnTimeSetListener callbackMethodTimePicker;
@@ -103,27 +107,7 @@ public class TenantMessageActivity extends AppCompatActivity {
 
         currentUserUID = Constant.userUID;
         category = Constant.category;
-//        databaseReference.child("user").child(currentUserUID).addValueEventListener(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//                User user = dataSnapshot.getValue(User.class);
-//                Constant.category = user.getCategory();
-//                Log.d(TAG, "category : " + Constant.category);
-//            }
-//
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError databaseError) {
-//
-//            }
-//        });
-//        Constant.category = "임대인";
         Log.d(TAG, "currentUserUID : " + currentUserUID);
-        /* These data should be saved in Constant class upon successful login.
-
-        currentUserUID = Constant.userUID;
-        category = Constant.category;
-        */
-        // Set ActionBar Title to name of the Tenant
 
         chatUserUID = getIntent().getStringExtra("clientUID").toString();
 
@@ -145,6 +129,9 @@ public class TenantMessageActivity extends AppCompatActivity {
         loadMessages();
 
         frameLayoutMsgDetail = findViewById(R.id.frameLayoutMsgDetail);
+
+        frameLayoutRepairItems = findViewById(R.id.frameLayoutRepairItems);
+        wheelViewRepairItems = findViewById(R.id.wheelViewRepairItems);
 
 
 //        imageViewSendButton.setOnClickListener(new View.OnClickListener() {
@@ -246,6 +233,7 @@ public class TenantMessageActivity extends AppCompatActivity {
             chatAddMap.put("seen", false);
             chatAddMap.put("timestamp", sendTime);
             chatAddMap.put("lastMessageId", pushID);
+            chatAddMap.put("token", token);
 
             Map chatUserMap = new HashMap();
             chatUserMap.put("chat/" + currentUserUID + "/" + chatUserUID, chatAddMap);
@@ -542,9 +530,6 @@ public class TenantMessageActivity extends AppCompatActivity {
             });
 
             // send response message
-            final MediaPlayer sendSound = MediaPlayer.create(getApplicationContext(), R.raw.light);
-            sendSound.start();
-
             DatabaseReference userMessagePush = databaseReference.child("message").child(currentUserUID).child(chatUserUID).push();
 
             String pushID = userMessagePush.getKey();
@@ -647,8 +632,9 @@ public class TenantMessageActivity extends AppCompatActivity {
         frameLayoutDark = frameLayoutMsgDetail.findViewById(R.id.frameLayoutDark2);
         frameLayoutSendMsgLayout = frameLayoutMsgDetail.findViewById(R.id.frameLayoutSendMsgLayout2);
 
+        linearLayoutDate = frameLayoutMsgDetail.findViewById(R.id.linearLayoutDate);
         buttonTitleAppointment = frameLayoutMsgDetail.findViewById(R.id.buttonTitleAppointment2);
-        buttonTitleFee = frameLayoutMsgDetail.findViewById(R.id.buttonTitleFee2);
+        buttonTitleRepair = frameLayoutMsgDetail.findViewById(R.id.buttonTitleRepair);
         buttonTitleMonthlyPayment = frameLayoutMsgDetail.findViewById(R.id.buttonTitleMonthlyPayment2);
         buttonTitleBldgConstruction = frameLayoutMsgDetail.findViewById(R.id.buttonTitleBldgContruction2);
         buttonTitleNoise = frameLayoutMsgDetail.findViewById(R.id.buttonTitleNoise2);
@@ -666,6 +652,8 @@ public class TenantMessageActivity extends AppCompatActivity {
         buttonInsertTime = frameLayoutMsgDetail.findViewById(R.id.buttonInsertTime2);
 
         buttonSendMsg = frameLayoutMsgDetail.findViewById(R.id.buttonSendMsg2);
+        buttonRepairItem = frameLayoutMsgDetail.findViewById(R.id.buttonRepairItem);
+        buttonSendMsg.setEnabled(false);
 
 
         initializeChoicesListener();
@@ -713,9 +701,12 @@ public class TenantMessageActivity extends AppCompatActivity {
     }
 
     public void initializeChoicesListener() {
+        frameLayoutRepairItems = findViewById(R.id.frameLayoutRepairItems);
+        wheelViewRepairItems = findViewById(R.id.wheelViewRepairItems);
         frameLayoutDark.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                buttonSendMsg.setEnabled(false);
                 Log.d(TAG, "clicked dark area");
                 Toast.makeText(TenantMessageActivity.this, "hello?", Toast.LENGTH_SHORT).show();
                 frameLayoutMsgDetail.removeAllViews();
@@ -726,6 +717,9 @@ public class TenantMessageActivity extends AppCompatActivity {
         buttonTitleAppointment.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                buttonSendMsg.setEnabled(true);
+                buttonRepairItem.setVisibility(View.GONE);
+                linearLayoutDate.setVisibility(View.VISIBLE);
                 textViewMsgPreview.setText("안녕하세요 세입자 입니다. \n0000년 00월 00일 00시 00분에 방문 가능한지 여쭤봅니다.");
                 buttonInsertDateStart.setVisibility(View.VISIBLE);
                 buttonInsertDateStart.setText("날짜");
@@ -735,16 +729,67 @@ public class TenantMessageActivity extends AppCompatActivity {
                 subject = "약속잡기";
             }
         });
-//        buttonTitleFee.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                textViewMsgPreview.setText("안녕하세요 집주인 입니다. \n관리비가 아직 입금이 안되었습니다. 확인 후 입금 바랍니다.");
-//                buttonInsertDateStart.setVisibility(View.INVISIBLE);
-//                buttonInsertDateEnd.setVisibility(View.INVISIBLE);
-//                buttonInsertTime.setVisibility(View.INVISIBLE);
-//                subject = "관리비 청구 요청";
-//            }
-//        });
+        final List<String> repairItemList = new ArrayList<>();
+        repairItemList.add("세면대");
+        repairItemList.add("현관문");
+        repairItemList.add("창문");
+        repairItemList.add("세면대");
+        repairItemList.add("현관문");
+        repairItemList.add("창문");
+        repairItemList.add("세면대");
+        repairItemList.add("현관문");
+        repairItemList.add("창문");
+        repairItemList.add("세면대");
+        repairItemList.add("현관문");
+        repairItemList.add("창문");
+        repairItemList.add("세면대");
+        repairItemList.add("현관문");
+        repairItemList.add("창문");
+        repairItemList.add("세면대");
+        repairItemList.add("현관문");
+        repairItemList.add("창문");
+        wheelViewRepairItems.setWheelAdapter(new ArrayWheelAdapter(getApplicationContext()));
+        wheelViewRepairItems.setSkin(WheelView.Skin.Common);
+
+        wheelViewRepairItems.setWheelData(repairItemList);
+        wheelViewRepairItems.setOnWheelItemSelectedListener(new WheelView.OnWheelItemSelectedListener() {
+            @Override
+            public void onItemSelected(int position, Object o) {
+                Log.d(TAG, "onItemSelected");
+                Toast.makeText(TenantMessageActivity.this, repairItemList.get(position), Toast.LENGTH_SHORT).show();
+                Log.d(TAG, "repairItem : " + repairItemList.get(position));
+                frameLayoutRepairItems.setVisibility(View.GONE);
+            }
+
+        });
+
+        wheelViewRepairItems.setOnWheelItemClickListener(new WheelView.OnWheelItemClickListener() {
+            @Override
+            public void onItemClick(int position, Object o) {
+                Log.d(TAG, "onItemClick");
+                Toast.makeText(TenantMessageActivity.this, repairItemList.get(position), Toast.LENGTH_SHORT).show();
+                Log.d(TAG, "repairItem : " + repairItemList.get(position));
+                frameLayoutRepairItems.setVisibility(View.GONE);
+            }
+        });
+        buttonTitleRepair.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                linearLayoutDate.setVisibility(View.GONE);
+
+                textViewMsgPreview.setText("안녕하세요 세입자 입니다. \n0000가 고장났습니다. \n수리 바랍니다.");
+                subject = "repairment";
+                buttonRepairItem.setVisibility(View.VISIBLE);
+                buttonRepairItem.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        frameLayoutRepairItems.setVisibility(View.VISIBLE);
+
+
+                    }
+                });
+            }
+        });
 //
 //        buttonTitleMonthlyPayment.setOnClickListener(new View.OnClickListener() {
 //            @Override
@@ -761,30 +806,30 @@ public class TenantMessageActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 textViewMsgPreview.setText("안녕하세요 집주인 입니다. \n0000년 00월 00일 ~ 0000년 00월 00일 공사가 있습니다.\n소음에 양해부탁드립니다.");
+                linearLayoutDate.setVisibility(View.VISIBLE);
                 buttonInsertDateStart.setVisibility(View.VISIBLE);
                 buttonInsertDateEnd.setVisibility(View.VISIBLE);
                 titleClicked = "bldgConstruction";
-                buttonInsertTime.setVisibility(View.INVISIBLE);
+                buttonInsertTime.setVisibility(View.GONE);
+                buttonRepairItem.setVisibility(View.GONE);
                 subject = "건물공사 공지";
             }
         });
         buttonTitleNoise.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                textViewMsgPreview.setText("안녕하세요 해피하우스 101호 입니다. \n밤 중 층간소음이 너무 심해 항의 드립니다.\n.");
-                buttonInsertDateStart.setVisibility(View.INVISIBLE);
-                buttonInsertDateEnd.setVisibility(View.INVISIBLE);
-                buttonInsertTime.setVisibility(View.INVISIBLE);
+                textViewMsgPreview.setText("안녕하세요 세입자 입니다. \n밤 중 층간소음이 너무 심해 항의 드립니다.\n.");
+                linearLayoutDate.setVisibility(View.GONE);
+                buttonRepairItem.setVisibility(View.GONE);
                 subject = "층간소음 주의";
             }
         });
         buttonTitleRecycle.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                textViewMsgPreview.setText("안녕하세요 해피하우스 101호 입니다. \n분리수거에 신경써 주시길 바랍니다.");
-                buttonInsertDateStart.setVisibility(View.INVISIBLE);
-                buttonInsertDateEnd.setVisibility(View.INVISIBLE);
-                buttonInsertTime.setVisibility(View.INVISIBLE);
+                textViewMsgPreview.setText("안녕하세요 세입자 입니다. \n분리수거를 않아는 주민이 있어 제보드립니다.");
+                linearLayoutDate.setVisibility(View.GONE);
+                buttonRepairItem.setVisibility(View.GONE);
                 subject = "분리수거";
             }
         });

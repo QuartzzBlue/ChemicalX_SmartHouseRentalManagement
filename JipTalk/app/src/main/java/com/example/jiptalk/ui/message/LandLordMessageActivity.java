@@ -225,6 +225,7 @@ public class LandLordMessageActivity extends AppCompatActivity {
             chatAddMap.put("seen", false);
             chatAddMap.put("timestamp", sendTime);
             chatAddMap.put("lastMessageId", pushID);
+            chatAddMap.put("token", token);
 
             Map chatUserMap = new HashMap();
             chatUserMap.put("chat/" + currentUserUID + "/" + chatUserUID, chatAddMap);
@@ -515,9 +516,6 @@ public class LandLordMessageActivity extends AppCompatActivity {
             });
 
             // send response message
-            final MediaPlayer sendSound = MediaPlayer.create(getApplicationContext(), R.raw.light);
-            sendSound.start();
-
             DatabaseReference userMessagePush = databaseReference.child("message").child(currentUserUID).child(chatUserUID).push();
 
             String pushID = userMessagePush.getKey();
