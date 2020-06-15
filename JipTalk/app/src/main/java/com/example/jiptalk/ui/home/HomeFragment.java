@@ -34,7 +34,6 @@ import com.google.firebase.iid.InstanceIdResult;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 public class HomeFragment extends Fragment {
 
@@ -46,11 +45,14 @@ public class HomeFragment extends Fragment {
     int totalPaidCnt,totalUnitCnt, totalExpireCnt,totalMonthlyIncome;
     TextView payStatusTv, expireCntTv,monthlyIncomeTv;
 
+
     ArrayList<Building> buildings;
     RecyclerView recyclerView;
     RecyclerView.LayoutManager layoutManager; //어댑터에서 getView 역할을 하는것
     // (뷰홀더 지정. 뷰홀더 : 화면에 표시될 아이템 뷰를 저장하는 객체)
     MyRecyclerViewAdapter myRecycleViewAdapter;
+
+    private FirebaseUser currentUser;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -79,7 +81,7 @@ public class HomeFragment extends Fragment {
     }
 
     public void initialization(){
-
+        currentUser = FirebaseAuth.getInstance().getCurrentUser();
         payStatusTv = root.findViewById(R.id.tv_home_paymentStatus);
         expireCntTv = root.findViewById(R.id.tv_home_expireCnt);
         monthlyIncomeTv = root.findViewById(R.id.tv_home_totalMonthlyIncome);
@@ -105,7 +107,7 @@ public class HomeFragment extends Fragment {
             public void onItemClick(View v, int position) {
                 // 액티비티 이동
                 Intent intent = new Intent(getActivity(), BuildingDetailActivity.class);
-                intent.putExtra("buildingKey",buildings.get(position).getId());
+                intent.putExtra("buildingInfo", buildings.get(position));
                 //Constant.nowBuildingKey = buildings.get(position).getId();
                 startActivity(intent);
             }
@@ -119,11 +121,11 @@ public class HomeFragment extends Fragment {
             Constant.token = Constant.newToken;
             Map map = new HashMap();
             map.put("token", Constant.token);
-            reference.child("user").child(Constant.userUID).updateChildren(map);
+            reference.child("user").child(currentUser.getUid()).updateChildren(map);
         }
 
         // DB로부터 값을 가져와서 token & category static 변수에 값 저장.
-        reference.child("user").child(Constant.userUID).addListenerForSingleValueEvent(new ValueEventListener() {
+        reference.child("user").child(currentUser.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 final HashMap hashMap = (HashMap) dataSnapshot.getValue();
@@ -135,7 +137,7 @@ public class HomeFragment extends Fragment {
                             String newToken = instanceIdResult.getToken();
                             Map map = new HashMap();
                             map.put("token", newToken);
-                            reference.child("user").child(Constant.userUID).updateChildren(map);
+                            reference.child("user").child(currentUser.getUid()).updateChildren(map);
                             Constant.token = newToken;
                             Constant.category = hashMap.get("category").toString();
                         }
@@ -165,14 +167,13 @@ public class HomeFragment extends Fragment {
 
         FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
         DatabaseReference buildingReference = firebaseDatabase.getReference("buildings");
-        FirebaseUser fUser = FirebaseAuth.getInstance().getCurrentUser();
 
-        buildingReference.child(fUser.getUid()).addValueEventListener(new ValueEventListener() {
+        buildingReference.child(currentUser.getUid()).addValueEventListener(new ValueEventListener() {
 
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-    //            Building building = dataSnapshot.getValue(Building.class);
+//                buildingMap = (HashMap<String, Building>) dataSnapshot.getValue();
 
                 for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
                     Building buildingItem = postSnapshot.getValue(Building.class);
@@ -270,7 +271,7 @@ class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAdapter.M
 
         String buildingName = buildings.get(position).getName();
         holder.buildingName.setText(buildingName);
-        holder.isDelayed.setText(buildings.get(position).getUnpaidCnt()+"");
+        holder.isDelayed.setText("미납 " + buildings.get(position).getUnpaidCnt()+"");
     }
 
     // getItemCount() - 전체 데이터 갯수 리턴.

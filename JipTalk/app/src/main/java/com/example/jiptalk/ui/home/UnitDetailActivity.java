@@ -1,7 +1,6 @@
 package com.example.jiptalk.ui.home;
 
 import android.os.Bundle;
-import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -9,7 +8,6 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentPagerAdapter;
 import androidx.fragment.app.FragmentStatePagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
@@ -27,18 +25,22 @@ public class UnitDetailActivity extends AppCompatActivity {
     private ViewPager viewPager;
     private MyFragmentPagerAdapter myFragmentPagerAdapter;
 
-    private String unitKey,buildingKey;
-    private String buildingName,unitNum;
+    private Unit thisUnit;
+    private String thisBuildingKey, thisBuildingName;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_unit_detail);
 
-        initialization();
+        initialize();
 
     }
-    private void initialization(){
+    private void initialize() {
+        thisUnit = (Unit) getIntent().getSerializableExtra("thisUnit");
+        thisBuildingKey = getIntent().getStringExtra("thisBuildingKey");
+        thisBuildingName = getIntent().getStringExtra("thisBuildingName");
+
         unitNumTv = findViewById(R.id.tv_unit_detail_unitNum);
         tabLayout = findViewById(R.id.tl_unit_detail);
 
@@ -62,24 +64,23 @@ public class UnitDetailActivity extends AppCompatActivity {
 
         });
 
-        getData();
+        setData();
 
 
     }
 
     public void setData(){
-        unitNumTv.setText(buildingName+" "+unitNum + "호");
+        unitNumTv.setText(thisBuildingName+" "+thisUnit.getUnitNum() + "호");
     }
 
-    public void getData(){
-
-        Unit unit =  Constant.buildings.get(Constant.nowBuildingKey).getUnits().get(Constant.nowUnitKey);
-        buildingName = Constant.buildings.get(Constant.nowBuildingKey).getName();
-        unitNum = unit.getUnitNum();
-
-        setData();
-
-    }
+//    public void getData(){
+//
+//
+//        unitNum = thisUnit.getUnitNum();
+//
+//        setData();
+//
+//    }
 
     public class MyFragmentPagerAdapter extends FragmentStatePagerAdapter{
 
@@ -92,7 +93,12 @@ public class UnitDetailActivity extends AppCompatActivity {
         public Fragment getItem(int position) {
             switch(position){
                 case 0 : return new Tab1Fragment();
-                case 1 : return new Tab2Fragment();
+                case 1 :
+                    Bundle bundle = new Bundle();
+                    bundle.putSerializable("thisUnit", thisUnit);
+                    Tab2Fragment tab2 = new Tab2Fragment();
+                    tab2.setArguments(bundle);
+                    return tab2;
                 case 2 : return new Tab3Fragment();
                 default : return null;
             }

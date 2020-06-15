@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
-import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Menu;
@@ -25,18 +24,16 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.jiptalk.Constant;
 import com.example.jiptalk.R;
 import com.example.jiptalk.Util;
 import com.example.jiptalk.Valid;
 import com.example.jiptalk.vo.Unit;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.material.snackbar.Snackbar;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
-import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -57,9 +54,10 @@ public class AddUnitActivity extends AppCompatActivity {
     View mainView;
 
     String dateFlag = "";
-    String buildingKey;
-
+    private String thisBuildingKey;
     private DatePickerDialog.OnDateSetListener callbackMethodDatePicker;
+
+    FirebaseUser currentUser;
     FirebaseDatabase mDatabase;
     DatabaseReference unitRef;
     Valid valid;
@@ -171,7 +169,7 @@ public class AddUnitActivity extends AppCompatActivity {
                 String deposit = depositEt.getText().toString();
                 String monthlyFee = monthlyFeeEt.getText().toString();
                 String manageFee = manageFeeEt.getText().toString();
-                String payDay = manageFeeEt.getText().toString();
+                String payDay = payDayEt.getText().toString();
 
                 leaseTypeRb = findViewById(leaseTypeRg.getCheckedRadioButtonId());
                 String leaseType = leaseTypeRb.getText().toString();
@@ -193,7 +191,9 @@ public class AddUnitActivity extends AppCompatActivity {
 
     public void initialization() {
         util = new Util();
+        thisBuildingKey = getIntent().getStringExtra("thisBuildingKey");
 
+//        currentUser = FirebaseAuth.getInstance().getCurrentUser();
         mainView = findViewById(R.id.sv_add_unit);
 
         monthlyFeeLo = findViewById(R.id.layout_add_unit_monthlyFee);
@@ -235,10 +235,9 @@ public class AddUnitActivity extends AppCompatActivity {
         errMsgTv = findViewById(R.id.tv_add_unit_errMsg);
         nowContext = this;
 
-        buildingKey = getIntent().getStringExtra("buildingKey");
 
         mDatabase = FirebaseDatabase.getInstance();
-        unitRef = mDatabase.getReference("buildings").child(Constant.userUID).child(Constant.nowBuildingKey);
+        unitRef = mDatabase.getReference("units").child(thisBuildingKey);
 
 
         initDatePickerListener();
@@ -371,26 +370,24 @@ public class AddUnitActivity extends AppCompatActivity {
 
     private void createUnit(final Unit newUnit) {
 
-        Log.d("===", "createUnit");
+        Log.d("===", "createUnit()");
 
         final Util util = new Util();
 
         util.showProgressDialog(nowContext);
 
-        Log.d("===",Constant.userUID);
-        String key = unitRef.child("units").push().getKey();
+        String key = unitRef.push().getKey();
         Map<String, Object> childUpdates = new HashMap<>();
-        childUpdates.put("/units/" + key, newUnit.toMap());
+        childUpdates.put("/"+key+"/", newUnit.toMap());
+
         unitRef.updateChildren(childUpdates).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
-                Log.d("===", "insertUnitToDatabase: succeed");
+                Log.d("===", "insertUnitToDatabase : succeed");
                 Toast.makeText(nowContext, "성공적으로 등록되었습니다.", Toast.LENGTH_SHORT).show();
                 util.hideProgressDialog();
-                // 액티비티 이동
-                Intent intent = new Intent(getApplicationContext(),BuildingDetailActivity.class);
-                startActivity(intent);
                 finish();
+
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
