@@ -1,6 +1,7 @@
 package com.example.jiptalk;
 
 import android.text.TextUtils;
+import android.util.Log;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -38,6 +39,7 @@ public class Valid {
 
     public boolean isNotBlank(String value){
         if(value.replace(" ","").equals("")){
+            Log.d("===", "false" );
             return false;
         }else{
             return true;

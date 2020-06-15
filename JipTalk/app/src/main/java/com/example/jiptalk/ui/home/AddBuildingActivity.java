@@ -37,25 +37,11 @@ import java.util.Map;
 
 public class AddBuildingActivity extends AppCompatActivity {
 
-    private FirebaseDatabase mDatabase;
-    private DatabaseReference buildingRef;
-    private FirebaseAuth mAuth;
-    FirebaseUser user;
-    String uid;
-
     Valid valid;
     Context nowContext;
     static final int REQUEST_CODE = 400;
 
-    Date currentTime;
-    SimpleDateFormat yearFormat,monthFormat,dayFormat;
-    String year,month,day;
-
     EditText et_buildingAddress,et_buildingName,et_totalUnitCnt;
-    Button searchBtn;
-
-    SharedPreferences appData;
-
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -63,16 +49,6 @@ public class AddBuildingActivity extends AppCompatActivity {
         setContentView(R.layout.activity_add_building);
         initialization();
 
-        //도로명 주소 웹뷰 액티비티로 이동
-        searchBtn.setOnClickListener(new View.OnClickListener(){
-
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getApplicationContext(), JusoWebViewActivity.class);
-                startActivityForResult(intent,REQUEST_CODE);
-
-            }
-        });
     }
 
     //도로명 주소 웹뷰 액티비티에서 주소 받아옴
@@ -104,11 +80,7 @@ public class AddBuildingActivity extends AppCompatActivity {
                 String buildingAddress = et_buildingAddress.getText().toString();
                 String buildingName = et_buildingName.getText().toString();
                 int totalUnitCnt = Integer.parseInt(et_totalUnitCnt.getText().toString());
-                Building newBuilding = new Building(buildingName,buildingAddress,totalUnitCnt,null);
-
-                //buildingID : userId_buildingname_등록날짜
-                newBuilding.setId(uid+"_"+buildingName+"_"+year+month+day);
-                Log.d("===",newBuilding.getId());
+                Building newBuilding = new Building(buildingName,buildingAddress,totalUnitCnt);
 
                 /* 유효성 검사 */
                 if(!isValid(newBuilding)) return false;
@@ -124,17 +96,20 @@ public class AddBuildingActivity extends AppCompatActivity {
 
     private void createBuilding(final Building newBuilding){
 
-        Log.d("===","createBuilding : "+newBuilding.getId());
+        FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
+        DatabaseReference buildingReference = firebaseDatabase.getReference("buildings");
+        FirebaseUser fUser = FirebaseAuth.getInstance().getCurrentUser();
+
+        Log.d("===","createBuilding");
 
         final Util util = new Util();
 
         util.showProgressDialog(nowContext);
 
-        String key = buildingRef.child("buildings").push().getKey();
+        String key = buildingReference.push().getKey();
         Map<String,Object> childUpdates = new HashMap<>();
-        childUpdates.put("/"+uid+"/"+key, newBuilding.toMap());
-        //Log.d("");
-        buildingRef.updateChildren(childUpdates).addOnSuccessListener(new OnSuccessListener<Void>() {
+        childUpdates.put("/"+fUser.getUid()+"/"+key, newBuilding.toMap());
+        buildingReference.updateChildren(childUpdates).addOnSuccessListener(new OnSuccessListener<Void>() {
                                         @Override
                                         public void onSuccess(Void aVoid) {
                                             Log.d("===", "insertBuildingToDatabase: succeed");
@@ -158,33 +133,27 @@ public class AddBuildingActivity extends AppCompatActivity {
     }
 
     private void initialization(){
+
         et_buildingAddress = findViewById(R.id.tv_add_building_address);
         et_buildingName = findViewById(R.id.tv_add_building_buildingName);
         et_totalUnitCnt = findViewById(R.id.tv_add_building_totalUnitCnt);
-        searchBtn = findViewById(R.id.btn_add_building_search);
 
-        mDatabase = FirebaseDatabase.getInstance();
-        buildingRef = mDatabase.getReference("buildings");
+        Button searchBtn = findViewById(R.id.btn_add_building_search);
 
-        mAuth = FirebaseAuth.getInstance();
-        user = mAuth.getCurrentUser();
+        //도로명 주소 웹뷰 액티비티로 이동
+        searchBtn.setOnClickListener(new View.OnClickListener(){
 
-        appData = getSharedPreferences("appData",MODE_PRIVATE);
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getApplicationContext(), JusoWebViewActivity.class);
+                startActivityForResult(intent,REQUEST_CODE);
 
-        currentTime = Calendar.getInstance().getTime();
-        yearFormat = new SimpleDateFormat("yyyy", Locale.getDefault());
-        monthFormat = new SimpleDateFormat("MM",Locale.getDefault());
-        dayFormat = new SimpleDateFormat("dd",Locale.getDefault());
-
-        year = yearFormat.format(currentTime);
-        month = monthFormat.format(currentTime);
-        day = dayFormat.format(currentTime);
+            }
+        });
 
         nowContext = this; // this = View.getContext();  현재 실행되고 있는 View의 context를 return 하는데 보통은 현재 활성화된 activity의 context가 된다.
         valid = new Valid();
 
-        user = mAuth.getCurrentUser();
-        uid = user.getUid();
     }
 
     private boolean isValid(Building newBuilding){

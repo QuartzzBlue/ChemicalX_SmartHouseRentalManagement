@@ -218,6 +218,27 @@ public class Unit {
         this.isOccupied = isOccupied;
     }
 
+    @Override
+    public String toString() {
+        return "Unit{" +
+                "unitID='" + unitID + '\'' +
+                ", unitNum='" + unitNum + '\'' +
+                ", leaseType='" + leaseType + '\'' +
+                ", tenantID='" + tenantID + '\'' +
+                ", tenantName='" + tenantName + '\'' +
+                ", tenantPhone='" + tenantPhone + '\'' +
+                ", payerName='" + payerName + '\'' +
+                ", deposit='" + deposit + '\'' +
+                ", mngFee='" + mngFee + '\'' +
+                ", monthlyFee='" + monthlyFee + '\'' +
+                ", payDay='" + payDay + '\'' +
+                ", startDate='" + startDate + '\'' +
+                ", endDate='" + endDate + '\'' +
+                ", isPaid='" + isPaid + '\'' +
+                ", isOccupied='" + isOccupied + '\'' +
+                '}';
+    }
+
     @Exclude
     public Map<String, Object> toMap(){
         HashMap<String, Object> result = new HashMap<>();

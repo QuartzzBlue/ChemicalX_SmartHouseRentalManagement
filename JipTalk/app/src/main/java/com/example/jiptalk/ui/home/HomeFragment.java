@@ -21,6 +21,8 @@ import com.example.jiptalk.Constant;
 import com.example.jiptalk.R;
 import com.example.jiptalk.vo.Building;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -41,6 +43,8 @@ public class HomeFragment extends Fragment {
     private HomeViewModel homeViewModel;
     Button buildingAddBtn;
     View root;
+    int totalPaidCnt,totalUnitCnt, totalExpireCnt,totalMonthlyIncome;
+    TextView payStatusTv, expireCntTv,monthlyIncomeTv;
 
     ArrayList<Building> buildings;
     RecyclerView recyclerView;
@@ -57,6 +61,8 @@ public class HomeFragment extends Fragment {
         initialization();
         setToken();
         getData();
+        setData();
+
 
         // Add New Building Btn
         buildingAddBtn.setOnClickListener(new View.OnClickListener(){
@@ -73,6 +79,10 @@ public class HomeFragment extends Fragment {
     }
 
     public void initialization(){
+
+        payStatusTv = root.findViewById(R.id.tv_home_paymentStatus);
+        expireCntTv = root.findViewById(R.id.tv_home_expireCnt);
+        monthlyIncomeTv = root.findViewById(R.id.tv_home_totalMonthlyIncome);
 
         buildings = new ArrayList<>();
 
@@ -95,8 +105,8 @@ public class HomeFragment extends Fragment {
             public void onItemClick(View v, int position) {
                 // 액티비티 이동
                 Intent intent = new Intent(getActivity(), BuildingDetailActivity.class);
-                //intent.putExtra("buildingKey",buildings.get(position).getId());
-                Constant.nowBuildingKey = buildings.get(position).getId();
+                intent.putExtra("buildingKey",buildings.get(position).getId());
+                //Constant.nowBuildingKey = buildings.get(position).getId();
                 startActivity(intent);
             }
         });
@@ -145,15 +155,47 @@ public class HomeFragment extends Fragment {
 
     }
 
-    private void getData() {
-        Set<String> keySet = Constant.buildings.keySet();
-        for(String key : keySet){
-            Building buildingItem = Constant.buildings.get(key);
-            buildingItem.setId(key);
-            buildings.add(buildingItem);
-        }
+    private void setData(){
+        expireCntTv.setText(totalExpireCnt +"");
+        monthlyIncomeTv.setText(totalMonthlyIncome+"");
+        payStatusTv.setText(totalPaidCnt+"/"+totalUnitCnt);
+    }
 
-        setAdapter();
+    private void getData() {
+
+        FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
+        DatabaseReference buildingReference = firebaseDatabase.getReference("buildings");
+        FirebaseUser fUser = FirebaseAuth.getInstance().getCurrentUser();
+
+        buildingReference.child(fUser.getUid()).addValueEventListener(new ValueEventListener() {
+
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+    //            Building building = dataSnapshot.getValue(Building.class);
+
+                for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
+                    Building buildingItem = postSnapshot.getValue(Building.class);
+                    buildingItem.setId(postSnapshot.getKey());
+
+                    totalUnitCnt += buildingItem.getOccupiedCnt();
+                    totalPaidCnt += buildingItem.getPaidCnt();
+                    totalMonthlyIncome += buildingItem.getMonthlyIncome();
+                    totalExpireCnt += buildingItem.getExpireCnt();
+
+                    buildings.add(buildingItem);
+                }
+
+                setAdapter();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.v(TAG, "InitConstants() : onCancelled", databaseError.toException());
+            }
+
+        });
+
     }
 
 
@@ -228,6 +270,7 @@ class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAdapter.M
 
         String buildingName = buildings.get(position).getName();
         holder.buildingName.setText(buildingName);
+        holder.isDelayed.setText(buildings.get(position).getUnpaidCnt()+"");
     }
 
     // getItemCount() - 전체 데이터 갯수 리턴.
