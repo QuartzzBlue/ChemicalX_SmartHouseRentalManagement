@@ -8,12 +8,13 @@ import com.google.firebase.database.Exclude;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.IgnoreExtraProperties;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
 @IgnoreExtraProperties
-public class Building {
+public class Building implements Serializable {
 
     String id;
     String name;
