@@ -44,7 +44,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                />
+                android:inputType="number" />
 
             <TextView
                 android:id="@+id/textView51"
@@ -150,7 +150,7 @@
             android:id="@+id/et_add_unit_tenantPhone"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="textPersonName" />
+            android:inputType="text|phone" />
 
         <TextView
             android:id="@+id/textView29"
@@ -381,7 +381,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:inputType="numberSigned"
+                android:inputType="number"
                 android:text="0" />
 
             <TextView
@@ -421,7 +421,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:inputType="numberSigned"
+                    android:inputType="number"
                     android:text="0" />
 
                 <TextView
@@ -455,7 +455,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:inputType="numberSigned"
+                android:inputType="number"
                 android:text="0" />
 
             <TextView
