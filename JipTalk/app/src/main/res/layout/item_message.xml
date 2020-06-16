@@ -67,4 +67,19 @@
         android:layout_weight="1"
         android:text="00:00pm"
         android:textAlignment="textEnd" />
+
+    <LinearLayout
+        android:id="@+id/linearLayoutDeleteMessage"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:gravity="right|center_vertical"
+        android:orientation="horizontal"
+        android:visibility="gone">
+
+        <ImageView
+            android:id="@+id/imageViewDeleteMessage"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            app:srcCompat="@android:drawable/ic_menu_delete" />
+    </LinearLayout>
 </LinearLayout>

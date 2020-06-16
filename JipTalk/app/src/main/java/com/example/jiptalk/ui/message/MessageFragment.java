@@ -14,6 +14,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -73,6 +74,8 @@ public class MessageFragment extends Fragment {
     private ArrayAdapter<String> arrayAdapterTenant;
     private Button buttonAddMsg, buttonAddNoti;
     private String clientSelected;
+    private ImageView imageViewDeleteMessages, imageViewDeleteMessage;
+    private LinearLayout linearLayoutDeleteMessage;
 
 
     /////
@@ -96,6 +99,8 @@ public class MessageFragment extends Fragment {
 
     public View onCreateView(@NonNull final LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
+
+
 
         Log.d(TAG, "Entered MessageFragment onCreateView");
         initiateClientList();
@@ -369,6 +374,20 @@ public class MessageFragment extends Fragment {
         recyclerViewMsg.setLayoutManager(layoutManager);
         messageAdapter.startListening();
         recyclerViewMsg.setAdapter(messageAdapter);
+
+
+
+        // initialize delete messages button etc.
+        imageViewDeleteMessages = root.findViewById(R.id.imageViewDeleteMessages);
+        imageViewDeleteMessages.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+
+
+
 
         return root;
     }
