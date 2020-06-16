@@ -121,28 +121,29 @@ public class SplashActivity extends Activity {
 //                }
 //            }.execute();
 
-            new DataSync(this, new DataSync.OnTaskFinishedCallback() {
-                @Override
-                public void onTaskFinished() {
-                    Log.v(TAG, "Move To MainActivity");
+//            new DataSync(this, new DataSync.OnTaskFinishedCallback() {
+//                @Override
+//                public void onTaskFinished() {
+//                    Log.v(TAG, "Move To MainActivity");
+//
+//                        intent = new Intent(getApplicationContext(), MainActivity.class);
+//                        startActivity(intent);
+//                        finish();
+//
+//
+//                }
+//            }).execute();
 
-                        intent = new Intent(getApplicationContext(), MainActivity.class);
-                        startActivity(intent);
-                        finish();
-                    
-
-                }
-            }).execute();
+            intent = new Intent(getApplicationContext(), MainActivity.class);
+            startActivity(intent);
+            finish();
 
         }else {
-            Log.v(TAG,"Move To LoginActivity");
+
             intent = new Intent(getApplicationContext(), LoginActivity.class);
             startActivity(intent);
             finish();
         }
-
-
-
     }
 
     private void isAutoLogin(){

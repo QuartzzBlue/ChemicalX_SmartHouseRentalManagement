@@ -58,5 +58,4 @@ dependencies {
 
     // WheelView for Tenant Repair Items
     implementation 'com.github.stfalcon:universalpickerdialog:0.1.0'
-
 }

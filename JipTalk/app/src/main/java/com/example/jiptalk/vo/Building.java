@@ -8,12 +8,13 @@ import com.google.firebase.database.Exclude;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.IgnoreExtraProperties;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
 @IgnoreExtraProperties
-public class Building {
+public class Building implements Serializable {
 
     String id;
     String name;
@@ -24,16 +25,17 @@ public class Building {
     int paidCnt;
     int unpaidCnt;
     int monthlyIncome;
+    int expireCnt;
+
     Map<String, Unit> units = new HashMap<>();
 
     public Building() {
     }
 
-    public Building(String name, String buildingAddress, int unitCnt,Map<String,Unit> units) {
+    public Building(String name, String buildingAddress, int unitCnt) {
         this.name = name;
         this.buildingAddress = buildingAddress;
         this.unitCnt = unitCnt;
-        this.units = units;
     }
 
     public Building(String name, String buildingAddress, int unitCnt, int occupiedCnt, int emptyCnt, int paidCnt, int unpaidCnt, int monthlyIncome, HashMap<String, Unit> unitList) {
@@ -140,6 +142,14 @@ public class Building {
         this.units = units;
     }
 
+    public int getExpireCnt() {
+        return expireCnt;
+    }
+
+    public void setExpireCnt(int expireCnt) {
+        this.expireCnt = expireCnt;
+    }
+
     @Override
     public String toString() {
         return "Building{" +
@@ -169,7 +179,8 @@ public class Building {
         result.put("paidCnt", paidCnt);
         result.put("unpaidCnt", unpaidCnt);
         result.put("monthlyIncome",monthlyIncome);
-        result.put("units",units);
+        result.put("expireCnt",expireCnt);
+        //result.put("units",units);
 
         return result;
     }

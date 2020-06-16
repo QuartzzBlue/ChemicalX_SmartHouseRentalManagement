@@ -3,12 +3,13 @@ package com.example.jiptalk.vo;
 import com.google.firebase.database.Exclude;
 import com.google.firebase.database.IgnoreExtraProperties;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
 
 @IgnoreExtraProperties
-public class Unit {
+public class Unit implements Serializable {
 
     String unitID;
     String unitNum;
@@ -216,6 +217,27 @@ public class Unit {
 
     public void setIsOccupied(String isOccupied) {
         this.isOccupied = isOccupied;
+    }
+
+    @Override
+    public String toString() {
+        return "Unit{" +
+                "unitID='" + unitID + '\'' +
+                ", unitNum='" + unitNum + '\'' +
+                ", leaseType='" + leaseType + '\'' +
+                ", tenantID='" + tenantID + '\'' +
+                ", tenantName='" + tenantName + '\'' +
+                ", tenantPhone='" + tenantPhone + '\'' +
+                ", payerName='" + payerName + '\'' +
+                ", deposit='" + deposit + '\'' +
+                ", mngFee='" + mngFee + '\'' +
+                ", monthlyFee='" + monthlyFee + '\'' +
+                ", payDay='" + payDay + '\'' +
+                ", startDate='" + startDate + '\'' +
+                ", endDate='" + endDate + '\'' +
+                ", isPaid='" + isPaid + '\'' +
+                ", isOccupied='" + isOccupied + '\'' +
+                '}';
     }
 
     @Exclude

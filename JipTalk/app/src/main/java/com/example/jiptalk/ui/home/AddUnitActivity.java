@@ -1,61 +1,45 @@
 package com.example.jiptalk.ui.home;
 
-import android.Manifest;
 import android.app.DatePickerDialog;
-import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.hardware.camera2.CameraCaptureSession;
-import android.hardware.camera2.CameraDevice;
-import android.hardware.camera2.CaptureRequest;
 import android.os.Bundle;
 import android.text.Editable;
-import android.text.Layout;
 import android.text.TextWatcher;
 import android.util.Log;
-import android.util.Size;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
-import android.widget.TimePicker;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 
-import com.example.jiptalk.Constant;
-import com.example.jiptalk.MainActivity;
 import com.example.jiptalk.R;
 import com.example.jiptalk.Util;
 import com.example.jiptalk.Valid;
-import com.example.jiptalk.vo.Building;
 import com.example.jiptalk.vo.Unit;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
-import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
-import java.util.TimeZone;
 
 public class AddUnitActivity extends AppCompatActivity {
 
@@ -65,18 +49,21 @@ public class AddUnitActivity extends AppCompatActivity {
     Button makeSameBtn,cameraBtn;
     RadioGroup leaseTypeRg, contractRg;
     RadioButton leaseTypeRb, contractRb, leaseTypeRbMonthly, leaseTypeRbFullDeposit, leaseTypeRbFullFee, contractRb3m, contractRb6m, contractRb1y, contractRb2y;
-    TextView errMsgtv;
+    TextView errMsgTv;
     Calendar startDateCalendar, endDateCalendar;
+    View mainView;
 
     String dateFlag = "";
-    String buildingKey;
-
+    private String thisBuildingKey;
     private DatePickerDialog.OnDateSetListener callbackMethodDatePicker;
+
+    FirebaseUser currentUser;
     FirebaseDatabase mDatabase;
     DatabaseReference unitRef;
     Valid valid;
     Context nowContext;
     NumberFormat myFormatter;
+    Util util;
 
 
     @Override
@@ -182,19 +169,16 @@ public class AddUnitActivity extends AppCompatActivity {
                 String deposit = depositEt.getText().toString();
                 String monthlyFee = monthlyFeeEt.getText().toString();
                 String manageFee = manageFeeEt.getText().toString();
-                String payDay = manageFeeEt.getText().toString();
+                String payDay = payDayEt.getText().toString();
 
                 leaseTypeRb = findViewById(leaseTypeRg.getCheckedRadioButtonId());
                 String leaseType = leaseTypeRb.getText().toString();
 
-                contractRb = findViewById(contractRg.getCheckedRadioButtonId());
-                String contract = contractRb.getText().toString();
-
 //                Unit newUnit = new Unit(unitNum, leaseType, tenantName, tenantPhone, payerName, deposit, manageFee, monthlyFee, payDay, startDate, endDate);
-                Unit newUnit = new Unit(unitNum, leaseType, tenantName, tenantPhone, payerName, deposit, manageFee, monthlyFee, payDay, startDate, endDate,"-1","1");
-
+                Unit newUnit = new Unit(unitNum, leaseType, tenantName, tenantPhone, payerName, deposit, manageFee, monthlyFee, payDay, startDate, endDate,"0","1");
+                Log.v("===","unit created : "+newUnit.toString());
                 /* 유효성 검사 */
-                if (!isValid(newUnit)) return false;
+                //if (!isValid(newUnit)) return false;
 
                 /* 유효성 검사 끝나면 인증 & DB 삽입*/
                 createUnit(newUnit);
@@ -206,6 +190,11 @@ public class AddUnitActivity extends AppCompatActivity {
     }
 
     public void initialization() {
+        util = new Util();
+        thisBuildingKey = getIntent().getStringExtra("thisBuildingKey");
+
+//        currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        mainView = findViewById(R.id.sv_add_unit);
 
         monthlyFeeLo = findViewById(R.id.layout_add_unit_monthlyFee);
         unitNumEt = findViewById(R.id.et_add_unit_unitNum);
@@ -225,6 +214,8 @@ public class AddUnitActivity extends AppCompatActivity {
         makeSameBtn = findViewById(R.id.btn_add_unit_makeSame);
         cameraBtn = findViewById(R.id.btn_moveToCamera);
 
+        //기능 구현 후 보이게
+        cameraBtn.setVisibility(View.INVISIBLE);
 
         leaseTypeRg = findViewById(R.id.rg_add_unit_leaseType);
         contractRg = findViewById(R.id.rg_add_unit_contract);
@@ -237,20 +228,22 @@ public class AddUnitActivity extends AppCompatActivity {
         contractRb2y = findViewById(R.id.rb_add_unit_contract_2y);
 
         myFormatter = NumberFormat.getInstance(Locale.getDefault());
+        depositEt.addTextChangedListener(new NumberTextWatcher(depositEt));
+        monthlyFeeEt.addTextChangedListener(new NumberTextWatcher(monthlyFeeEt));
+        manageFeeEt.addTextChangedListener(new NumberTextWatcher(manageFeeEt));
 
-        errMsgtv = findViewById(R.id.tv_add_unit_errMsg);
+        errMsgTv = findViewById(R.id.tv_add_unit_errMsg);
         nowContext = this;
 
-        buildingKey = getIntent().getStringExtra("buildingKey");
 
         mDatabase = FirebaseDatabase.getInstance();
-        unitRef = mDatabase.getReference("buildings").child(Constant.userUID).child(Constant.nowBuildingKey);
+        unitRef = mDatabase.getReference("units").child(thisBuildingKey);
 
 
         initDatePickerListener();
 
-
     }
+
     private final TextWatcher textWatcher = new TextWatcher() {
         @Override
         public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -262,12 +255,12 @@ public class AddUnitActivity extends AppCompatActivity {
             if(monthlyFeeEt.getText().toString().trim().equals("")){
                 monthlyFee = 0;
             }else{
-                monthlyFee = Integer.parseInt(monthlyFeeEt.getText().toString());
+                monthlyFee = Integer.parseInt(monthlyFeeEt.getText().toString().replaceAll(",",""));
             }
             if(manageFeeEt.getText().toString().trim().equals("")){
                 manageFee = 0;
             }else{
-                manageFee = Integer.parseInt(manageFeeEt.getText().toString());
+                manageFee = Integer.parseInt(manageFeeEt.getText().toString().replaceAll(",",""));
             }
             int totalFee = monthlyFee + manageFee;
             totalFeeEt.setText(myFormatter.format(totalFee));
@@ -319,11 +312,11 @@ public class AddUnitActivity extends AppCompatActivity {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 if (startDateEt.getText().toString().equals("")) {
-                    errMsgtv.setText("시작 날짜를 선택해 주세요.");
+                    errMsgTv.setText("시작 날짜를 선택해 주세요.");
                     return;
                 } else {
                     //왜 안먹지..?
-                    errMsgtv.setVisibility(View.INVISIBLE);
+                    errMsgTv.setVisibility(View.INVISIBLE);
                 }
 
                 if (checkedId == R.id.rb_add_unit_contract_3m) {
@@ -360,37 +353,41 @@ public class AddUnitActivity extends AppCompatActivity {
 
     private boolean isValid(Unit newUnit) {
 
-//        if(!valid.isNotBlank(newUnit.getUnitNum()||!valid.isNotBlank(newUnit.getTenantName())||!valid.isNotBlank(newUnit.getPayerName()||!valid.isNotBlank(newUnit.getTenantPhone()))){
-//            Log.d("===", "createBuilding : not valid value" );
-//            Toast.makeText(nowContext, "빈칸을 모두 채워주세요",
-//                    Toast.LENGTH_SHORT).show();
-//            return false;
-//        }
+        Log.d("===", String.valueOf(newUnit.getUnitNum().equals("")));
+
+        if(!valid.isNotBlank(newUnit.getUnitNum()))
+//                ||!valid.isNotBlank(newUnit.getTenantName())||!valid.isNotBlank(newUnit.getPayerName())
+//                ||!valid.isNotBlank(newUnit.getTenantPhone())||!valid.isNotBlank(newUnit.getStartDate())||!valid.isNotBlank(newUnit.getEndDate())
+//                ||!valid.isNotBlank(newUnit.getPayDay()))
+        {
+            Log.d("===", "createBuilding : not valid value" );
+            //Snackbar.make(mainView,"빈칸을 모두 채워주세요",Snackbar.LENGTH_SHORT).show();
+            //Toast.makeText(nowContext, "빈칸을 모두 채워주세요",Toast.LENGTH_SHORT).show();
+            return false;
+        }
         return true;
     }
 
     private void createUnit(final Unit newUnit) {
 
-        Log.d("===", "createUnit");
+        Log.d("===", "createUnit()");
 
         final Util util = new Util();
 
         util.showProgressDialog(nowContext);
 
-        Log.d("===",Constant.userUID);
-        String key = unitRef.child("units").push().getKey();
+        String key = unitRef.push().getKey();
         Map<String, Object> childUpdates = new HashMap<>();
-        childUpdates.put("/units/" + key, newUnit.toMap());
+        childUpdates.put("/"+key+"/", newUnit.toMap());
+
         unitRef.updateChildren(childUpdates).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
-                Log.d("===", "insertUnitToDatabase: succeed");
+                Log.d("===", "insertUnitToDatabase : succeed");
                 Toast.makeText(nowContext, "성공적으로 등록되었습니다.", Toast.LENGTH_SHORT).show();
                 util.hideProgressDialog();
-                // 액티비티 이동
-                Intent intent = new Intent(getApplicationContext(),BuildingDetailActivity.class);
-                startActivity(intent);
                 finish();
+
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
@@ -404,5 +401,45 @@ public class AddUnitActivity extends AppCompatActivity {
 
 
     }
+
 }
 
+class NumberTextWatcher implements TextWatcher{
+
+    private NumberFormat nf;
+    private EditText et;
+
+    public NumberTextWatcher(EditText et){
+       nf = NumberFormat.getInstance();
+       this.et = et;
+    }
+
+    private static final String TAG = "NumberTextWatcher";
+
+    @Override
+    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+    }
+
+    @Override
+    public void onTextChanged(CharSequence s, int start, int before, int count) {
+        et.removeTextChangedListener(this);
+
+        try{
+            String tmp = s.toString();
+            tmp = tmp.replace(",","");
+            long itmp = Long.parseLong(tmp);
+            tmp = nf.format(itmp);
+            et.setText(tmp);
+            et.setSelection(tmp.length());
+        } catch(Exception e){
+
+        }
+        et.addTextChangedListener(this);
+    }
+
+    @Override
+    public void afterTextChanged(Editable s) {
+
+    }
+}

@@ -16,6 +16,9 @@ import com.example.jiptalk.FindIdActivity;
 import com.example.jiptalk.R;
 import com.example.jiptalk.vo.Unit;
 
+import java.text.NumberFormat;
+import java.util.Locale;
+
 public class Tab2Fragment extends Fragment {
     private ViewGroup viewGroup;
     private TextView nameTv, depositorTv, phoneTv, leaseTypeTv, contractPeriodTv, depositTv, payDayTv, monthlyFeeTv, manageFeeTv, monthlyTotalFeeTv;
@@ -27,7 +30,7 @@ public class Tab2Fragment extends Fragment {
 
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle saveInstanceState){
         viewGroup = (ViewGroup) inflater.inflate(R.layout.item_unit_detail_tab2,null);
-
+        thisUnit = (Unit) getArguments().getSerializable("thisUnit");
         return viewGroup;
     }
 
@@ -40,8 +43,7 @@ public class Tab2Fragment extends Fragment {
     }
 
     private void initialize() {
-        thisUnit = Constant.buildings.get(Constant.nowBuildingKey).getUnits().get(Constant.nowUnitKey);
-
+        NumberFormat myFormatter = NumberFormat.getInstance(Locale.getDefault());
         nameTv = viewGroup.findViewById(R.id.tv_unit_detail_tab2_name);
         depositorTv = viewGroup.findViewById(R.id.tv_unit_detail_tab2_depositor);
         phoneTv = viewGroup.findViewById(R.id.tv_unit_detail_tab2_phone);
@@ -62,8 +64,8 @@ public class Tab2Fragment extends Fragment {
         payDayTv.setText("매월 " + thisUnit.getPayDay() + "일");
         monthlyFeeTv.setText(thisUnit.getMonthlyFee() + "원");
         manageFeeTv.setText(thisUnit.getMngFee() + "원");
-        int totalFee = Integer.parseInt(thisUnit.getMonthlyFee()) + Integer.parseInt(thisUnit.getMngFee());
-        monthlyTotalFeeTv.setText(totalFee + "원");
+        int totalFee = Integer.parseInt(thisUnit.getMonthlyFee().replace(",", "")) + Integer.parseInt(thisUnit.getMngFee().replace(",", ""));
+        monthlyTotalFeeTv.setText(myFormatter.format(totalFee) + "원");
 
     }
 
