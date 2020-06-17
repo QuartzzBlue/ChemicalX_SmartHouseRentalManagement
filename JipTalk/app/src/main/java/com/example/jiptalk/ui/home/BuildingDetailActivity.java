@@ -10,6 +10,7 @@ import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -20,7 +21,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.jiptalk.Constant;
 import com.example.jiptalk.R;
 import com.example.jiptalk.vo.Building;
 import com.example.jiptalk.vo.Unit;
@@ -38,19 +38,16 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
 
 public class BuildingDetailActivity extends AppCompatActivity {
 
     int expireCnt,monthIncome,paidCnt,unpaidCnt,occupiedCnt,emptyCnt,unitCnt;
     TextView buildingNameTv,expireCntTv,monthIncomeTv,unpaidCntTv,paidCntTv,occupiedCntTv,emptyCntTv,unitCntTv, emptyView;
-    Button addUnitBtn,editBtn;
+    Button addUnitBtn,editBtn, delBtn, completeBtn;
     private RecyclerView recyclerView;
     RecyclerView.LayoutManager layoutManager;
     UnitViewAdapter unitViewAdapter;
     Context nowContext;
-
     private ArrayList<Unit> unitList;
     private String thisBuildingKey, buildingName;
     private Building thisBuilding;
@@ -79,10 +76,30 @@ public class BuildingDetailActivity extends AppCompatActivity {
         editBtn.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
+                delBtn.setVisibility(View.VISIBLE);
+                completeBtn.setVisibility(View.VISIBLE);
+                editBtn.setVisibility(View.GONE);
 
+                for (int position=0; position<recyclerView.getChildCount(); position++){
+                    recyclerView.getChildAt(position).findViewById(R.id.cb_rv_unit_selectedItem).setVisibility(View.VISIBLE);
+                    recyclerView.getChildAt(position).findViewById(R.id.cb_rv_unit_selectedItem).setTag(position);
+                }
+                unitViewAdapter.notifyDataSetChanged();
             }
         });
 
+        completeBtn.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                delBtn.setVisibility(View.GONE);
+                completeBtn.setVisibility(View.GONE);
+                editBtn.setVisibility(View.VISIBLE);
+                for (int position=0; position<recyclerView.getChildCount(); position++){
+                    recyclerView.getChildAt(position).findViewById(R.id.cb_rv_unit_selectedItem).setVisibility(View.GONE);
+                }
+                unitViewAdapter.notifyDataSetChanged();
+            }
+        });
     }
 
     /* AppBar 에 정보 버튼 추가 */
@@ -110,6 +127,8 @@ public class BuildingDetailActivity extends AppCompatActivity {
         expireCntTv = findViewById(R.id.tv_building_detail_expireCnt);
         addUnitBtn = findViewById(R.id.btn_building_detail_addUnit);
         editBtn=findViewById(R.id.btn_building_detail_edit);
+        delBtn = findViewById(R.id.btn_building_detail_delete);
+        completeBtn = findViewById(R.id.btn_building_detail_complete);
         recyclerView = findViewById(R.id.rv_building_detail);
         emptyView = findViewById(R.id.tv_building_detail_emptyView);
         dbRef = FirebaseDatabase.getInstance().getReference("units/"+ thisBuildingKey);
@@ -247,13 +266,14 @@ class UnitViewAdapter extends RecyclerView.Adapter<UnitViewAdapter.MyViewHolder>
     class MyViewHolder extends RecyclerView.ViewHolder{
 
         TextView unitNumTv,userNameTv,monthlyFeeTv,isPaidTv,startDateTv,endDateTv;
+        CheckBox checkBox;
         ProgressBar progressBar;
         ImageButton btn_unitDetail;
 
         //뷰 객체에 대한 참조
         MyViewHolder(final View itemView){
             super(itemView);
-
+            checkBox = itemView.findViewById(R.id.cb_rv_unit_selectedItem);
             btn_unitDetail = itemView.findViewById(R.id.btn_recyclerview_buildingDetail);
             unitNumTv = itemView.findViewById(R.id.tv_rv_item_unitNum);
             userNameTv = itemView.findViewById(R.id.tv_rv_unit_userName);
@@ -328,6 +348,7 @@ class UnitViewAdapter extends RecyclerView.Adapter<UnitViewAdapter.MyViewHolder>
         }
         holder.startDateTv.setText(units.get(position).getStartDate());
         holder.endDateTv.setText(units.get(position).getEndDate());
+
 
         /* 날짜 프로그래스바 세팅 */
         Date startDate, endDate;
