@@ -60,21 +60,13 @@
             android:text="메세지 내용" />
     </LinearLayout>
 
-    <TextView
-        android:id="@+id/textViewMsgTime"
-        android:layout_width="100dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:text="00:00pm"
-        android:textAlignment="textEnd" />
-
     <LinearLayout
         android:id="@+id/linearLayoutDeleteMessage"
         android:layout_width="60dp"
         android:layout_height="60dp"
         android:gravity="right|center_vertical"
         android:orientation="horizontal"
-        android:visibility="gone">
+        android:visibility="visible">
 
         <ImageView
             android:id="@+id/imageViewDeleteMessage"

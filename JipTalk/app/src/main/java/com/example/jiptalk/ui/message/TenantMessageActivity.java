@@ -31,9 +31,9 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import com.example.jiptalk.Constant;
 import com.example.jiptalk.R;
 import com.google.android.gms.tasks.OnFailureListener;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -50,8 +50,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
-
-import stfalcon.universalpickerdialog.UniversalPickerDialog;
 
 public class TenantMessageActivity extends AppCompatActivity {
 
@@ -104,8 +102,9 @@ public class TenantMessageActivity extends AppCompatActivity {
         databaseReference = FirebaseDatabase.getInstance().getReference();
 
 
-        currentUserUID = Constant.userUID;
-        category = Constant.category;
+        currentUserUID = FirebaseAuth.getInstance().getUid();
+        category = "세입자";
+        Log.d(TAG, "category : " + category);
         Log.d(TAG, "currentUserUID : " + currentUserUID);
 
         chatUserUID = getIntent().getStringExtra("clientUID").toString();
@@ -159,7 +158,7 @@ public class TenantMessageActivity extends AppCompatActivity {
         databaseReference.child("chat").child(chatUserUID).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                databaseReference.child("chat").child(chatUserUID).child(Constant.userUID).child("seen").setValue(true).addOnFailureListener(new OnFailureListener() {
+                databaseReference.child("chat").child(chatUserUID).child(currentUserUID).child("seen").setValue(true).addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
                         Log.d("CHAT_ERROR", e.getMessage().toString());

@@ -14,12 +14,14 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -36,6 +38,7 @@ import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -73,6 +76,8 @@ public class MessageFragment extends Fragment {
     private ArrayAdapter<String> arrayAdapterTenant;
     private Button buttonAddMsg, buttonAddNoti;
     private String clientSelected;
+    private ImageView imageViewDeleteMessages, imageViewDeleteMessage;
+    private LinearLayout linearLayoutDeleteMessage;
 
 
     /////
@@ -81,13 +86,16 @@ public class MessageFragment extends Fragment {
     private View mView;
     private String currentUserUID;
     private String category;
-    private DatabaseReference rootRef, chatData, userData;
+    private DatabaseReference rootRef, chatData, userData, myData, buildingData;
     private FirebaseRecyclerOptions<MessageVO> messageOptions;
-    private FirebaseRecyclerAdapter<MessageVO, MessageViewHolder> messageAdapter;
+    public FirebaseRecyclerAdapter<MessageVO, MessageViewHolder> messageAdapter;
     private DatabaseReference mChatFriendData;
 
 
     ////
+
+    public static final int VIEWTYPE_NORMAL = 0;
+    public static final int VIEWTYPE_EDIT = 1;
 
     private ArrayList<String> clientList2 = new ArrayList<>();
 
@@ -97,8 +105,8 @@ public class MessageFragment extends Fragment {
     public View onCreateView(@NonNull final LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
 
+
         Log.d(TAG, "Entered MessageFragment onCreateView");
-        initiateClientList();
 
 
         // remove Actionbar
@@ -107,6 +115,15 @@ public class MessageFragment extends Fragment {
 
 //        notificationsViewModel = ViewModelProviders.of(this).get(MessageViewModel.class);
         root = inflater.inflate(R.layout.fragment_message, container, false);
+
+
+        // initialize delete messages button etc.
+        imageViewDeleteMessages = root.findViewById(R.id.imageViewDeleteMessages);
+//        imageViewDeleteMessages.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//            }
+//        });
 
 //        messageItemAdapter = new MessageItemAdapter(msgList);
         notiItemAdapter = new NotiItemAdapter(notiList);
@@ -119,23 +136,51 @@ public class MessageFragment extends Fragment {
         recyclerViewMsg = root.findViewById(R.id.recyclerViewMsg);
         recyclerViewMsg.setHasFixedSize(false);
         currentUserUID = FirebaseAuth.getInstance().getUid();
+        Log.d(TAG, "currentUserID : " + currentUserUID);
+
+
 //         currentUserUID = "집주인";
 //        currentUserUID = "조현민";
 //        category = "임대인";
 //        currentUserUID = "이슬";
 //        category = "임차인";
         rootRef = FirebaseDatabase.getInstance().getReference();
-        chatData = rootRef.child("chat").child(currentUserUID);
+        initiateClientList();
+        myData = rootRef.child("user").child(currentUserUID);
+        myData.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                Log.d(TAG, "category : " + dataSnapshot.child("category").getValue().toString());
+                category = dataSnapshot.child("category").getValue().toString();
+            }
 
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+        chatData = rootRef.child("chat").child(currentUserUID);
         messageOptions = new FirebaseRecyclerOptions.Builder<MessageVO>().setQuery(chatData, MessageVO.class).build();
 
 
         messageAdapter = new FirebaseRecyclerAdapter<MessageVO, MessageViewHolder>(messageOptions) {
+
+            int viewType = VIEWTYPE_NORMAL;
+
+            public void setViewType(int viewType) {
+                this.viewType = viewType;
+            }
+
+
+
             @Override
-            protected void onBindViewHolder(@NonNull final MessageViewHolder holder, int position, @NonNull final MessageVO model) {
+            protected void onBindViewHolder(@NonNull final MessageViewHolder holder, final int position, @NonNull final MessageVO model) {
                 final String chatUserUID = getRef(position).getKey();
+
                 Log.d(TAG, "chatUserUID : " + chatUserUID);
                 DatabaseReference mRootChat = rootRef.child("chat");
+
                 mRootChat.addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
@@ -147,9 +192,9 @@ public class MessageFragment extends Fragment {
                                 @Override
                                 public void onClick(View v) {
                                     Intent intent = null;
-                                    if (Constant.category.equals("집주인")) {
+                                    if (category.equals("집주인")) {
                                         intent = new Intent(getContext(), LandLordMessageActivity.class);
-                                    } else if (Constant.category.equals("세입자")) {
+                                    } else if (category.equals("세입자")) {
                                         intent = new Intent(getContext(), TenantMessageActivity.class);
                                     }
 
@@ -164,12 +209,14 @@ public class MessageFragment extends Fragment {
                             holder.chatLayout.setOnLongClickListener(new View.OnLongClickListener() {
                                 @Override
                                 public boolean onLongClick(View v) {
-                                    Toast.makeText(getContext(), "Long Clicked", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(getContext(), position + " Long Clicked", Toast.LENGTH_SHORT).show();
 
 
                                     return false;
                                 }
                             });
+
+
                             DatabaseReference mOursMessage = rootRef.child("messages").child(currentUserUID).child(chatUserUID).child(lastMessageId);
                             mOursMessage.addValueEventListener(new ValueEventListener() {
                                 @Override
@@ -185,6 +232,21 @@ public class MessageFragment extends Fragment {
                                     holder.setName(getChatUserName(chatUserUID));
                                     holder.setContent(last_message);
                                     holder.setTime(getDate(message_time));
+//
+
+//                                    View.OnClickListener deleteButtonListener = new View.OnClickListener() {
+//                                        @Override
+//                                        public void onClick(View v) {
+//                                            holder.linearLayoutDeleteMessage.setVisibility(View.VISIBLE);
+//                                        }
+//                                    };
+//                                    imageViewDeleteMessages.setOnClickListener(new View.OnClickListener() {
+//                                        @Override
+//                                        public void onClick(View v) {
+//                                            holder.linearLayoutDeleteMessage.setVisibility(View.VISIBLE);
+//                                        }
+//                                    });
+                                    //imageViewDeleteMessages.setOnClickListener(deleteButtonListener);
 
                                 }
 
@@ -210,9 +272,22 @@ public class MessageFragment extends Fragment {
             @NonNull
             @Override
             public MessageViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-                View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_message, parent, false);
+                View view;
+                if (viewType == VIEWTYPE_NORMAL) {
+                    view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_message, parent, false);
+                } else {
+                    view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_message_delete, parent, false);
+                }
                 return new MessageViewHolder(view);
             }
+
+            public void setDeleteButtonVisibility(LinearLayout button) {
+                if (imageViewDeleteMessages.callOnClick()) {
+                    button.setVisibility(View.VISIBLE);
+                }
+            }
+
+
         };
 
 
@@ -264,6 +339,7 @@ public class MessageFragment extends Fragment {
                     client.setUID(userSnapshot.getKey());
                     Log.d(TAG, client.toString());
                     Log.d(TAG, client.getUID() + "");
+
                     if (client != null) {
                         clientList.add(client);
                         clientNameList.add(client.getName());
@@ -281,9 +357,9 @@ public class MessageFragment extends Fragment {
                             public void onClick(View v) {
                                 if (clientSelected != null) {
                                     Intent intent = null;
-                                    if (Constant.category.equals("집주인")) {
+                                    if (category.equals("집주인")) {
                                         intent = new Intent(getContext(), LandLordMessageActivity.class);
-                                    } else if (Constant.category.equals("세입자")) {
+                                    } else if (category.equals("세입자")) {
                                         intent = new Intent(getContext(), TenantMessageActivity.class);
                                     }
                                     Log.d(TAG, "client UID : " + clientList.get(position).getUID());
@@ -370,11 +446,33 @@ public class MessageFragment extends Fragment {
         messageAdapter.startListening();
         recyclerViewMsg.setAdapter(messageAdapter);
 
+
+        imageViewDeleteMessages.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+
         return root;
     }
 
 
     public void initiateClientList() {
+
+        buildingData = rootRef.child("buildings").child(currentUserUID);
+        buildingData.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                Log.d(TAG, "buildingKey : " + dataSnapshot.getValue());
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
 
         Iterator<String> keys = Constant.buildings.keySet().iterator();
         while (keys.hasNext()) {
@@ -456,31 +554,42 @@ public class MessageFragment extends Fragment {
     public static class MessageViewHolder extends RecyclerView.ViewHolder {
 
         LinearLayout chatLayout;
+        TextView textViewName, textViewTitle, textViewConent, textViewTime;
+        LinearLayout linearLayoutDeleteMessage;
 
         public MessageViewHolder(final View itemView) {
             super(itemView);
             chatLayout = itemView.findViewById(R.id.linearLayoutMessageItem);
+            textViewName = itemView.findViewById(R.id.textViewMsgName);
+            textViewTitle = itemView.findViewById(R.id.textViewMsgTitle);
+            textViewConent = itemView.findViewById(R.id.textViewMsgContent);
+            textViewTime = itemView.findViewById(R.id.textViewMsgTime);
+            linearLayoutDeleteMessage = itemView.findViewById(R.id.linearLayoutDeleteMessage);
         }
 
         public void setName(String name) {
-            TextView textViewName = itemView.findViewById(R.id.textViewMsgName);
             textViewName.setText(name);
         }
 
         public void setTitle(String title) {
-            TextView textViewTitle = itemView.findViewById(R.id.textViewMsgTitle);
             textViewTitle.setText(title);
         }
 
         public void setContent(String content) {
-            TextView textViewConent = itemView.findViewById(R.id.textViewMsgContent);
             textViewConent.setText(content);
         }
 
 
         public void setTime(String time) {
-            TextView textViewTime = itemView.findViewById(R.id.textViewMsgTime);
             textViewTime.setText(time);
+        }
+
+        public void setDeleteButtonVisible() {
+            linearLayoutDeleteMessage.setVisibility(View.VISIBLE);
+        }
+
+        public void setDeleteButtonGone() {
+            linearLayoutDeleteMessage.setVisibility(View.GONE);
         }
 
     }
