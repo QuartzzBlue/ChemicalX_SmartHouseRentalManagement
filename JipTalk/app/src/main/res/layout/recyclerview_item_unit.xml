@@ -25,12 +25,6 @@
             android:gravity="center"
             android:orientation="horizontal">
 
-            <CheckBox
-                android:id="@+id/cb_rv_unit_selectedItem"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:visibility="gone" />
-
             <TextView
                 android:id="@+id/tv_rv_item_unitNum"
                 android:layout_width="wrap_content"
@@ -71,6 +65,12 @@
                     android:textSize="18sp"
                     tools:text="isPaid" />
             </LinearLayout>
+
+            <CheckBox
+                android:id="@+id/cb_rv_unit_selectedItem"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="gone" />
 
             <ImageButton
                 android:id="@+id/btn_recyclerview_buildingDetail"

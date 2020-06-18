@@ -82,7 +82,8 @@ public class BuildingDetailActivity extends AppCompatActivity {
 
                 for (int position=0; position<recyclerView.getChildCount(); position++){
                     recyclerView.getChildAt(position).findViewById(R.id.cb_rv_unit_selectedItem).setVisibility(View.VISIBLE);
-                    recyclerView.getChildAt(position).findViewById(R.id.cb_rv_unit_selectedItem).setTag(position);
+                    recyclerView.getChildAt(position).findViewById(R.id.btn_recyclerview_buildingDetail).setVisibility(View.GONE);
+//                    recyclerView.getChildAt(position).findViewById(R.id.cb_rv_unit_selectedItem).setTag(position);
                 }
                 unitViewAdapter.notifyDataSetChanged();
             }
@@ -96,8 +97,16 @@ public class BuildingDetailActivity extends AppCompatActivity {
                 editBtn.setVisibility(View.VISIBLE);
                 for (int position=0; position<recyclerView.getChildCount(); position++){
                     recyclerView.getChildAt(position).findViewById(R.id.cb_rv_unit_selectedItem).setVisibility(View.GONE);
+                    recyclerView.getChildAt(position).findViewById(R.id.btn_recyclerview_buildingDetail).setVisibility(View.VISIBLE);
                 }
                 unitViewAdapter.notifyDataSetChanged();
+            }
+        });
+
+        delBtn.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+
             }
         });
     }
@@ -332,17 +341,17 @@ class UnitViewAdapter extends RecyclerView.Adapter<UnitViewAdapter.MyViewHolder>
     public void onBindViewHolder(@NonNull UnitViewAdapter.MyViewHolder holder, int position) {
         String unitNum = units.get(position).getUnitNum();
 
-        holder.unitNumTv.setText(unitNum);
+        holder.unitNumTv.setText(unitNum + "호");
         holder.userNameTv.setText(units.get(position).getTenantName());
         int totalFee = Integer.parseInt(units.get(position).getMonthlyFee().replace(",", ""))+Integer.parseInt(units.get(position).getMngFee().replace(",", ""));
 //        holder.monthlyFeeTv.setText("월 "+ myFormatter.format(totalFee) +" 원");
         holder.monthlyFeeTv.setText("월 "+ totalFee +" 원");
         holder.startDateTv.setText(units.get(position).getStartDate());
         holder.endDateTv.setText(units.get(position).getEndDate());
-        if(units.get(position).getIsPaid().equals("-1")){
+        if(units.get(position).getIsPaid().equals("0")){
             holder.isPaidTv.setText("미납");
             holder.isPaidTv.setTextColor(Color.RED);
-        }else{
+        }else if(units.get(position).getIsPaid().equals("1")){
             holder.isPaidTv.setText("완납");
             holder.isPaidTv.setTextColor(Color.BLUE);
         }
