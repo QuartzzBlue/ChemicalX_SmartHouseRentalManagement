@@ -83,7 +83,6 @@ public class HomeFragment extends Fragment {
     public void initialization(){
         currentUser = FirebaseAuth.getInstance().getCurrentUser();
         payStatusTv = root.findViewById(R.id.tv_home_paymentStatus);
-        expireCntTv = root.findViewById(R.id.tv_home_expireCnt);
         monthlyIncomeTv = root.findViewById(R.id.tv_home_totalMonthlyIncome);
 
         buildings = new ArrayList<>();
