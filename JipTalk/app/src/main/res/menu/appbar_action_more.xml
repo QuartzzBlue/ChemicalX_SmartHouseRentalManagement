@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/action_more"
+        android:title="더보기"
+        android:icon="@drawable/btn_more"
+        app:showAsAction="always">
+        <menu>
+        <item
+            android:id="@+id/more_delete"
+            android:title="삭제"
+            app:showAsAction="never"/>
+        <item
+            android:id="@+id/more_clear"
+            android:title="초기화"
+            app:showAsAction="never"/>
+        </menu>
+    </item>
+</menu>

@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -21,9 +22,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.jiptalk.MainActivity;
 import com.example.jiptalk.R;
 import com.example.jiptalk.vo.Building;
 import com.example.jiptalk.vo.Unit;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -60,6 +65,7 @@ public class BuildingDetailActivity extends AppCompatActivity {
         setContentView(R.layout.activity_building_detail);
 
         initialization();
+        getData();
 
 
         addUnitBtn.setOnClickListener(new View.OnClickListener(){
@@ -111,11 +117,33 @@ public class BuildingDetailActivity extends AppCompatActivity {
         });
     }
 
-    /* AppBar 에 정보 버튼 추가 */
+    /* AppBar 에 더보기 버튼 추가 */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.appbar_action_info, menu) ;
+        getMenuInflater().inflate(R.menu.appbar_action_more, menu) ;
         return true ;
+    }
+
+    //세이브 버튼 클릭 시
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        switch (item.getItemId()) {
+
+            case R.id.more_clear:
+
+
+            case R.id.more_delete:
+                FirebaseDatabase.getInstance().getReference().child("buildings").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child(thisBuildingKey).removeValue();
+                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                startActivity(intent);
+                finish();
+                FirebaseDatabase.getInstance().getReference().child("units").child(thisBuildingKey).removeValue();
+                return true;
+
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     public void initialization(){
@@ -140,13 +168,10 @@ public class BuildingDetailActivity extends AppCompatActivity {
         completeBtn = findViewById(R.id.btn_building_detail_complete);
         recyclerView = findViewById(R.id.rv_building_detail);
         emptyView = findViewById(R.id.tv_building_detail_emptyView);
-        dbRef = FirebaseDatabase.getInstance().getReference("units/"+ thisBuildingKey);
+        //dbRef = FirebaseDatabase.getInstance().getReference("units/"+ thisBuildingKey);
+        dbRef = FirebaseDatabase.getInstance().getReference().child("units");
         myFormatter = NumberFormat.getInstance(Locale.getDefault());
         nowContext = this;
-
-        getData();
-
-
     }
 
     public void setAdapter(){
@@ -189,7 +214,7 @@ public class BuildingDetailActivity extends AppCompatActivity {
 
     public void getData(){
 
-        dbRef.addValueEventListener(new ValueEventListener() {  //addValueEventListener : 한 번만 콜백되고 즉시 삭제
+        dbRef.child(thisBuildingKey).addValueEventListener(new ValueEventListener() {  //addValueEventListener : 한 번만 콜백되고 즉시 삭제
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 Log.w("===", "BuildingDetail/getData : onDataChange");
