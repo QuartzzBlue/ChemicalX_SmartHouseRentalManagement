@@ -9,7 +9,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
-import android.text.Layout;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Menu;
@@ -17,7 +16,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
@@ -38,10 +36,12 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.auth.PhoneAuthProvider;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
-import java.lang.reflect.Array;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -55,14 +55,15 @@ public class SignUpActivity extends AppCompatActivity {
     private String mVerificationCode; // 전화번호 인증번호
     private Valid valid;
     private Context nowContext;
+    private User landlordInfo;
 
-    EditText idEt, pwdEt, phoneEt, nameEt, pwdCheckEt, phoneCheckEt, depositorEt, accountNumEt;
+    EditText idEt, pwdEt, phoneEt, nameEt, pwdCheckEt, phoneCheckEt, depositorEt, accountNumEt, landlordPhoneEt;
     TextView pwdValidTv, pwdCheckValidTv;
     Spinner bankSpinner;
     RadioGroup categoryRg;
     RadioButton checkedSexRgbt, checkedCategoryRgbt;
     Button phoneAuthBt, phoneAuthCheckBt;
-    LinearLayout accountInfoLo;
+    LinearLayout landlordLo, tenantLo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -163,9 +164,11 @@ public class SignUpActivity extends AppCompatActivity {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 if(checkedId == R.id.rb_sign_up_landlord) { //임대인
-                    accountInfoLo.setVisibility(View.VISIBLE);
+                    landlordLo.setVisibility(View.VISIBLE);
+                    tenantLo.setVisibility(View.GONE);
                 }else{  //세입자
-                    accountInfoLo.setVisibility(View.GONE);
+                    landlordLo.setVisibility(View.GONE);
+                    tenantLo.setVisibility(View.VISIBLE);
                 }
             }
         });
@@ -195,17 +198,26 @@ public class SignUpActivity extends AppCompatActivity {
                 String depositor = depositorEt.getText().toString().trim();
                 String accountNum = accountNumEt.getText().toString().trim();
                 String bank = bankSpinner.getSelectedItem().toString();
+                String landlordPhone = landlordPhoneEt.getText().toString().trim();
                 if(bank.equals("선택하세요")){
                     bank = null;
                 }
 
                 User newUser = new User(email, phone, name, depositor, bank, accountNum, sex, category, true, null);
 
-                /* 유효성 검사 */
+                /* 기본 유효성 검사 */
                 if(!isValid(newUser)) return false;
 
-                /* 유효성 검사 끝나면 인증 & DB 삽입*/
+                /* 세입자로 가입하는 경우, 입력한 임대인 휴대폰 번호가 존재하는지 확인 후 회원가입 진행*/
+                if(newUser.getCategory().equals("세입자")) {
+                    if(!isVerifyLandlord(landlordPhone)) return false;
+                }
+
                 createUser(newUser, password);
+
+
+                /* 유효성 검사 끝나면 인증 & DB 삽입*/
+
 
                 return true ;
             default :
@@ -277,6 +289,41 @@ public class SignUpActivity extends AppCompatActivity {
         });
 
     }
+    /**** 삭제해야함 ****/
+    public void testtest(View v) {
+        String landlordPhone = landlordPhoneEt.getText().toString().trim();
+        isVerifyLandlord(landlordPhone);
+    }
+
+    private boolean isVerifyLandlord(String landlordPhone) {
+        final Boolean[] flag = new Boolean[1];
+        Log.w("===", "verifyLandlord()");
+        userRef = FirebaseDatabase.getInstance().getReference("user");
+        userRef.orderByChild("phone").equalTo(landlordPhone).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                Log.w("===", "verifyLandlord() : onDataChange");
+                 for(DataSnapshot userSnapshot : dataSnapshot.getChildren()){
+                     Log.w("===", "key : " + userSnapshot.getKey());
+                     Log.w("===", "Value : " + userSnapshot.getValue());
+                     landlordInfo = userSnapshot.getValue(User.class);
+                     landlordInfo.setUID(userSnapshot.getKey());
+                 }
+                flag[0] = true;
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.d("===", "verifyLandlord: onCancelled");
+                Toast.makeText(nowContext, "입력하신 정보에 해당하는 임대인이 존재하지 않습니다.",
+                        Toast.LENGTH_LONG).show();
+                flag[0] = false;
+            }
+        });
+
+        return flag[0];
+    }
+
     private void sendVerificationCode(String phoneNumber){
         PhoneAuthProvider.getInstance().verifyPhoneNumber(
                 "+82" + phoneNumber,        // Phone number to verify
@@ -344,6 +391,7 @@ public class SignUpActivity extends AppCompatActivity {
         phoneCheckEt = findViewById(R.id.signUpPhoneCheckTv);
         accountNumEt = findViewById(R.id.et_sign_up_accountNum);
         depositorEt = findViewById(R.id.et_sign_up_depositor);
+        landlordPhoneEt = findViewById(R.id.et_sign_up_landlordPhone);
 
         RadioGroup sexRg = findViewById(R.id.signUpSexRg);
         categoryRg = findViewById(R.id.signUpCategoryRg);
@@ -355,7 +403,8 @@ public class SignUpActivity extends AppCompatActivity {
         pwdValidTv = findViewById(R.id.signUpPwdValidTv);
         pwdCheckValidTv = findViewById(R.id.signUpPwdCheckValidTv);
 
-        accountInfoLo = findViewById(R.id.layout_sign_up_accountInfo);
+        landlordLo = findViewById(R.id.layout_sign_up_accountInfo);
+        tenantLo = findViewById(R.id.layout_sign_up_landlordPhone);
         nowContext = this; // this = View.getContext();  현재 실행되고 있는 View의 context를 return 하는데 보통은 현재 활성화된 activity의 context가 된다.
         valid = new Valid();
 
@@ -406,12 +455,17 @@ public class SignUpActivity extends AppCompatActivity {
             nameEt.requestFocus();
             return false;
         }
-//        if(!valid.isNotBlank(newUser.getPhone()) || !valid.isValidPhone(newUser.getPhone())){
-//            Log.d("===", "createAccount: phone is not valid ");
-//            Toast.makeText(nowContext, "핸드폰 번호가 올바르지 않습니다.",
-//                    Toast.LENGTH_SHORT).show();
-//            return false;
-//        }
+
+        // 세입자의 경우에만 해당
+        if(newUser.getCategory().equals("세입자")) {
+            if(!valid.isNotBlank(landlordPhoneEt.getText().toString()) || !valid.isValidPhone(landlordPhoneEt.getText().toString())) {
+                Log.d("===", "createAccount: landlordPhone is not valid");
+                Toast.makeText(nowContext, "임대인 휴대폰 번호를 정확하게 입력해 주세요.",
+                        Toast.LENGTH_SHORT).show();
+                landlordPhoneEt.requestFocus();
+                return false;
+            }
+        }
         return true;
     }
 

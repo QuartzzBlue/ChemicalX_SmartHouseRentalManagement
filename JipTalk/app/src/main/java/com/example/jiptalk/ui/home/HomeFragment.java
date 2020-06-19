@@ -157,7 +157,6 @@ public class HomeFragment extends Fragment {
     }
 
     private void setData(){
-        expireCntTv.setText(totalExpireCnt +"");
         monthlyIncomeTv.setText(totalMonthlyIncome+"");
         payStatusTv.setText(totalPaidCnt+"/"+totalUnitCnt);
     }
