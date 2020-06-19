@@ -32,4 +32,9 @@
         <item>산림조합</item>
         <item>저축은행</item>
     </string-array>
+    <string-array name="filter_list">
+        <item>전체</item>
+        <item>미납</item>
+        <item>완납</item>
+    </string-array>
 </resources>
