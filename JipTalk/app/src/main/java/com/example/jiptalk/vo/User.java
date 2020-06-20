@@ -3,11 +3,12 @@ package com.example.jiptalk.vo;
 import com.google.firebase.database.Exclude;
 import com.google.firebase.database.IgnoreExtraProperties;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
 @IgnoreExtraProperties
-public class User {
+public class User implements Serializable {
     String UID;
     String email;
     String phone;

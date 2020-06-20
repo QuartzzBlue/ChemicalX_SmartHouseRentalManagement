@@ -7,9 +7,11 @@ import androidx.fragment.app.FragmentManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -26,7 +28,7 @@ import com.google.firebase.database.ValueEventListener;
 public class SettingUserInfoActivity extends AppCompatActivity {
 
     private TextView emailTv, nameTv;
-    private Button modPwdBt, modPhoneBt;
+    private Button modPwdBt, modPhoneBt, modAccountBt;
     private ImageView modNameBt;
     private User currentUser;
     private DatabaseReference dbRef;
@@ -38,6 +40,8 @@ public class SettingUserInfoActivity extends AppCompatActivity {
         setContentView(R.layout.activity_setting_user_info);
         getPersonalInfo();
         initialization();
+
+
     }
 
     private void initialization() {
@@ -49,6 +53,7 @@ public class SettingUserInfoActivity extends AppCompatActivity {
         modPwdBt = findViewById(R.id.bt_setting_user_info_modPassword);
         modPhoneBt = findViewById(R.id.bt_setting_user_info_modPhoneNum);
         modNameBt = findViewById(R.id.image_setting_user_info_modUserName);
+        modAccountBt = findViewById(R.id.bt_setting_user_info_modAccount);
 
         //edit icon
         modNameBt.setOnClickListener(new View.OnClickListener() {
@@ -82,6 +87,17 @@ public class SettingUserInfoActivity extends AppCompatActivity {
             }
         });
 
+        //계좌정보 변경
+        modAccountBt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.w("===", "modAccountBt : onClick");
+                Intent intent = new Intent(nowContext, CheckUserAccountActivity.class);
+                intent.putExtra("userInfo", currentUser);
+                startActivity(intent);
+            }
+        });
+
     }
 
 
@@ -98,6 +114,16 @@ public class SettingUserInfoActivity extends AppCompatActivity {
 
                 emailTv.setText(currentUser.getEmail());
                 nameTv.setText(currentUser.getName());
+
+                if(currentUser.getCategory().trim().equals("임대인")){
+                    Log.w("===", "if");
+                    modAccountBt.setVisibility(View.VISIBLE);
+
+                } else {
+                    Log.w("===", "else");
+                    modAccountBt.setVisibility(View.GONE);
+                }
+
             }
 
             @Override

@@ -14,14 +14,17 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.Toast;
 
+import com.example.jiptalk.LoginActivity;
 import com.example.jiptalk.R;
+import com.google.firebase.auth.FirebaseAuth;
 
 public class SettingFragment extends Fragment {
 
     private ViewGroup viewGroup;
     private SettingViewModel mViewModel;
-    private Button alarmBt, infoBt, developersBt;
+    private Button alarmBt, infoBt, developersBt, logoutBt;
     private Intent intent;
     private Context nowContext;
 
@@ -60,6 +63,21 @@ public class SettingFragment extends Fragment {
             }
         });
 
+        logoutBt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                /** 로그 아웃 **/
+                FirebaseAuth.getInstance().signOut();
+
+                intent = new Intent(nowContext, LoginActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP); //중간 스택에 쌓인 액티비티들 제거
+                intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP); //액티비티가 스택 맨 위에 실행중이라면 재사용
+                startActivity(intent);
+                Toast.makeText(nowContext, "로그아웃 되었습니다.", Toast.LENGTH_SHORT).show();
+                getActivity().finish();
+            }
+        });
+
         return viewGroup;
     }
 
@@ -75,7 +93,9 @@ public class SettingFragment extends Fragment {
         alarmBt = viewGroup.findViewById(R.id.bt_setting_alarm);
         infoBt = viewGroup.findViewById(R.id.bt_setting_info);
         developersBt = viewGroup.findViewById(R.id.bt_setting_developers);
+        logoutBt = viewGroup.findViewById(R.id.bt_setting_logout);
         nowContext = getContext();
     }
+
 
 }
