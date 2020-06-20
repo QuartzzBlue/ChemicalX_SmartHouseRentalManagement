@@ -210,14 +210,11 @@ public class SignUpActivity extends AppCompatActivity {
 
                 /* 세입자로 가입하는 경우, 입력한 임대인 휴대폰 번호가 존재하는지 확인 후 회원가입 진행*/
                 if(newUser.getCategory().equals("세입자")) {
-                    if(!isVerifyLandlord(landlordPhone)) return false;
+                    if(!isVerifiedLandlord(landlordPhone)) return false;
                 }
 
-                createUser(newUser, password);
-
-
                 /* 유효성 검사 끝나면 인증 & DB 삽입*/
-
+                createUser(newUser, password);
 
                 return true ;
             default :
@@ -292,13 +289,15 @@ public class SignUpActivity extends AppCompatActivity {
     /**** 삭제해야함 ****/
     public void testtest(View v) {
         String landlordPhone = landlordPhoneEt.getText().toString().trim();
-        isVerifyLandlord(landlordPhone);
+        isVerifiedLandlord(landlordPhone);
     }
 
-    private boolean isVerifyLandlord(String landlordPhone) {
+    private boolean isVerifiedLandlord(String landlordPhone) {
         final Boolean[] flag = new Boolean[1];
+
         Log.w("===", "verifyLandlord()");
         userRef = FirebaseDatabase.getInstance().getReference("user");
+
         userRef.orderByChild("phone").equalTo(landlordPhone).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -307,9 +306,17 @@ public class SignUpActivity extends AppCompatActivity {
                      Log.w("===", "key : " + userSnapshot.getKey());
                      Log.w("===", "Value : " + userSnapshot.getValue());
                      landlordInfo = userSnapshot.getValue(User.class);
-                     landlordInfo.setUID(userSnapshot.getKey());
+                     // 임대인 유저가 맞는지 확인
+                     if(!landlordInfo.getCategory().equals("임대인")){
+                         flag[0] = false;
+                         landlordInfo = null;
+                         Toast.makeText(nowContext, "입력하신 정보에 해당하는 임대인이 존재하지 않습니다.",
+                                 Toast.LENGTH_LONG).show();
+                     }else {
+                         flag[0] = true;
+                         landlordInfo.setUID(userSnapshot.getKey());
+                     }
                  }
-                flag[0] = true;
             }
 
             @Override

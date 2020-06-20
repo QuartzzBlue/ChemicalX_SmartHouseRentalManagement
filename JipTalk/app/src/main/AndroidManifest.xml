@@ -3,8 +3,9 @@
     package="com.example.jiptalk">
 
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.CAMERA" />
+
     <uses-feature android:name="android.hardware.camera2.full" />
     <uses-feature android:name="android.hardware.camera.autofocus" />
 
@@ -16,8 +17,9 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-
-        <activity android:name=".ui.setting.ModUserPwdActivity"></activity>
+        <activity android:name=".ui.setting.CheckUserAccountActivity"></activity>
+        <activity android:name=".ui.setting.ModUserAccountActivity" />
+        <activity android:name=".ui.setting.ModUserPwdActivity" />
         <activity android:name=".ui.setting.CheckUserPwdActivity" />
         <activity android:name=".ui.setting.ModUserPhoneActivity" />
         <activity android:name=".ui.message.TenantMessageActivity" />
@@ -69,15 +71,15 @@
             android:label="신규 세대 등록" />
         <activity android:name=".ui.home.UnitDetailActivity" />
 
-        <receiver android:name=".SmsReceiver" android:exported="true">
+        <receiver
+            android:name=".SmsReceiver"
+            android:exported="true">
             <intent-filter>
-                <action android:name="com.google.android.gms.auth.api.phone.SMS_RETRIEVED"/>
+                <action android:name="com.google.android.gms.auth.api.phone.SMS_RETRIEVED" />
             </intent-filter>
         </receiver>
+
         <activity android:name=".ui.home.CameraActivity" />
-
     </application>
-
-
 
 </manifest>
