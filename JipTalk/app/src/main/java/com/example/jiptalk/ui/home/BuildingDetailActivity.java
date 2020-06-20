@@ -51,9 +51,10 @@ import java.util.Locale;
 
 public class BuildingDetailActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener{
 
-    int expireCnt,monthIncome,paidCnt,unpaidCnt,occupiedCnt,emptyCnt,unitCnt;
-    TextView buildingNameTv,expireCntTv,monthIncomeTv,unpaidCntTv,paidCntTv,occupiedCntTv,emptyCntTv,unitCntTv, emptyView;
-    Button addUnitBtn,editBtn, delBtn, completeBtn;
+    int paidCnt,unpaidCnt,occupiedCnt,unitCnt;
+    boolean flag = false;
+    TextView buildingNameTv,unpaidCntTv,paidCntTv,occupiedCntTv,unitCntTv, emptyView;
+    Button addUnitBtn;
     private RecyclerView recyclerView;
     RecyclerView.LayoutManager layoutManager;
     UnitViewAdapter unitViewAdapter;
@@ -72,72 +73,26 @@ public class BuildingDetailActivity extends AppCompatActivity implements Adapter
 
         initialization();
         setSpinner();
-
-
-        addUnitBtn.setOnClickListener(new View.OnClickListener(){
-
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(nowContext, AddUnitActivity.class);
-                intent.putExtra("thisBuildingKey", thisBuildingKey);
-                startActivity(intent);
-
-            }
-        });
-
-        editBtn.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v) {
-                delBtn.setVisibility(View.VISIBLE);
-                completeBtn.setVisibility(View.VISIBLE);
-                editBtn.setVisibility(View.GONE);
-
-                for (int position=0; position<recyclerView.getChildCount(); position++){
-                    recyclerView.getChildAt(position).findViewById(R.id.cb_rv_unit_selectedItem).setVisibility(View.VISIBLE);
-                    recyclerView.getChildAt(position).findViewById(R.id.btn_recyclerview_buildingDetail).setVisibility(View.GONE);
-//                    recyclerView.getChildAt(position).findViewById(R.id.cb_rv_unit_selectedItem).setTag(position);
-                }
-                unitViewAdapter.notifyDataSetChanged();
-            }
-        });
-
-        completeBtn.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v) {
-                delBtn.setVisibility(View.GONE);
-                completeBtn.setVisibility(View.GONE);
-                editBtn.setVisibility(View.VISIBLE);
-                for (int position=0; position<recyclerView.getChildCount(); position++){
-                    recyclerView.getChildAt(position).findViewById(R.id.cb_rv_unit_selectedItem).setVisibility(View.GONE);
-                    recyclerView.getChildAt(position).findViewById(R.id.btn_recyclerview_buildingDetail).setVisibility(View.VISIBLE);
-                }
-                unitViewAdapter.notifyDataSetChanged();
-            }
-        });
-
-        delBtn.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v) {
-
-            }
-        });
     }
 
-    /* AppBar 에 더보기 버튼 추가 */
+    /* AppBar 에 Overflow 버튼 추가 */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.appbar_action_more, menu) ;
         return true ;
     }
 
-    //세이브 버튼 클릭 시
+    //overflow menu
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
         switch (item.getItemId()) {
 
+            //초기화
             case R.id.more_clear:
-
+                FirebaseDatabase.getInstance().getReference().child("units").child(thisBuildingKey).removeValue();
+                getData();
+                return true;
 
             case R.id.more_delete:
                 FirebaseDatabase.getInstance().getReference().child("buildings").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child(thisBuildingKey).removeValue();
@@ -152,13 +107,6 @@ public class BuildingDetailActivity extends AppCompatActivity implements Adapter
         }
     }
 
-    public void setSpinner(){
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,R.array.filter_list,android.R.layout.simple_spinner_dropdown_item);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner.setAdapter(adapter);
-
-    }
-
     public void initialization(){
         Intent intent = getIntent();
         thisBuilding = (Building) intent.getSerializableExtra("buildingInfo");
@@ -170,17 +118,63 @@ public class BuildingDetailActivity extends AppCompatActivity implements Adapter
         paidUnitList = new ArrayList<>();
 
         buildingNameTv = findViewById(R.id.tv_building_detail_buildingName);
-        monthIncomeTv = findViewById(R.id.tv_building_detail_monthIncome);
         unpaidCntTv = findViewById(R.id.tv_building_detail_unpaidCnt);
         paidCntTv = findViewById(R.id.tv_building_detail_paidCnt);
         occupiedCntTv = findViewById(R.id.tv_building_detail_occupiedCnt);
-        emptyCntTv = findViewById(R.id.tv_building_detail_emptyCnt);
         unitCntTv = findViewById(R.id.tv_building_detail_unitCnt);
-        expireCntTv = findViewById(R.id.tv_building_detail_expireCnt);
+
+        //buttons
         addUnitBtn = findViewById(R.id.btn_building_detail_addUnit);
-        editBtn=findViewById(R.id.btn_building_detail_edit);
-        delBtn = findViewById(R.id.btn_building_detail_delete);
-        completeBtn = findViewById(R.id.btn_building_detail_complete);
+        addUnitBtn.setOnClickListener(new View.OnClickListener(){
+
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(nowContext, AddUnitActivity.class);
+                intent.putExtra("thisBuildingKey", thisBuildingKey);
+                startActivityForResult(intent,100);
+            }
+        });
+
+//        editBtn=findViewById(R.id.btn_building_detail_edit);
+//        editBtn.setOnClickListener(new View.OnClickListener(){
+//            @Override
+//            public void onClick(View v) {
+//                delBtn.setVisibility(View.VISIBLE);
+//                completeBtn.setVisibility(View.VISIBLE);
+//                editBtn.setVisibility(View.GONE);
+//
+//                for (int position=0; position<recyclerView.getChildCount(); position++){
+//                    recyclerView.getChildAt(position).findViewById(R.id.cb_rv_unit_selectedItem).setVisibility(View.VISIBLE);
+//                    recyclerView.getChildAt(position).findViewById(R.id.btn_recyclerview_buildingDetail).setVisibility(View.GONE);
+////                    recyclerView.getChildAt(position).findViewById(R.id.cb_rv_unit_selectedItem).setTag(position);
+//                }
+//                unitViewAdapter.notifyDataSetChanged();
+//            }
+//        });
+
+//        delBtn = findViewById(R.id.btn_building_detail_delete);
+//        delBtn.setOnClickListener(new View.OnClickListener(){
+//            @Override
+//            public void onClick(View v) {
+//
+//            }
+//        });
+//
+//        completeBtn = findViewById(R.id.btn_building_detail_complete);
+//        completeBtn.setOnClickListener(new View.OnClickListener(){
+//            @Override
+//            public void onClick(View v) {
+//                delBtn.setVisibility(View.GONE);
+//                completeBtn.setVisibility(View.GONE);
+//                editBtn.setVisibility(View.VISIBLE);
+//                for (int position=0; position<recyclerView.getChildCount(); position++){
+//                    recyclerView.getChildAt(position).findViewById(R.id.cb_rv_unit_selectedItem).setVisibility(View.GONE);
+//                    recyclerView.getChildAt(position).findViewById(R.id.btn_recyclerview_buildingDetail).setVisibility(View.VISIBLE);
+//                }
+//                unitViewAdapter.notifyDataSetChanged();
+//            }
+//        });
+
         recyclerView = findViewById(R.id.rv_building_detail);
         emptyView = findViewById(R.id.tv_building_detail_emptyView);
         spinner = findViewById(R.id.sp_building_detail);
@@ -189,50 +183,17 @@ public class BuildingDetailActivity extends AppCompatActivity implements Adapter
         dbRef = FirebaseDatabase.getInstance().getReference().child("units");
         myFormatter = NumberFormat.getInstance(Locale.getDefault());
         nowContext = this;
-        getData();
-    }
-
-    public void setAdapter(ArrayList<Unit> list){
-
-        recyclerView=findViewById(R.id.rv_building_detail);
-        recyclerView.setHasFixedSize(true);
-        layoutManager = new LinearLayoutManager(getApplicationContext());
-        recyclerView.setLayoutManager(layoutManager);
-
-        unitViewAdapter = new UnitViewAdapter(list);
-        recyclerView.setAdapter(unitViewAdapter);
-
-        // 리사이클러뷰의 아이템 클릭 시 호수의 UnitDetailActivity 로 이동
-        unitViewAdapter.setOnItemClickListener(new UnitViewAdapter.OnItemClickListener() {
-            @Override
-            public void onItemClick(View v, int position) {
-                // 액티비티 이동
-                Intent intent = new Intent(getApplicationContext(), UnitDetailActivity.class);
-                intent.putExtra("thisBuildingKey", thisBuildingKey);
-                intent.putExtra("thisBuildingName", thisBuilding.getName());
-                intent.putExtra("thisUnit", unitList.get(position));
-                startActivity(intent);
-            }
-        });
-
-        unitViewAdapter.notifyDataSetChanged();
-
-    }
-
-    public void setData(){
-
-        buildingNameTv.setText(buildingName+"");
-        monthIncomeTv.setText(monthIncome+"");
-        unpaidCntTv.setText(unpaidCnt+"");
-        paidCntTv.setText(paidCnt+"");
-        occupiedCntTv.setText(occupiedCnt+"");
-        expireCntTv.setText(expireCnt+"");
-        emptyCntTv.setText(emptyCnt+"");
-        unitCntTv.setText(unitCnt+"");
-
     }
 
     public void getData(){
+
+        unitList.clear();
+        unpaidUnitList.clear();
+        paidUnitList.clear();
+
+        unpaidCnt = 0;
+        paidCnt = 0;
+        occupiedCnt = 0;
 
         dbRef.child(thisBuildingKey).addValueEventListener(new ValueEventListener() {  //addValueEventListener : 한 번만 콜백되고 즉시 삭제
             @Override
@@ -282,10 +243,6 @@ public class BuildingDetailActivity extends AppCompatActivity implements Adapter
                         long expireDay = (endCalendar.getTimeInMillis() - todayCalendar.getTimeInMillis())/1000;
                         expireDay /= 86400; //하루는 86400초
 
-                        if(expireDay<60){
-                            expireCnt++;
-                        }
-
                     } catch (ParseException e) {
                         e.printStackTrace();
                     }
@@ -295,10 +252,9 @@ public class BuildingDetailActivity extends AppCompatActivity implements Adapter
 
                 Log.w("===", "unitList : " + unitList.toString());
 
-                emptyCnt = unitCnt-occupiedCnt;
-
-                setData();
                 setAdapter(unitList);
+                unitViewAdapter.notifyDataSetChanged();
+                setData();
 
             }
 
@@ -307,14 +263,52 @@ public class BuildingDetailActivity extends AppCompatActivity implements Adapter
                 Log.w("===", "getPersonalInfoThread() : onCancelled", databaseError.toException());
             }
         });
-
     }
+
+    public void setData(){
+        buildingNameTv.setText(buildingName+"");
+        unpaidCntTv.setText(unpaidCnt+"");
+        paidCntTv.setText(paidCnt+"");
+        occupiedCntTv.setText(occupiedCnt+"");
+        unitCntTv.setText(unitCnt+"");
+    }
+
+    public void setAdapter(ArrayList<Unit> list){
+        recyclerView=findViewById(R.id.rv_building_detail);
+        recyclerView.setHasFixedSize(true);
+        layoutManager = new LinearLayoutManager(getApplicationContext());
+        recyclerView.setLayoutManager(layoutManager);
+
+        unitViewAdapter = new UnitViewAdapter(list);
+        recyclerView.setAdapter(unitViewAdapter);
+
+        // 리사이클러뷰의 아이템 클릭 시 호수의 UnitDetailActivity 로 이동
+        unitViewAdapter.setOnItemClickListener(new UnitViewAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(View v, int position) {
+                // 액티비티 이동
+                Intent intent = new Intent(getApplicationContext(), UnitDetailActivity.class);
+                intent.putExtra("thisBuildingKey", thisBuildingKey);
+                intent.putExtra("thisBuildingName", thisBuilding.getName());
+                intent.putExtra("thisUnit", unitList.get(position));
+                startActivity(intent);
+            }
+        });
+        unitViewAdapter.notifyDataSetChanged();
+    }
+
+    public void setSpinner(){
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,R.array.filter_list,android.R.layout.simple_spinner_dropdown_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(adapter);
+    }
+
 
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
         String item = parent.getItemAtPosition(position).toString();
         if(item.equals("전체")){
-            setAdapter(unitList);
+           getData();
         }else if (item.equals("완납")){
             setAdapter(paidUnitList);
         }else if (item.equals("미납")){
