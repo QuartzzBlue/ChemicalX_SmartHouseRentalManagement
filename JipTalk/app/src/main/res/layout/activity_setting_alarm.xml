@@ -23,10 +23,5 @@
             android:thumb="@drawable/switch_thumb"
             android:track="@drawable/switch_track" />
 
-        <Button
-            android:id="@+id/btn_setting_alarm_test"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="자동로그인정보삭제" />
     </LinearLayout>
 </LinearLayout>
