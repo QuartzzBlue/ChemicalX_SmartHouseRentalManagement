@@ -30,9 +30,13 @@ import com.example.jiptalk.Valid;
 import com.example.jiptalk.vo.Unit;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
@@ -57,14 +61,15 @@ public class AddUnitActivity extends AppCompatActivity {
     private String thisBuildingKey;
     private DatePickerDialog.OnDateSetListener callbackMethodDatePicker;
 
-    FirebaseUser currentUser;
     FirebaseDatabase mDatabase;
-    DatabaseReference unitRef;
+    DatabaseReference unitRef, totalRef;
     Valid valid;
     Context nowContext;
     NumberFormat myFormatter;
     Util util;
 
+    private int totalUnpaidCnt, totalOccupiedCnt, totalMonthlyIncome;
+    private String userUid;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -193,7 +198,6 @@ public class AddUnitActivity extends AppCompatActivity {
         util = new Util();
         thisBuildingKey = getIntent().getStringExtra("thisBuildingKey");
 
-//        currentUser = FirebaseAuth.getInstance().getCurrentUser();
         mainView = findViewById(R.id.sv_add_unit);
 
         monthlyFeeLo = findViewById(R.id.layout_add_unit_monthlyFee);
@@ -237,8 +241,10 @@ public class AddUnitActivity extends AppCompatActivity {
 
 
         mDatabase = FirebaseDatabase.getInstance();
-        unitRef = mDatabase.getReference("units").child(thisBuildingKey);
-
+//        unitRef = mDatabase.getReference("units").child(thisBuildingKey);
+        unitRef = mDatabase.getReference();
+        userUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        totalRef = mDatabase.getReference("buildings").child(userUid);
 
         initDatePickerListener();
 
@@ -376,9 +382,25 @@ public class AddUnitActivity extends AppCompatActivity {
 
         util.showProgressDialog(nowContext);
 
-        String key = unitRef.push().getKey();
+        totalRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                totalUnpaidCnt = Integer.parseInt(dataSnapshot.child("totalUnpaidCnt").toString());
+                totalOccupiedCnt = Integer.parseInt(dataSnapshot.child("totalOccupiedCnt").toString());
+                totalMonthlyIncome = Integer.parseInt(dataSnapshot.child("totalMonthlyIncome").toString());
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.d("===", "createUnit : onCancelled " + databaseError.getDetails());
+            }
+        });
+
+
+        String key = unitRef.child("units").child(thisBuildingKey).push().getKey();
         Map<String, Object> childUpdates = new HashMap<>();
-        childUpdates.put("/"+key+"/", newUnit.toMap());
+        childUpdates.put("units/" + thisBuildingKey + "/" + key + "/", newUnit.toMap());
+        childUpdates.put("buildings/" + userUid + "/totalOccupiedCnt/", totalOccupiedCnt+1);
 
         unitRef.updateChildren(childUpdates).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override

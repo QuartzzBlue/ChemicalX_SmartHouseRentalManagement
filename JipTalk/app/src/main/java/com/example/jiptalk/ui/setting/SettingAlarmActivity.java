@@ -1,11 +1,13 @@
 package com.example.jiptalk.ui.setting;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -36,7 +38,6 @@ public class SettingAlarmActivity extends AppCompatActivity {
     private User user;
     private String userUid;
     private Context nowContext;
-    Button test; //삭제해야될것
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,24 +62,12 @@ public class SettingAlarmActivity extends AppCompatActivity {
             }
         });
 
-        // 자동로그인 정보 삭제
-        test.setOnClickListener(new View.OnClickListener() { //삭제해야될것
-            @Override
-            public void onClick(View v) {
-                SharedPreferences appData = getSharedPreferences("appData",MODE_PRIVATE);
-                SharedPreferences.Editor editor = appData.edit();
-                editor.clear();
-                editor.commit();
-            }
-        });
-
     }
 
     private void initialization() {
         nowContext = this;
         dbRef = FirebaseDatabase.getInstance().getReference("user");
         pushAlarm = findViewById(R.id.switch_setting_alarm_pushAlarm);
-        test = findViewById(R.id.btn_setting_alarm_test); //삭제해야될것
         getPersonalUserSetting();
     }
 
@@ -94,6 +83,9 @@ public class SettingAlarmActivity extends AppCompatActivity {
                 ////// boolean 타입은 왜 매칭이 안되는거지??
                 user.setAlarmOn((Boolean)dataSnapshot.child("isAlarmOn").getValue());
                 Log.w("===", "Current User Info : " + user.toString());
+                if(user.getAlarmOn() == null) {
+                    user.setAlarmOn(true);
+                }
 
                 // 푸시알림 설정
                 if(user.getAlarmOn()) pushAlarm.setChecked(true);

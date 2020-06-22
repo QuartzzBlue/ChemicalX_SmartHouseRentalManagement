@@ -65,11 +65,13 @@
             android:name=".ui.home.AddBuildingActivity"
             android:label="신규 건물 등록" />
         <activity android:name=".ui.home.JusoWebViewActivity" />
-        <activity android:name=".ui.home.BuildingDetailActivity" />
+        <activity android:name=".ui.home.BuildingDetailActivity"
+            android:label="건물 상세"/>
         <activity
             android:name=".ui.home.AddUnitActivity"
             android:label="신규 세대 등록" />
-        <activity android:name=".ui.home.UnitDetailActivity" />
+        <activity android:name=".ui.home.UnitDetailActivity"
+            android:label="호수 상세"/>
 
         <receiver
             android:name=".SmsReceiver"
