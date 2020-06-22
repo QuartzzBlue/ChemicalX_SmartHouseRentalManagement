@@ -2,6 +2,8 @@ package com.example.jiptalk.ui.home;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -12,6 +14,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -270,6 +273,15 @@ class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAdapter.M
         String buildingName = buildings.get(position).getName();
         holder.buildingName.setText(buildingName);
         holder.isDelayed.setText("미납 " + buildings.get(position).getUnpaidCnt()+"");
+
+        // 미납 개수가 0인경우 배경을 초록색으로 변환
+        if(buildings.get(position).getUnpaidCnt() == 0) {
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                holder.isDelayed.setBackground(ContextCompat.getDrawable(holder.isDelayed.getContext(), R.drawable.round_button_4));
+            } else {
+                holder.isDelayed.setBackgroundDrawable(ContextCompat.getDrawable(holder.isDelayed.getContext(), R.drawable.round_button_4));
+            }
+        }
     }
 
     // getItemCount() - 전체 데이터 갯수 리턴.
