@@ -40,8 +40,6 @@ public class SettingUserInfoActivity extends AppCompatActivity {
         setContentView(R.layout.activity_setting_user_info);
         getPersonalInfo();
         initialization();
-
-
     }
 
     private void initialization() {
@@ -111,16 +109,16 @@ public class SettingUserInfoActivity extends AppCompatActivity {
                 Log.w("===", "getPersonalInfoThread() : onDataChange");
                 Log.w("===", "getPersonalInfoThread() : " + currentUser.toString());
                 Log.w("===", "getPersonalInfoThread() : " + dataSnapshot.getValue());
+                currentUser.setAlarmOn((Boolean)dataSnapshot.child("isAlarmOn").getValue());
 
                 emailTv.setText(currentUser.getEmail());
                 nameTv.setText(currentUser.getName());
 
+                // 임대인 계정일 경우에만 계좌 정보 변경 버튼 보여줌
                 if(currentUser.getCategory().trim().equals("임대인")){
-                    Log.w("===", "if");
                     modAccountBt.setVisibility(View.VISIBLE);
 
                 } else {
-                    Log.w("===", "else");
                     modAccountBt.setVisibility(View.GONE);
                 }
 
