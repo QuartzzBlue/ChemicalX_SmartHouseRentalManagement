@@ -15,6 +15,7 @@
         android:id="@+id/textView47"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="5dp"
         android:text="현재 계좌정보"
         android:textColor="@color/black"
         android:textSize="18sp" />

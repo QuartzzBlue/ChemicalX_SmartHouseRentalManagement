@@ -10,7 +10,7 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="364dp"
+        android:layout_height="204dp"
         android:layout_weight="1"
         android:gravity="center"
         android:orientation="vertical">
@@ -54,7 +54,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_weight="2"
+        android:layout_weight="3"
         android:gravity="center"
         android:orientation="vertical"
         android:paddingBottom="100dp">
@@ -97,8 +97,7 @@
             android:background="@drawable/round_button_2"
             android:padding="10dp"
             android:text="계좌 정보 변경"
-            android:textSize="18sp"
-            android:visibility="visible" />
+            android:textSize="18sp" />
     </LinearLayout>
 
 </LinearLayout>

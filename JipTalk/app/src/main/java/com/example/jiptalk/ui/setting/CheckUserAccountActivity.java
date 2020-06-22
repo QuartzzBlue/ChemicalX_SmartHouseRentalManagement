@@ -37,6 +37,7 @@ public class CheckUserAccountActivity extends AppCompatActivity {
             /*** 변경 버튼 눌렸을 때 ***/
             case R.id.action_modify :
                 Intent intent = new Intent(getApplicationContext(), ModUserAccountActivity.class);
+                intent.putExtra("userInfo", userInfo);
                 startActivity(intent);
                 return true ;
             default :
@@ -50,7 +51,7 @@ public class CheckUserAccountActivity extends AppCompatActivity {
         accountNumTv = findViewById(R.id.tv_check_user_account_accountNum);
 
         if(userInfo.getAccountNum() != null && userInfo.getBank() != null && userInfo.getDepositor() != null){
-            bankTv.setText(userInfo.getBank() + "은행 " + userInfo.getDepositor());
+            bankTv.setText(userInfo.getBank() + "은행  (예금주) " + userInfo.getDepositor());
             accountNumTv.setText(userInfo.getAccountNum());
         }else {
             bankTv.setText("계좌 정보가 없습니다.");
