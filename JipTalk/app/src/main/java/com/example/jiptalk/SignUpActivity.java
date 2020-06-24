@@ -55,7 +55,10 @@ public class SignUpActivity extends AppCompatActivity {
     private String mVerificationCode; // 전화번호 인증번호
     private Valid valid;
     private Context nowContext;
+
+    //새로 가입하는 유저가 세입자인 경우 필요
     private User landlordInfo;
+    private String myUnitID, myBuildingID;
 
     EditText idEt, pwdEt, phoneEt, nameEt, pwdCheckEt, phoneCheckEt, depositorEt, accountNumEt, landlordPhoneEt;
     TextView pwdValidTv, pwdCheckValidTv;
@@ -208,13 +211,15 @@ public class SignUpActivity extends AppCompatActivity {
                 /* 기본 유효성 검사 */
                 if(!isValid(newUser)) return false;
 
-                /* 세입자로 가입하는 경우, 입력한 임대인 휴대폰 번호가 존재하는지 확인 후 회원가입 진행*/
+                /* 인증 & DB 삽입*/
+
+                // 세입자로 가입하는 경우, 입력한 임대인 휴대폰 번호가 존재하는지 확인 후 회원가입 진행
                 if(newUser.getCategory().equals("세입자")) {
                     if(!isVerifiedLandlord(landlordPhone)) return false;
+                    createUser(newUser, password, true);
+                }else{
+                    createUser(newUser, password, false);
                 }
-
-                /* 유효성 검사 끝나면 인증 & DB 삽입*/
-                createUser(newUser, password);
 
                 return true ;
             default :
@@ -222,7 +227,7 @@ public class SignUpActivity extends AppCompatActivity {
         }
     }
 
-    private void createUser(final User newUser, String pwd){
+    private void createUser(final User newUser, String pwd, final boolean isTenant){
 
         final Util util = new Util();
 
@@ -249,13 +254,22 @@ public class SignUpActivity extends AppCompatActivity {
                     Log.d("===", "createUserAuthentication: succeed");
 
                     /*** DB에 USER 정보 등록 ***/
-                    FirebaseUser user = task.getResult().getUser();
-
-                    String uid = user.getUid();
+                    String uid = task.getResult().getUser().getUid();
 
                     Map<String, Object> childUpdates = new HashMap<>();
-                    childUpdates.put("user/"+ uid, newUser.toMap());
-                    // 업데이트
+
+                    // 세입자의 경우 추가 정보 입력
+                    if(isTenant) {
+                        childUpdates.put("tenants/" + uid + "/landlordDepositor/", landlordInfo.getDepositor());
+                        childUpdates.put("tenants/" + uid + "/landlordBank/", landlordInfo.getBank());
+                        childUpdates.put("tenants/" + uid + "/landlordAccountNum/", landlordInfo.getAccountNum());
+                        if(doesUnitExist(newUser.getPhone())) {
+                            childUpdates.put("tenants/" + uid + "/unitID/", myUnitID);
+                            childUpdates.put("tenants/" + uid + "/buildingID/", myBuildingID);
+                        }
+                    }
+
+                    // DB에 유저 정보 업데이트
                     userRef.updateChildren(childUpdates)
                             .addOnSuccessListener(new OnSuccessListener<Void>() {
                                 @Override
@@ -288,10 +302,11 @@ public class SignUpActivity extends AppCompatActivity {
     }
     /**** 삭제해야함 ****/
     public void testtest(View v) {
-        String landlordPhone = landlordPhoneEt.getText().toString().trim();
-        isVerifiedLandlord(landlordPhone);
+        String tenantPhone = phoneEt.getText().toString().trim();
+        doesUnitExist(tenantPhone);
     }
 
+    /*** (세입자) 임대인 존재하는지 확인 및 임대인 정보 받아옴 ***/
     private boolean isVerifiedLandlord(String landlordPhone) {
         final Boolean[] flag = new Boolean[1];
 
@@ -330,6 +345,37 @@ public class SignUpActivity extends AppCompatActivity {
 
         return flag[0];
     }
+
+    /*** (세입자) 본인 전화번호로 등록된 unitID와 BuildingID 검색, 없을 경우 false return ***/
+    private boolean doesUnitExist(String tenantPhone) {
+        final Boolean[] flag = new Boolean[1];
+
+        Log.w("===", "doesUnitExist()");
+        DatabaseReference unitRef = FirebaseDatabase.getInstance().getReference("units");
+        Log.w("===", "doesUnitExist() 1");
+        unitRef.orderByChild("tenantPhone").equalTo(tenantPhone).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                Log.w("===", "doesUnitExist() : onDataChange");
+                for(DataSnapshot userSnapshot : dataSnapshot.getChildren()){
+                    Log.w("===", "key : " + userSnapshot.getKey());
+                    Log.w("===", "Value : " + userSnapshot.getValue());
+//                    landlordInfo = userSnapshot.getValue(User.class);
+                    flag[0] = true;
+                }
+                flag[0] = true;
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.d("===", "doesUnitExist() : onCancelled");
+                flag[0] = false;
+            }
+        });
+        Log.d("===", "flag: " + flag[0]);
+        return flag[0];
+    }
+
 
     private void sendVerificationCode(String phoneNumber){
         PhoneAuthProvider.getInstance().verifyPhoneNumber(
