@@ -15,11 +15,17 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.jiptalk.tenant.TMainActivity;
+import com.example.jiptalk.vo.User;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 public class LoginActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
@@ -142,14 +148,29 @@ public class LoginActivity extends AppCompatActivity {
 
                             /* Version 업데이트 되면서 굳이 콜백함수 안 쓰고 바로 user 정보 불러와서 해결하는듯 */
                             FirebaseUser user = mAuth.getCurrentUser();
-                            Constant.userUID = mAuth.getUid();
-
-                            // 액티비티 이동
-                            Intent intent = new Intent(nowContext, MainActivity.class);
-
-                            startActivity(intent);
-
-
+                            //Constant.userUID = mAuth.getUid();
+//                            FirebaseDatabase.getInstance().getReference().child("users").child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+//                                @Override
+//                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//                                    User user = dataSnapshot.getValue(User.class);
+//                                    if(user.getCategory().equals("세입자")) {
+//                                        Toast.makeText(LoginActivity.this,"세입자 로그인",Toast.LENGTH_LONG).show();
+//                                        Intent intent = new Intent(nowContext,TMainActivity.class);
+//                                        startActivity(intent);
+//                                    }else if (user.getCategory().equals("임대인")){
+//                                        Toast.makeText(LoginActivity.this,"임대인 로그인",Toast.LENGTH_LONG).show();
+//                                        Intent intent = new Intent(nowContext,MainActivity.class);
+//                                        startActivity(intent);
+//                                    }
+//                                }
+//
+//                                @Override
+//                                public void onCancelled(@NonNull DatabaseError databaseError) {
+//
+//                                }
+//                            });
+                        Intent intent = new Intent(nowContext,MainActivity.class);
+                        startActivity(intent);
                         }
 
                     }

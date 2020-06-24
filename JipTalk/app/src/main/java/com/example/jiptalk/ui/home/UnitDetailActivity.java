@@ -1,6 +1,9 @@
 package com.example.jiptalk.ui.home;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -12,10 +15,13 @@ import androidx.fragment.app.FragmentStatePagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
 import com.example.jiptalk.Constant;
+import com.example.jiptalk.MainActivity;
 import com.example.jiptalk.R;
 import com.example.jiptalk.vo.Unit;
 import com.google.android.material.tabs.TabItem;
 import com.google.android.material.tabs.TabLayout;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.FirebaseDatabase;
 
 public class UnitDetailActivity extends AppCompatActivity {
 
@@ -36,6 +42,36 @@ public class UnitDetailActivity extends AppCompatActivity {
         initialize();
 
     }
+
+    /* AppBar 에 Overflow 버튼 추가 */
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.appbar_action_more, menu) ;
+        return true ;
+    }
+
+    //overflow menu
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        switch (item.getItemId()) {
+
+            //초기화
+            case R.id.more_clear:
+
+                return true;
+
+            case R.id.more_delete:
+                FirebaseDatabase.getInstance().getReference().child("units").child(thisBuildingKey).child(thisUnit.getUnitID()).removeValue();
+                finish();
+
+                return true;
+
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
     private void initialize() {
         thisUnit = (Unit) getIntent().getSerializableExtra("thisUnit");
         thisBuildingKey = getIntent().getStringExtra("thisBuildingKey");
