@@ -20,6 +20,8 @@ public class User implements Serializable {
     String category;    // 임대인 or 임차인
     Boolean isAlarmOn;
     String token;
+    String buildingID;
+    String unitID;
 
 
     public User() {}
@@ -53,6 +55,22 @@ public class User implements Serializable {
         this.category = category;
         this.isAlarmOn = isAlarmOn;
         this.token = token;
+    }
+
+    public User(String UID, String email, String phone, String name, String depositor, String bank, String accountNum, String sex, String category, Boolean isAlarmOn, String token,String BuildingID, String unitID) {
+        this.UID = UID;
+        this.email = email;
+        this.phone = phone;
+        this.name = name;
+        this.depositor = depositor;
+        this.bank = bank;
+        this.accountNum = accountNum;
+        this.sex = sex;
+        this.category = category;
+        this.isAlarmOn = isAlarmOn;
+        this.token = token;
+        this.buildingID = buildingID;
+        this.unitID = unitID;
     }
 
     public String getEmail() {
@@ -131,6 +149,21 @@ public class User implements Serializable {
         this.token = token;
     }
 
+    public String getBuildingID() {
+        return buildingID;
+    }
+
+    public void setBuildingID(String buildingID) {
+        this.buildingID = buildingID;
+    }
+
+    public String getUnitID() {
+        return unitID;
+    }
+
+    public void setUnitID(String unitID) {
+        this.unitID = unitID;
+    }
 
     @Exclude
     public Map<String, Object> toMap() {
@@ -144,6 +177,8 @@ public class User implements Serializable {
         result.put("sex", sex);
         result.put("category", category);
         result.put("isAlarmOn", isAlarmOn);
+        result.put("buildingID",buildingID);
+        result.put("unitID",unitID);
         return result;
     }
 
