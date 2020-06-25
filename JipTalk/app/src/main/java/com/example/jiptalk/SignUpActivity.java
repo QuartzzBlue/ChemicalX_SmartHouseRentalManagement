@@ -25,6 +25,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 
+import com.example.jiptalk.vo.Tenant;
 import com.example.jiptalk.vo.User;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -33,7 +34,6 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseException;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.auth.PhoneAuthProvider;
 import com.google.firebase.database.DataSnapshot;
@@ -63,7 +63,7 @@ public class SignUpActivity extends AppCompatActivity {
     EditText idEt, pwdEt, phoneEt, nameEt, pwdCheckEt, phoneCheckEt, depositorEt, accountNumEt, landlordPhoneEt;
     TextView pwdValidTv, pwdCheckValidTv;
     Spinner bankSpinner;
-    RadioGroup categoryRg;
+    RadioGroup sexRg, categoryRg;
     RadioButton checkedSexRgbt, checkedCategoryRgbt;
     Button phoneAuthBt, phoneAuthCheckBt;
     LinearLayout landlordLo, tenantLo;
@@ -191,6 +191,9 @@ public class SignUpActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             /*** 저장 버튼 눌렸을 때 ***/
             case R.id.action_save :
+                User newUser = null;
+                checkedSexRgbt = findViewById(sexRg.getCheckedRadioButtonId());
+                checkedCategoryRgbt = findViewById(categoryRg.getCheckedRadioButtonId());
 
                 String email = idEt.getText().toString().trim();
                 String password = pwdEt.getText().toString().trim();
@@ -198,25 +201,28 @@ public class SignUpActivity extends AppCompatActivity {
                 String name = nameEt.getText().toString().trim();
                 String sex = checkedSexRgbt.getText().toString().trim();
                 String category = checkedCategoryRgbt.getText().toString().trim();
-                String depositor = depositorEt.getText().toString().trim();
-                String accountNum = accountNumEt.getText().toString().trim();
-                String bank = bankSpinner.getSelectedItem().toString();
-                String landlordPhone = landlordPhoneEt.getText().toString().trim();
-                if(bank.equals("선택하세요")){
-                    bank = null;
+
+                if(category.equals("임대인")){ //임대인
+                    String depositor = depositorEt.getText().toString().trim();
+                    String accountNum = accountNumEt.getText().toString().trim();
+                    String bank = null;
+                    if(!bankSpinner.getSelectedItem().toString().equals("선택하세요")){
+                        bank = bankSpinner.getSelectedItem().toString();
+                    }
+                    newUser = new User(email, phone, name, depositor, bank, accountNum, sex, category, true, null);
+                }else{ //세입자
+                    newUser = new User(email, phone, name, null, null, null, sex, category, true, null);
                 }
 
-                User newUser = new User(email, phone, name, depositor, bank, accountNum, sex, category, true, null);
+
+                Log.d("===", "newUser : " + newUser.toString());
 
                 /* 기본 유효성 검사 */
                 if(!isValid(newUser)) return false;
 
                 /* 인증 & DB 삽입*/
-
-                // 세입자로 가입하는 경우, 입력한 임대인 휴대폰 번호가 존재하는지 확인 후 회원가입 진행
-                if(newUser.getCategory().equals("세입자")) {
-                    if(!isVerifiedLandlord(landlordPhone)) return false;
-                    createUser(newUser, password, true);
+                if(newUser.getCategory().equals("세입자")) { // 세입자로 가입하는 경우, 입력한 임대인 휴대폰 번호가 존재하는지 확인 후 회원가입 진행
+                    confirmTenant(newUser, password);
                 }else{
                     createUser(newUser, password, false);
                 }
@@ -254,20 +260,24 @@ public class SignUpActivity extends AppCompatActivity {
                     Log.d("===", "createUserAuthentication: succeed");
 
                     /*** DB에 USER 정보 등록 ***/
-                    String uid = task.getResult().getUser().getUid();
-
                     Map<String, Object> childUpdates = new HashMap<>();
+
+                    String uid = task.getResult().getUser().getUid();
+                    newUser.setUID(uid);
 
                     // 세입자의 경우 추가 정보 입력
                     if(isTenant) {
-                        childUpdates.put("tenants/" + uid + "/landlordDepositor/", landlordInfo.getDepositor());
-                        childUpdates.put("tenants/" + uid + "/landlordBank/", landlordInfo.getBank());
-                        childUpdates.put("tenants/" + uid + "/landlordAccountNum/", landlordInfo.getAccountNum());
-                        if(doesUnitExist(newUser.getPhone())) {
-                            childUpdates.put("tenants/" + uid + "/unitID/", myUnitID);
-                            childUpdates.put("tenants/" + uid + "/buildingID/", myBuildingID);
-                        }
+                        Log.d("===", "isTenant : true");
+                        newUser.setBuildingID(myBuildingID);
+                        newUser.setUnitID(myUnitID);
+                        newUser.setBank(landlordInfo.getBank());
+                        newUser.setDepositor(landlordInfo.getDepositor());
+                        newUser.setAccountNum(landlordInfo.getAccountNum());
                     }
+
+                    Log.d("===", "final newUser : " +  newUser.toString());
+
+                    childUpdates.put("user/" + uid + "/", newUser);
 
                     // DB에 유저 정보 업데이트
                     userRef.updateChildren(childUpdates)
@@ -302,14 +312,16 @@ public class SignUpActivity extends AppCompatActivity {
     }
     /**** 삭제해야함 ****/
     public void testtest(View v) {
-        String tenantPhone = phoneEt.getText().toString().trim();
-        doesUnitExist(tenantPhone);
+
+        User newUser = new User("seule@daum.net", "010-5120-0763", "박승희", null, null, null, "여", "세입자", true, null);
+//        doesUnitExist(newUser, "1234");
+          confirmTenant(newUser, "Test0101!");
     }
 
     /*** (세입자) 임대인 존재하는지 확인 및 임대인 정보 받아옴 ***/
-    private boolean isVerifiedLandlord(String landlordPhone) {
-        final Boolean[] flag = new Boolean[1];
+    private void confirmTenant(final User newUser, String pwd) {
 
+        String landlordPhone = landlordPhoneEt.getText().toString().trim();
         Log.w("===", "verifyLandlord()");
         userRef = FirebaseDatabase.getInstance().getReference("user");
 
@@ -317,63 +329,75 @@ public class SignUpActivity extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 Log.w("===", "verifyLandlord() : onDataChange");
-                 for(DataSnapshot userSnapshot : dataSnapshot.getChildren()){
+                if(dataSnapshot.getValue() == null){
+                    Toast.makeText(nowContext, "입력하신 정보에 해당하는 임대인이 존재하지 않습니다.",
+                            Toast.LENGTH_LONG).show();
+                    return;
+                }
+                for(DataSnapshot userSnapshot : dataSnapshot.getChildren()){
                      Log.w("===", "key : " + userSnapshot.getKey());
                      Log.w("===", "Value : " + userSnapshot.getValue());
                      landlordInfo = userSnapshot.getValue(User.class);
                      // 임대인 유저가 맞는지 확인
                      if(!landlordInfo.getCategory().equals("임대인")){
-                         flag[0] = false;
                          landlordInfo = null;
                          Toast.makeText(nowContext, "입력하신 정보에 해당하는 임대인이 존재하지 않습니다.",
                                  Toast.LENGTH_LONG).show();
+                         return;
                      }else {
-                         flag[0] = true;
                          landlordInfo.setUID(userSnapshot.getKey());
                      }
-                 }
+                }
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-                Log.d("===", "verifyLandlord: onCancelled");
+                Log.d("===", "verifyLandlord: onCancelled "+ databaseError.getDetails());
                 Toast.makeText(nowContext, "입력하신 정보에 해당하는 임대인이 존재하지 않습니다.",
                         Toast.LENGTH_LONG).show();
-                flag[0] = false;
             }
         });
 
-        return flag[0];
+        if(landlordInfo == null) {
+            return;
+        }else{
+            doesUnitExist(newUser, pwd);
+        }
     }
 
     /*** (세입자) 본인 전화번호로 등록된 unitID와 BuildingID 검색, 없을 경우 false return ***/
-    private boolean doesUnitExist(String tenantPhone) {
-        final Boolean[] flag = new Boolean[1];
-
+    private void doesUnitExist(final User newUser, final String pwd) {
         Log.w("===", "doesUnitExist()");
-        DatabaseReference unitRef = FirebaseDatabase.getInstance().getReference("units");
-        Log.w("===", "doesUnitExist() 1");
-        unitRef.orderByChild("tenantPhone").equalTo(tenantPhone).addValueEventListener(new ValueEventListener() {
+        DatabaseReference unitRef = FirebaseDatabase.getInstance().getReference("registeredTenants");
+        String tenantPhone = newUser.getPhone();
+
+        unitRef.orderByChild("phone").equalTo(tenantPhone).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 Log.w("===", "doesUnitExist() : onDataChange");
-                for(DataSnapshot userSnapshot : dataSnapshot.getChildren()){
-                    Log.w("===", "key : " + userSnapshot.getKey());
-                    Log.w("===", "Value : " + userSnapshot.getValue());
-//                    landlordInfo = userSnapshot.getValue(User.class);
-                    flag[0] = true;
+                if(dataSnapshot.getValue() == null){
+                    Log.w("===", "doesUnitExist() : No Value");
+                }else{
+                    for(DataSnapshot userSnapshot : dataSnapshot.getChildren()){
+                        Log.w("===", "key : " + userSnapshot.getKey());
+                        Log.w("===", "Value : " + userSnapshot.getValue());
+
+                        Tenant tmpTenant = userSnapshot.getValue(Tenant.class);
+                        myUnitID = tmpTenant.getUnitID();
+                        myBuildingID = tmpTenant.getBuildingID();
+
+                        Log.w("===", "building : "+myBuildingID + "/ unit : " + myUnitID);
+                    }
                 }
-                flag[0] = true;
+                createUser(newUser, pwd, true);
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
                 Log.d("===", "doesUnitExist() : onCancelled");
-                flag[0] = false;
+
             }
         });
-        Log.d("===", "flag: " + flag[0]);
-        return flag[0];
     }
 
 
@@ -446,10 +470,8 @@ public class SignUpActivity extends AppCompatActivity {
         depositorEt = findViewById(R.id.et_sign_up_depositor);
         landlordPhoneEt = findViewById(R.id.et_sign_up_landlordPhone);
 
-        RadioGroup sexRg = findViewById(R.id.signUpSexRg);
+        sexRg = findViewById(R.id.signUpSexRg);
         categoryRg = findViewById(R.id.signUpCategoryRg);
-        checkedSexRgbt = findViewById(sexRg.getCheckedRadioButtonId());
-        checkedCategoryRgbt = findViewById(categoryRg.getCheckedRadioButtonId());
 
         phoneAuthBt = findViewById(R.id.signUpPhoneAuthBt);
         phoneAuthCheckBt = findViewById(R.id.signUpPhoneAuthVerificationBt);
