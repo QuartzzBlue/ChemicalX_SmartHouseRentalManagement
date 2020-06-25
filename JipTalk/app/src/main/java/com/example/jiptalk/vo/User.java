@@ -13,15 +13,20 @@ public class User implements Serializable {
     String email;
     String phone;
     String name;
-    String depositor;  // 예금자명
-    String bank;    // 은행
-    String accountNum; //  계좌번호
     String sex;
     String category;    // 임대인 or 임차인
     Boolean isAlarmOn;
     String token;
+
+    /* 임대인 */
+    String depositor;  // 예금자명
+    String bank;    // 은행
+    String accountNum; //  계좌번호
+
+    /* 세입자 */
     String buildingID;
     String unitID;
+
 
 
     public User() {}
@@ -189,13 +194,15 @@ public class User implements Serializable {
                 ", email='" + email + '\'' +
                 ", phone='" + phone + '\'' +
                 ", name='" + name + '\'' +
-                ", depositor='" + depositor + '\'' +
-                ", bank='" + bank + '\'' +
-                ", accountNum='" + accountNum + '\'' +
                 ", sex='" + sex + '\'' +
                 ", category='" + category + '\'' +
                 ", isAlarmOn=" + isAlarmOn +
                 ", token='" + token + '\'' +
+                ", depositor='" + depositor + '\'' +
+                ", bank='" + bank + '\'' +
+                ", accountNum='" + accountNum + '\'' +
+                ", buildingID='" + buildingID + '\'' +
+                ", unitID='" + unitID + '\'' +
                 '}';
     }
 }

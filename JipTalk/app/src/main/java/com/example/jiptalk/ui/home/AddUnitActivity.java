@@ -27,7 +27,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.jiptalk.R;
 import com.example.jiptalk.Util;
 import com.example.jiptalk.Valid;
+import com.example.jiptalk.vo.Tenant;
 import com.example.jiptalk.vo.Unit;
+import com.example.jiptalk.vo.User;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -396,11 +398,20 @@ public class AddUnitActivity extends AppCompatActivity {
             }
         });
 
-
-        String key = unitRef.child("units").child(thisBuildingKey).push().getKey();
         Map<String, Object> childUpdates = new HashMap<>();
-        childUpdates.put("units/" + thisBuildingKey + "/" + key + "/", newUnit.toMap());
-        childUpdates.put("buildings/" + userUid + "/totalOccupiedCnt/", totalOccupiedCnt+1);
+
+        String unitKey = unitRef.child("units").child(thisBuildingKey).push().getKey();
+        String tenantKey = unitRef.child("tenants").push().getKey();
+
+        Tenant tenant = new Tenant();
+        tenant.setName(newUnit.getTenantName());
+        tenant.setPhone(newUnit.getTenantPhone());
+        tenant.setUnitID(unitKey);
+        tenant.setBuildingID(thisBuildingKey);
+
+        childUpdates.put("units/" + thisBuildingKey + "/" + unitKey + "/", newUnit.toMap());
+        childUpdates.put("registeredTenants/" + tenantKey + "/", tenant.toMap());
+//        childUpdates.put("buildings/" + userUid + "/totalOccupiedCnt/", totalOccupiedCnt+1);
 
         unitRef.updateChildren(childUpdates).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
