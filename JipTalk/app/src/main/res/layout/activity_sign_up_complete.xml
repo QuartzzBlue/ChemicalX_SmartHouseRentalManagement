@@ -5,6 +5,10 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:paddingLeft="25dp"
+    android:paddingTop="40dp"
+    android:paddingRight="25dp"
+    android:paddingBottom="40dp"
     android:textAlignment="center"
     tools:context=".SignUpCompleteActivity">
 
@@ -14,27 +18,55 @@
         android:layout_height="69dp"
         app:srcCompat="@drawable/logo_medium" />
 
-    <TextView
-        android:id="@+id/textView19"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="회원이 되신 것을"
-        android:textAlignment="center"
-        android:textSize="24sp" />
+        android:layout_height="50dp"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/textView21"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="진심으로 환영합니다!"
-        android:textAlignment="center"
-        android:textSize="24sp" />
+        <TextView
+            android:id="@+id/textView48"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="15dp"
+            android:text="WELCOME!"
+            android:textAlignment="center"
+            android:textColor="@color/black"
+            android:textSize="30sp"
+            android:textStyle="bold" />
 
-    <TextView
-        android:id="@+id/signUpCompleteTimeOutTV"
+        <TextView
+            android:id="@+id/textView19"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="회원이 되신 것을"
+            android:textAlignment="center"
+            android:textColor="@color/black"
+            android:textSize="24sp" />
+
+        <TextView
+            android:id="@+id/textView21"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="진심으로 환영합니다!"
+            android:textAlignment="center"
+            android:textColor="@color/black"
+            android:textSize="24sp" />
+    </LinearLayout>
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="3초 뒤에 로그인 화면으로 이동합니다"
-        android:textAlignment="center"
-        android:textSize="14sp" />
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/signUpCompleteTimeOutTV"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="3초 뒤에 로그인 화면으로 이동합니다"
+            android:textAlignment="center"
+            android:textSize="14sp" />
+    </LinearLayout>
 </LinearLayout>
