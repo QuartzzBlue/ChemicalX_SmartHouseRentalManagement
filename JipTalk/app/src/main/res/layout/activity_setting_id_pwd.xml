@@ -5,6 +5,10 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:paddingLeft="25dp"
+    android:paddingTop="15dp"
+    android:paddingRight="25dp"
+    android:paddingBottom="15dp"
     android:textAlignment="center"
     tools:context=".SettingIdPwdActivity">
 
@@ -12,6 +16,7 @@
         android:id="@+id/settingFindIdBt"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp"
         android:background="@drawable/round_button_2"
         android:text="아이디 찾기" />
 

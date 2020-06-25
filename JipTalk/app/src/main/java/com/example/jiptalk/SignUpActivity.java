@@ -8,6 +8,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.telephony.PhoneNumberFormattingTextWatcher;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -119,6 +120,8 @@ public class SignUpActivity extends AppCompatActivity {
             @Override
             public void afterTextChanged(Editable s) {}
         });
+
+        phoneEt.addTextChangedListener(new PhoneNumberFormattingTextWatcher());
 
         /*** 전화번호 인증 ***/
         phoneAuthBt.setOnClickListener(new View.OnClickListener(){
@@ -285,7 +288,6 @@ public class SignUpActivity extends AppCompatActivity {
                                 @Override
                                 public void onSuccess(Void aVoid) {
                                     Log.d("===", "insertUserToDatabase: succeed");
-                                    Toast.makeText(nowContext, "회원가입이 성공적으로 이루어졌습니다.", Toast.LENGTH_SHORT).show();
                                     util.hideProgressDialog();
                                     // 액티비티 이동
                                     Intent intent = new Intent(getApplicationContext(), SignUpCompleteActivity.class);
@@ -304,22 +306,13 @@ public class SignUpActivity extends AppCompatActivity {
 
                 }
 
-
-
             }
         });
 
     }
-    /**** 삭제해야함 ****/
-    public void testtest(View v) {
-
-        User newUser = new User("seule@daum.net", "010-5120-0763", "박승희", null, null, null, "여", "세입자", true, null);
-//        doesUnitExist(newUser, "1234");
-          confirmTenant(newUser, "Test0101!");
-    }
 
     /*** (세입자) 임대인 존재하는지 확인 및 임대인 정보 받아옴 ***/
-    private void confirmTenant(final User newUser, String pwd) {
+    private void confirmTenant(final User newUser, final String pwd) {
 
         String landlordPhone = landlordPhoneEt.getText().toString().trim();
         Log.w("===", "verifyLandlord()");
@@ -348,6 +341,10 @@ public class SignUpActivity extends AppCompatActivity {
                          landlordInfo.setUID(userSnapshot.getKey());
                      }
                 }
+
+                if(landlordInfo == null) return;
+                else doesUnitExist(newUser, pwd);
+
             }
 
             @Override
@@ -358,11 +355,6 @@ public class SignUpActivity extends AppCompatActivity {
             }
         });
 
-        if(landlordInfo == null) {
-            return;
-        }else{
-            doesUnitExist(newUser, pwd);
-        }
     }
 
     /*** (세입자) 본인 전화번호로 등록된 unitID와 BuildingID 검색, 없을 경우 false return ***/

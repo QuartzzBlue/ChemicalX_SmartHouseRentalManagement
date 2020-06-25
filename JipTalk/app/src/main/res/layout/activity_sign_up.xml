@@ -401,13 +401,6 @@
                     android:inputType="phone" />
             </LinearLayout>
 
-            <Button
-                android:id="@+id/button"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:onClick="testtest"
-                android:text="Button" />
-
         </LinearLayout>
     </ScrollView>
 

@@ -4,6 +4,7 @@ import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.telephony.PhoneNumberFormattingTextWatcher;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -78,6 +79,8 @@ public class AddUnitActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_unit);
         initialization();
+
+        tenantPhoneEt.addTextChangedListener(new PhoneNumberFormattingTextWatcher());
 
         //입금자동일 버튼 클릭 시
         makeSameBtn.setOnClickListener(new View.OnClickListener() {
