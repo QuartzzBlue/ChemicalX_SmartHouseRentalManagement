@@ -51,17 +51,6 @@ public class AddBuildingActivity extends AppCompatActivity {
 
     }
 
-    //도로명 주소 웹뷰 액티비티에서 주소 받아옴
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode==REQUEST_CODE){
-            if(resultCode == RESULT_OK){
-                et_buildingAddress.setText(data.getStringExtra("result"));
-            }
-        }
-    }
-
     /* AppBar 에 세이브 버튼 추가 */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -154,6 +143,17 @@ public class AddBuildingActivity extends AppCompatActivity {
         nowContext = this; // this = View.getContext();  현재 실행되고 있는 View의 context를 return 하는데 보통은 현재 활성화된 activity의 context가 된다.
         valid = new Valid();
 
+    }
+
+    //도로명 주소 웹뷰 액티비티에서 주소 받아옴
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode==REQUEST_CODE){
+            if(resultCode == RESULT_OK){
+                et_buildingAddress.setText(data.getStringExtra("result"));
+            }
+        }
     }
 
     private boolean isValid(Building newBuilding){
