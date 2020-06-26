@@ -15,16 +15,8 @@
     android:orientation="vertical"
     tools:context="com.example.jiptalk.ui.home.JusoWebViewActivity">
 
-
     <WebView
-
-        android:id="@+id/daum_webview"
-
+        android:id="@+id/webView"
         android:layout_width="match_parent"
-
-        android:layout_height="match_parent"
-
-        />
-
-
+        android:layout_height="match_parent" />
 </LinearLayout>
