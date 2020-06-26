@@ -46,7 +46,7 @@ public class UnitDetailActivity extends AppCompatActivity {
     /* AppBar 에 Overflow 버튼 추가 */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.appbar_action_more, menu) ;
+        getMenuInflater().inflate(R.menu.appbar_action_unitdetail, menu) ;
         return true ;
     }
 
@@ -57,16 +57,21 @@ public class UnitDetailActivity extends AppCompatActivity {
         switch (item.getItemId()) {
 
             //초기화
-            case R.id.more_clear:
+            case R.id.unit_clear:
 
                 return true;
 
-            case R.id.more_delete:
+            case R.id.unit_delete:
                 FirebaseDatabase.getInstance().getReference().child("units").child(thisBuildingKey).child(thisUnit.getUnitID()).removeValue();
                 finish();
 
                 return true;
 
+            case R.id.unit_modify:
+                Intent intent = new Intent(getApplicationContext(), ModUnitDetailActivity.class);
+                startActivity(intent);
+
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }

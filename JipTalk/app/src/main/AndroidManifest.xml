@@ -17,7 +17,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".ui.setting.CheckUserAccountActivity"></activity>
+        <activity android:name=".ui.home.ModUnitDetailActivity"></activity>
+        <activity android:name=".ui.setting.CheckUserAccountActivity" />
         <activity android:name=".ui.setting.ModUserAccountActivity" />
         <activity android:name=".ui.setting.ModUserPwdActivity" />
         <activity android:name=".ui.setting.CheckUserPwdActivity" />
@@ -50,7 +51,8 @@
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name" />
-        <activity android:name=".tenant.TMainActivity"
+        <activity
+            android:name=".tenant.TMainActivity"
             android:label="@string/app_name" />
         <activity
             android:name=".SplashActivity"
@@ -67,13 +69,15 @@
             android:name=".ui.home.AddBuildingActivity"
             android:label="신규 건물 등록" />
         <activity android:name=".ui.home.JusoWebViewActivity" />
-        <activity android:name=".ui.home.BuildingDetailActivity"
-            android:label="건물 상세"/>
+        <activity
+            android:name=".ui.home.BuildingDetailActivity"
+            android:label="건물 상세" />
         <activity
             android:name=".ui.home.AddUnitActivity"
             android:label="신규 세대 등록" />
-        <activity android:name=".ui.home.UnitDetailActivity"
-            android:label="호수 상세"/>
+        <activity
+            android:name=".ui.home.UnitDetailActivity"
+            android:label="호수 상세" />
 
         <receiver
             android:name=".SmsReceiver"
