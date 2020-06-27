@@ -110,17 +110,7 @@ public class JusoWebViewActivity extends AppCompatActivity {
         webView.getSettings().setDomStorageEnabled(false);
         webView.getSettings().setAppCacheEnabled(false);
 
-        try {
-            String base64 = null;
-            String htmlContent = "...";
-            base64 = android.util.Base64.encodeToString(htmlContent.getBytes("UTF-8"),
-                    android.util.Base64.DEFAULT);
-            webView.loadData(base64, "text/html; charset=utf-8", "base64");
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
-
-        webView.loadUrl("http://192.168.56.1:8080/WebServer/address.jsp");
+        webView.loadUrl("https://smart-house-rental-management.web.app/");
 
     }
 
