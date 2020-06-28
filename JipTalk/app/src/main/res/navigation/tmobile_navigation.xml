@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/tnavigation_home"
-        android:name="com.example.jiptalk.ui.home.THomeFragment"
+        android:name="com.example.jiptalk.tenant.THomeFragment"
         android:label="@string/title_home"
         tools:layout="@layout/fragment_home_tenant" >
     </fragment>

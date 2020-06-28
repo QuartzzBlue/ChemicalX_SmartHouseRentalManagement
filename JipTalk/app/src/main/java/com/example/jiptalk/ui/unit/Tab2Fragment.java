@@ -1,4 +1,4 @@
-package com.example.jiptalk.ui.home;
+package com.example.jiptalk.ui.unit;
 
 import android.content.Intent;
 import android.os.Bundle;

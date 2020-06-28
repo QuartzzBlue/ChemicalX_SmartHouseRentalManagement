@@ -13,7 +13,7 @@
     android:layout_height="match_parent"
 
     android:orientation="vertical"
-    tools:context="com.example.jiptalk.ui.home.JusoWebViewActivity">
+    tools:context="com.example.jiptalk.ui.building.JusoWebViewActivity">
 
     <WebView
         android:id="@+id/webView"

@@ -1,10 +1,9 @@
-package com.example.jiptalk.ui.home;
+package com.example.jiptalk.ui.building;
 
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -15,15 +14,10 @@ import android.webkit.WebChromeClient;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.jiptalk.R;
-
-import java.io.UnsupportedEncodingException;
-
-import static android.app.Activity.RESULT_OK;
 
 public class JusoWebViewActivity extends AppCompatActivity {
 

@@ -1,4 +1,4 @@
-package com.example.jiptalk.ui.home;
+package com.example.jiptalk.ui.unit;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
