@@ -32,7 +32,7 @@ public class UnitDetailActivity extends AppCompatActivity {
     private MyFragmentPagerAdapter myFragmentPagerAdapter;
 
     private Unit thisUnit;
-    private String thisBuildingKey, thisBuildingName;
+    private String thisBuildingKey, thisBuildingName, thisUnitKey;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -81,6 +81,7 @@ public class UnitDetailActivity extends AppCompatActivity {
 
     private void initialize() {
         thisUnit = (Unit) getIntent().getSerializableExtra("thisUnit");
+        thisUnitKey = getIntent().getStringExtra("thisUnitKey");
         thisBuildingKey = getIntent().getStringExtra("thisBuildingKey");
         thisBuildingName = getIntent().getStringExtra("thisBuildingName");
 
@@ -138,7 +139,9 @@ public class UnitDetailActivity extends AppCompatActivity {
                 case 0 : return new Tab1Fragment();
                 case 1 :
                     Bundle bundle = new Bundle();
-                    bundle.putSerializable("thisUnit", thisUnit);
+                    bundle.putString("thisUnitKey", thisUnitKey);
+                    bundle.putString("thisBuildingKey", thisBuildingKey);
+//                    bundle.putSerializable("thisUnit", thisUnit);
                     Tab2Fragment tab2 = new Tab2Fragment();
                     tab2.setArguments(bundle);
                     return tab2;
