@@ -17,7 +17,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".ui.home.ModUnitDetailActivity"></activity>
+        <activity android:name=".ui.message.AddNotiActivity"></activity>
+        <activity android:name=".ui.home.ModUnitDetailActivity" />
         <activity android:name=".ui.setting.CheckUserAccountActivity" />
         <activity android:name=".ui.setting.ModUserAccountActivity" />
         <activity android:name=".ui.setting.ModUserPwdActivity" />

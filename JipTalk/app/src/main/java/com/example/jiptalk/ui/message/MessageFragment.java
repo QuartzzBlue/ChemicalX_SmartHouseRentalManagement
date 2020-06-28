@@ -2,6 +2,7 @@ package com.example.jiptalk.ui.message;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.format.DateFormat;
 import android.util.Log;
@@ -53,6 +54,8 @@ import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
 
+import static java.nio.file.Paths.get;
+
 public class MessageFragment extends Fragment {
 
     private String TAG = "=== jiptalk.ui.message.MessageFragment";
@@ -73,7 +76,7 @@ public class MessageFragment extends Fragment {
     private Spinner spinnerTenantList, spinnerBuildingList;
     private ArrayList<String> clientNameList = new ArrayList<>();
     private ArrayList<User> clientList = new ArrayList<>();
-    private ArrayAdapter<String> arrayAdapterTenant;
+    private ArrayAdapter<String> arrayAdapterTenant, arrayAdapterNoti;
     private Button buttonAddMsg, buttonAddNoti;
     private String clientSelected;
     private ImageView imageViewDeleteMessages, imageViewDeleteMessage;
@@ -82,13 +85,16 @@ public class MessageFragment extends Fragment {
 
     /////
 
-    private RecyclerView recyclerViewMsg;
+    private RecyclerView recyclerViewMsg, recyclerViewNoti;
     private View mView;
     private String currentUserUID;
     private String category;
-    private DatabaseReference rootRef, chatData, userData, myData, buildingData;
+    private DatabaseReference rootRef, chatData, userData, myData, buildingData, notiData;
     private FirebaseRecyclerOptions<MessageVO> messageOptions;
     public FirebaseRecyclerAdapter<MessageVO, MessageViewHolder> messageAdapter;
+
+    private FirebaseRecyclerOptions<Noti> notiOptions;
+    public FirebaseRecyclerAdapter<Noti, NotiViewHolder> notiAdapter;
     private DatabaseReference mChatFriendData;
 
 
@@ -98,6 +104,8 @@ public class MessageFragment extends Fragment {
     public static final int VIEWTYPE_EDIT = 1;
 
     private ArrayList<String> clientList2 = new ArrayList<>();
+    private ArrayList<String> buildingNameList = new ArrayList<>();
+    private ArrayList<Building> buildingList = new ArrayList<>();
 
 
 //    private MessageViewModel notificationsViewModel;
@@ -126,7 +134,7 @@ public class MessageFragment extends Fragment {
 //        });
 
 //        messageItemAdapter = new MessageItemAdapter(msgList);
-        notiItemAdapter = new NotiItemAdapter(notiList);
+
 
 //        RecyclerView recyclerViewMsg = root.findViewById(R.id.recyclerViewMsg);
 //        recyclerViewMsg.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -135,23 +143,25 @@ public class MessageFragment extends Fragment {
 
         recyclerViewMsg = root.findViewById(R.id.recyclerViewMsg);
         recyclerViewMsg.setHasFixedSize(false);
+        recyclerViewNoti = root.findViewById(R.id.recyclerViewNoti);
+        recyclerViewNoti.setHasFixedSize(false);
+
         currentUserUID = FirebaseAuth.getInstance().getUid();
         Log.d(TAG, "currentUserID : " + currentUserUID);
 
 
-//         currentUserUID = "집주인";
-//        currentUserUID = "조현민";
-//        category = "임대인";
-//        currentUserUID = "이슬";
-//        category = "임차인";
         rootRef = FirebaseDatabase.getInstance().getReference();
         initiateClientList();
         myData = rootRef.child("user").child(currentUserUID);
-        myData.addListenerForSingleValueEvent(new ValueEventListener() {
+        myData.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 Log.d(TAG, "category : " + dataSnapshot.child("category").getValue().toString());
                 category = dataSnapshot.child("category").getValue().toString();
+                if (category.equals("세입자")) {
+                    ImageView imageViewDeleteNotice = root.findViewById(R.id.imageViewDeleteNotice);
+                    imageViewDeleteNotice.setVisibility(View.INVISIBLE);
+                }
             }
 
             @Override
@@ -161,9 +171,101 @@ public class MessageFragment extends Fragment {
         });
 
         chatData = rootRef.child("chat").child(currentUserUID);
+
+        notiData = rootRef.child("noti").child(currentUserUID);
+        notiOptions = new FirebaseRecyclerOptions.Builder<Noti>().setQuery(notiData, Noti.class).build();
+        notiAdapter = new FirebaseRecyclerAdapter<Noti, NotiViewHolder>(notiOptions) {
+            @Override
+            protected void onBindViewHolder(@NonNull final NotiViewHolder holder, int i, @NonNull final Noti noti) {
+
+                DatabaseReference notiRef = rootRef.child("noti").child(currentUserUID);
+                notiRef.addChildEventListener(new ChildEventListener() {
+                    @Override
+                    public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                        Noti notiDataSnapshot = dataSnapshot.getValue(Noti.class);
+                        Log.d(TAG, "notiDataSnapshot : " + notiDataSnapshot.toString());
+
+                        holder.setBuildingName(notiDataSnapshot.getBuildingName());
+                        holder.setTitle(notiDataSnapshot.getTitle());
+                        holder.setContent(notiDataSnapshot.getContent());
+                        holder.setTime(getDate(notiDataSnapshot.getTime()));
+                    }
+
+                    @Override
+                    public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+                    }
+
+                    @Override
+                    public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+
+                    }
+
+                    @Override
+                    public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+                notiRef.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        if (dataSnapshot.getChildrenCount() == 0) {
+                            return;
+                        }
+
+//                        Noti notiDataSnapshot = dataSnapshot.getValue(Noti.class);
+//                        Log.d(TAG, "notiDataSnapshot : " + notiDataSnapshot.toString());
+//
+//                        String key = dataSnapshot.getKey();
+//                        Log.d(TAG, "noti key : " + key);
+//                        Log.d(TAG, "noti value : " + dataSnapshot.getValue());
+//                        Map<String, Object> notiMap = (Map<String, Object>) dataSnapshot.getValue();
+//                        Iterator<String> notiKeyIterator = notiMap.keySet().iterator();
+//                        while (notiKeyIterator.hasNext()) {
+//                            String notiKey = notiKeyIterator.next();
+//                            Log.d(TAG, "notiKey : " + notiKey);
+//                            Object obj = notiMap.get(notiKey);
+//                            Map notiObjMap = (Map) obj;
+//                            Log.d(TAG, "noti VO buildingName : " + notiObjMap.get("buildingName").toString());
+//
+//
+//                            final String buildingName = notiObjMap.get("buildingName").toString();
+//                            final String title = notiObjMap.get("title").toString();
+//                            final String content = notiObjMap.get("content").toString();
+//                            final Long time = (Long) notiObjMap.get("time");
+//
+//                            Log.d(TAG, "noti added : " + title);
+//
+//
+//                            holder.setBuildingName(buildingName);
+//                            holder.setTitle(title);
+//                            holder.setContent(content);
+//                        }
+
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                        Log.d("mOursMessage: ", databaseError.getMessage());
+                    }
+                });
+            }
+
+            @NonNull
+            @Override
+            public NotiViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+                View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_noti, parent, false);
+
+                return new NotiViewHolder(view);
+            }
+        };
+
         messageOptions = new FirebaseRecyclerOptions.Builder<MessageVO>().setQuery(chatData, MessageVO.class).build();
-
-
         messageAdapter = new FirebaseRecyclerAdapter<MessageVO, MessageViewHolder>(messageOptions) {
 
             int viewType = VIEWTYPE_NORMAL;
@@ -171,7 +273,6 @@ public class MessageFragment extends Fragment {
             public void setViewType(int viewType) {
                 this.viewType = viewType;
             }
-
 
 
             @Override
@@ -290,16 +391,16 @@ public class MessageFragment extends Fragment {
 
         };
 
-
+        //notiItemAdapter = new NotiItemAdapter(notiList);
 //        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
 //        recyclerViewMsg.setLayoutManager(layoutManager);
 //        messageAdapter.startListening();
 //        recyclerViewMsg.setAdapter(messageAdapter);
 
 
-        RecyclerView recyclerViewNoti = root.findViewById(R.id.recyclerViewNoti);
-        recyclerViewNoti.setLayoutManager(new LinearLayoutManager(getContext()));
-        recyclerViewNoti.setAdapter(notiItemAdapter);
+//        RecyclerView recyclerViewNoti = root.findViewById(R.id.recyclerViewNoti);
+//        recyclerViewNoti.setLayoutManager(new LinearLayoutManager(getContext()));
+//        recyclerViewNoti.setAdapter(notiItemAdapter);
 
 
         fab_open = AnimationUtils.loadAnimation(getContext(), R.anim.fab_open);
@@ -309,6 +410,7 @@ public class MessageFragment extends Fragment {
         fabAddMsg = (FloatingActionButton) root.findViewById(R.id.fabAddMsg);
         fabAddNoti = (FloatingActionButton) root.findViewById(R.id.fabAddNoti);
 
+
         frameLayoutMessage = (FrameLayout) root.findViewById(R.id.frameLayoutMessage);
         frameLayoutAddMsg = (FrameLayout) root.findViewById(R.id.frameLayoutAddMsg);
         frameLayoutAddNoti = (FrameLayout) root.findViewById(R.id.frameLayoutAddNoti);
@@ -317,7 +419,9 @@ public class MessageFragment extends Fragment {
         textViewAddNoti = root.findViewById(R.id.textViewAddNoti);
 
         spinnerTenantList = root.findViewById(R.id.spinnerTenantList);
+        spinnerBuildingList = root.findViewById(R.id.spinnerBuildingList);
         buttonAddMsg = root.findViewById(R.id.buttonAddMsg);
+        buttonAddNoti = root.findViewById(R.id.buttonAddNoti);
 
 
         /**
@@ -345,6 +449,31 @@ public class MessageFragment extends Fragment {
                         clientNameList.add(client.getName());
                     }
                 }
+                arrayAdapterNoti = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_dropdown_item, buildingNameList);
+                spinnerBuildingList.setAdapter(arrayAdapterNoti);
+                spinnerBuildingList.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                    @Override
+                    public void onItemSelected(AdapterView<?> parent, View view, final int position, long id) {
+                        buttonAddNoti.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                if (category != null && (category.equals("집주인") || category.equals("임대인"))) {
+                                    Intent intent = new Intent(getContext(), AddNotiActivity.class);
+                                    intent.putExtra("buildingName", buildingList.get(position).getName());
+                                    intent.putExtra("buildingKey", buildingList.get(position).getId());
+                                    startActivity(intent);
+                                }
+                            }
+                        });
+
+                    }
+
+                    @Override
+                    public void onNothingSelected(AdapterView<?> parent) {
+
+                    }
+                });
+
 
                 arrayAdapterTenant = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_dropdown_item, clientNameList);
                 spinnerTenantList.setAdapter(arrayAdapterTenant);
@@ -391,6 +520,9 @@ public class MessageFragment extends Fragment {
         fabAddBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (category != null && category.equals("세입자")) {
+                    fabAddNoti.setVisibility(View.GONE);
+                }
                 frameLayoutMessage.setAlpha(0.7f);
                 frameLayoutMessage.setClickable(true);
                 anim();
@@ -417,6 +549,7 @@ public class MessageFragment extends Fragment {
                 frameLayoutMessage.setVisibility(View.VISIBLE);
                 frameLayoutMessage.setAlpha(0.7f);
                 frameLayoutAddNoti.setVisibility(View.VISIBLE);
+
             }
         });
 
@@ -441,10 +574,15 @@ public class MessageFragment extends Fragment {
         });
 
 
-        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
-        recyclerViewMsg.setLayoutManager(layoutManager);
+        LinearLayoutManager layoutManagerMsg = new LinearLayoutManager(getContext());
+        recyclerViewMsg.setLayoutManager(layoutManagerMsg);
         messageAdapter.startListening();
         recyclerViewMsg.setAdapter(messageAdapter);
+
+        LinearLayoutManager layoutManagerNoti = new LinearLayoutManager(getContext());
+        recyclerViewNoti.setLayoutManager(layoutManagerNoti);
+        notiAdapter.startListening();
+        recyclerViewNoti.setAdapter(notiAdapter);
 
 
         imageViewDeleteMessages.setOnClickListener(new View.OnClickListener() {
@@ -464,7 +602,12 @@ public class MessageFragment extends Fragment {
         buildingData.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                Log.d(TAG, "buildingKey : " + dataSnapshot.getValue());
+                for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
+                    Building buildingItem = postSnapshot.getValue(Building.class);
+                    buildingItem.setId(postSnapshot.getKey());
+                    buildingList.add(buildingItem);
+                    buildingNameList.add(buildingItem.getName());
+                }
             }
 
             @Override
@@ -473,9 +616,11 @@ public class MessageFragment extends Fragment {
             }
         });
 
-
+        Log.d(TAG, "BuildingList : " + buildingList.toString());
         Iterator<String> keys = Constant.buildings.keySet().iterator();
         while (keys.hasNext()) {
+
+
             Map<String, Unit> unitHashMap = Constant.buildings.get(keys.next()).getUnits();
 
             Iterator<String> unitKeys = unitHashMap.keySet().iterator();
@@ -550,11 +695,10 @@ public class MessageFragment extends Fragment {
     }
 
 
-    // MessageVO
+    // Message ViewHolder for Firebase RecyclerView Adapter
     public static class MessageViewHolder extends RecyclerView.ViewHolder {
-
         LinearLayout chatLayout;
-        TextView textViewName, textViewTitle, textViewConent, textViewTime;
+        TextView textViewName, textViewTitle, textViewContent, textViewTime;
         LinearLayout linearLayoutDeleteMessage;
 
         public MessageViewHolder(final View itemView) {
@@ -562,7 +706,7 @@ public class MessageFragment extends Fragment {
             chatLayout = itemView.findViewById(R.id.linearLayoutMessageItem);
             textViewName = itemView.findViewById(R.id.textViewMsgName);
             textViewTitle = itemView.findViewById(R.id.textViewMsgTitle);
-            textViewConent = itemView.findViewById(R.id.textViewMsgContent);
+            textViewContent = itemView.findViewById(R.id.textViewMsgContent);
             textViewTime = itemView.findViewById(R.id.textViewMsgTime);
             linearLayoutDeleteMessage = itemView.findViewById(R.id.linearLayoutDeleteMessage);
         }
@@ -576,7 +720,7 @@ public class MessageFragment extends Fragment {
         }
 
         public void setContent(String content) {
-            textViewConent.setText(content);
+            textViewContent.setText(content);
         }
 
 
@@ -593,6 +737,42 @@ public class MessageFragment extends Fragment {
         }
 
     }
+
+    // Noti ViewHolder for Firebase RecyclerView Adapter
+    public static class NotiViewHolder extends RecyclerView.ViewHolder {
+
+        LinearLayout noticeLayout;
+        TextView textViewTitle, textViewConent, textViewTime, textViewBuildingName;
+
+        public NotiViewHolder(final View itemView) {
+            super(itemView);
+            noticeLayout = itemView.findViewById(R.id.linearLayoutNoticeItem);
+            textViewBuildingName = itemView.findViewById(R.id.textViewNotiBuildingName);
+            textViewTitle = itemView.findViewById(R.id.textViewNotiTitle);
+            textViewConent = itemView.findViewById(R.id.textViewNotiContent);
+            textViewTime = itemView.findViewById(R.id.textViewNotiTime);
+        }
+
+        public void setBuildingName(String buildingName) {
+            buildingName = buildingName.substring(0, 2);
+            textViewBuildingName.setText(buildingName);
+        }
+
+        public void setTitle(String title) {
+            textViewTitle.setText(title);
+        }
+
+        public void setContent(String content) {
+            textViewConent.setText(content);
+        }
+
+
+        public void setTime(String time) {
+            textViewTime.setText(time);
+        }
+
+    }
+
 
     public String getDate(long time) {
         Calendar cal = Calendar.getInstance(Locale.ENGLISH);
@@ -615,6 +795,9 @@ public class MessageFragment extends Fragment {
     }
 
 
+    //
+
+
     class NotiItemAdapter extends RecyclerView.Adapter<NotiItemAdapter.ViewHolder> {
 
         ArrayList<Noti> notiList;
@@ -626,10 +809,11 @@ public class MessageFragment extends Fragment {
             public ViewHolder(View itemView) {
                 super(itemView);
 
-                name = itemView.findViewById(R.id.textViewNotiName);
+                name = itemView.findViewById(R.id.textViewNotiBuildingName);
                 title = itemView.findViewById(R.id.textViewNotiTitle);
                 content = itemView.findViewById(R.id.textViewNotiContent);
                 time = itemView.findViewById(R.id.textViewNotiTime);
+
             }
         }
 
@@ -653,7 +837,7 @@ public class MessageFragment extends Fragment {
         @Override
         public void onBindViewHolder(@NonNull NotiItemAdapter.ViewHolder holder, final int position) {
 
-            holder.name.setText(notiList.get(position).getName() + "");
+            holder.name.setText(notiList.get(position).getBuildingName() + "");
             holder.title.setText(notiList.get(position).getTitle() + "");
             holder.content.setText(notiList.get(position).getContent() + "");
             holder.time.setText(notiList.get(position).getTime() + "");

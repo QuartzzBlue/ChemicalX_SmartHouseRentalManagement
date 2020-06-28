@@ -51,6 +51,7 @@ import * as functions from 'firebase-functions';
 //     return null;
 // })
 
+
 export const monthlyPaymentCreate = functions.database
 .ref('/units/{buildingID}/{unitID}')
 .onCreate((snapshot, context) => {
@@ -62,10 +63,13 @@ export const monthlyPaymentCreate = functions.database
     return null;
 })
 
-exports.scheduledFunctionCrontab = functions.pubsub.schedule('16 05 * * *')
+exports.scheduledFunctionCrontab = functions.pubsub.schedule('00 00 * * *')
   //.timeZone('America/New_York') // Users can choose timezone - default is America/Los_Angeles
   .timeZone('Asia/Seoul')
   .onRun((context) => {
-  console.log('This will be run every day at 4:05 PM Eastern!');
+  console.log('This is scheduledFunctionCrontab()');
+
+
+
   return null;
 });
