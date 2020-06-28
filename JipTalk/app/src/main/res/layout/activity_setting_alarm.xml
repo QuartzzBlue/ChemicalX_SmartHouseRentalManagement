@@ -20,8 +20,8 @@
             android:padding="15dp"
             android:text="푸시 알림 설정"
             android:textSize="20sp"
-            android:thumb="@drawable/switch_thumb"
-            android:track="@drawable/switch_track" />
+            android:thumb="@drawable/switch_thumb_1"
+            android:track="@drawable/switch_track_1" />
 
     </LinearLayout>
 </LinearLayout>

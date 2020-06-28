@@ -290,6 +290,7 @@ public class BuildingDetailActivity extends AppCompatActivity implements Adapter
                 Intent intent = new Intent(getApplicationContext(), UnitDetailActivity.class);
                 intent.putExtra("thisBuildingKey", thisBuildingKey);
                 intent.putExtra("thisBuildingName", thisBuilding.getName());
+                intent.putExtra("thisUnitKey", unitList.get(position).getUnitID());
                 intent.putExtra("thisUnit", unitList.get(position));
                 startActivity(intent);
             }
@@ -325,7 +326,7 @@ public class BuildingDetailActivity extends AppCompatActivity implements Adapter
 class UnitViewAdapter extends RecyclerView.Adapter<UnitViewAdapter.MyViewHolder>{
 
     private ArrayList<Unit> units;
-    private OnItemClickListener onItemClickListener=null;
+    private OnItemClickListener onItemClickListener = null;
 
     //아이템 뷰를 저장하는 뷰 홀더 클래스
     class MyViewHolder extends RecyclerView.ViewHolder{

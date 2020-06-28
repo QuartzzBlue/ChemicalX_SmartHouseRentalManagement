@@ -239,11 +239,11 @@ public class ModUnitDetailActivity extends AppCompatActivity {
 
                 if (selectedBt == R.id.rb_mod_unit_detail_contract_3m) {
                     eCalendar.add(Calendar.MONTH, 3);
-                } else if (selectedBt == R.id.rb_add_unit_contract_6m) {
+                } else if (selectedBt == R.id.rb_mod_unit_detail_contract_6m) {
                     eCalendar.add(Calendar.MONTH, 6);
-                } else if (selectedBt == R.id.rb_add_unit_contract_1y) {
+                } else if (selectedBt == R.id.rb_mod_unit_detail_contract_1y) {
                     eCalendar.add(Calendar.YEAR, 1);
-                } else if (selectedBt == R.id.rb_add_unit_contract_2y) {
+                } else if (selectedBt == R.id.rb_mod_unit_detail_contract_2y) {
                     eCalendar.add(Calendar.YEAR, 2);
                 }
                 eCalendar.add(Calendar.DATE, -1);
