@@ -69,6 +69,8 @@ public class UnitDetailActivity extends AppCompatActivity {
 
             case R.id.unit_modify:
                 Intent intent = new Intent(getApplicationContext(), ModUnitDetailActivity.class);
+                intent.putExtra("thisUnit", thisUnit);
+                intent.putExtra("thisBuildingKey", thisBuildingKey);
                 startActivity(intent);
 
                 return true;
