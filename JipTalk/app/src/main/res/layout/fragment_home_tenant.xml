@@ -99,19 +99,11 @@
                     android:orientation="vertical">
 
                     <TextView
-                        android:id="@+id/textView69"
+                        android:id="@+id/tv_tenant_home_detail"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:gravity="center"
-                        android:text="+1일 연체되었습니다."
-                        android:textSize="18sp" />
-
-                    <TextView
-                        android:id="@+id/textView73"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:text="다음 납부까지 1일 남았습니다."
+                        android:text="내용"
                         android:textSize="18sp" />
 
                 </LinearLayout>

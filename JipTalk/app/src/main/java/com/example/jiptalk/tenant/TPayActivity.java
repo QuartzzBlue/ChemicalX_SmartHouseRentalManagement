@@ -1,4 +1,4 @@
-package com.example.jiptalk.ui.home;
+package com.example.jiptalk.tenant;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -6,11 +6,15 @@ import android.os.Bundle;
 
 import com.example.jiptalk.R;
 
-public class ModUnitDetailActivity extends AppCompatActivity {
+import retrofit2.Call;
+import retrofit2.http.GET;
+
+public class TPayActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_mod_unit_detail);
+        setContentView(R.layout.activity_t_pay);
     }
+
 }

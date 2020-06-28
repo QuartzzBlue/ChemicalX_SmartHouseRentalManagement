@@ -1,4 +1,4 @@
-package com.example.jiptalk.ui.home;
+package com.example.jiptalk.ui.unit;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -11,16 +11,14 @@ import androidx.fragment.app.Fragment;
 
 import com.example.jiptalk.R;
 
-public class Tab1Fragment extends Fragment {
+public class Tab3Fragment extends Fragment {
 
     public void onCreate(Bundle saveInstanceState) {
         super.onCreate(saveInstanceState);
     }
 
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle saveInstanceState){
-        View view = inflater.inflate(R.layout.item_unit_detail_tab1,null);
-
-        //recycler view 구현..
+        View view = inflater.inflate(R.layout.item_unit_detail_tab3,null);
 
         return view;
     }

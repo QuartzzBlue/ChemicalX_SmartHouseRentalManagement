@@ -17,7 +17,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".ui.home.ModUnitDetailActivity"></activity>
+        <activity android:name=".tenant.TPayActivity"></activity>
+        <activity android:name=".ui.unit.ModUnitDetailActivity" />
         <activity android:name=".ui.setting.CheckUserAccountActivity" />
         <activity android:name=".ui.setting.ModUserAccountActivity" />
         <activity android:name=".ui.setting.ModUserPwdActivity" />
@@ -68,15 +69,15 @@
         <activity
             android:name=".ui.home.AddBuildingActivity"
             android:label="신규 건물 등록" />
-        <activity android:name=".ui.home.JusoWebViewActivity" />
+        <activity android:name=".ui.building.JusoWebViewActivity" />
         <activity
-            android:name=".ui.home.BuildingDetailActivity"
+            android:name=".ui.building.BuildingDetailActivity"
             android:label="건물 상세" />
         <activity
-            android:name=".ui.home.AddUnitActivity"
+            android:name=".ui.building.AddUnitActivity"
             android:label="신규 세대 등록" />
         <activity
-            android:name=".ui.home.UnitDetailActivity"
+            android:name=".ui.unit.UnitDetailActivity"
             android:label="호수 상세" />
 
         <receiver
@@ -87,7 +88,7 @@
             </intent-filter>
         </receiver>
 
-        <activity android:name=".ui.home.CameraActivity" />
+        <activity android:name=".ui.building.CameraActivity" />
     </application>
 
 </manifest>

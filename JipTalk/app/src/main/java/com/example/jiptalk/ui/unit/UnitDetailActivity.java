@@ -1,4 +1,4 @@
-package com.example.jiptalk.ui.home;
+package com.example.jiptalk.ui.unit;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -14,13 +14,10 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentStatePagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
-import com.example.jiptalk.Constant;
-import com.example.jiptalk.MainActivity;
 import com.example.jiptalk.R;
 import com.example.jiptalk.vo.Unit;
 import com.google.android.material.tabs.TabItem;
 import com.google.android.material.tabs.TabLayout;
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.FirebaseDatabase;
 
 public class UnitDetailActivity extends AppCompatActivity {

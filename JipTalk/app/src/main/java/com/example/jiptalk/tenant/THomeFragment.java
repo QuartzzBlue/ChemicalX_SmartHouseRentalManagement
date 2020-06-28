@@ -1,7 +1,9 @@
-package com.example.jiptalk.ui.home;
+package com.example.jiptalk.tenant;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,9 +14,13 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProviders;
 
+import com.example.jiptalk.MyDialog;
 import com.example.jiptalk.R;
+import com.example.jiptalk.Util;
 import com.example.jiptalk.vo.Unit;
 import com.example.jiptalk.vo.User;
 import com.google.firebase.auth.FirebaseAuth;
@@ -23,8 +29,11 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.database.core.Context;
 
 import java.text.NumberFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Locale;
 
 public class THomeFragment extends Fragment {
@@ -34,6 +43,9 @@ public class THomeFragment extends Fragment {
     TextView buildingInfoTv,monthTv,monthlyFee1Tv,paymentStatusTv;
     ImageView historyBtn,contactInfoBtn;
     TableLayout contactInfo;
+    Calendar calendar,target;
+    String account;
+    final static int requestCode = 1234;
     private TextView nameTv, depositorTv, phoneTv, leaseTypeTv, contractPeriodTv, depositTv, payDayTv, monthlyFeeTv, manageFeeTv, monthlyTotalFeeTv;
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -50,7 +62,9 @@ public class THomeFragment extends Fragment {
         contactInfoBtn = root.findViewById(R.id.btn_tenant_home_contactInfo);
         payNowBtn= root.findViewById(R.id.btn_tenant_home_payNow);
         contactInfo = root.findViewById(R.id.tl_tenant_home);
-
+        calendar = Calendar.getInstance();
+        target = Calendar.getInstance();
+        final int month = calendar.get(Calendar.MONTH)+1;
         //납부 내역
         historyBtn.setOnClickListener(new View.OnClickListener(){
 
@@ -78,6 +92,22 @@ public class THomeFragment extends Fragment {
 
             @Override
             public void onClick(View v) {
+                MyDialog dialog = new MyDialog(getContext());
+                dialog.setTitle(month+"월 월세 납부");
+                //dialog.setMessage(FirebaseDatabase.getInstance().getReference().child())
+                dialog.setPositiveButton("확인", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                    }
+                });
+                dialog.setNegativeButton("취소", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                });
+                dialog.show();
 
             }
         });
@@ -111,6 +141,7 @@ public class THomeFragment extends Fragment {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                         Unit unit = dataSnapshot.getValue(Unit.class);
+                        Log.d("===",unit.toString());
                         setData(unit);
                     }
 
@@ -131,11 +162,23 @@ public class THomeFragment extends Fragment {
     public void setData(Unit thisUnit){
         NumberFormat myFormatter = NumberFormat.getInstance(Locale.getDefault());
         buildingInfoTv.setText(thisUnit.getUnitNum()+"호");
-        if(thisUnit.getIsPaid().equals("0")){
-            paymentStatusTv.setText("미납");
-        }else{
-            paymentStatusTv.setText("완납");
-        }
+
+//        if(thisUnit.getIsPaid().equals("0")){
+//            target.set(calendar.get(Calendar.YEAR),Calendar.MONTH+1,Integer.parseInt(thisUnit.getPayDay()),0,0,0);
+//            long diffSec = (target.getTimeInMillis()-calendar.getTimeInMillis())/1000;
+//            long diffDays = diffSec/(24*60*60);
+//            paymentStatusTv.setText("미납");
+//            ((TextView)root.findViewById(R.id.tv_tenant_home_detail)).setText(diffDays+"일 연체되었습니다");
+//            payNowBtn.setEnabled(true);
+//        }else{
+//            target.set(calendar.get(Calendar.YEAR),Calendar.MONTH+2,Integer.parseInt(thisUnit.getPayDay()),0,0,0);
+//            long diffSec = (target.getTimeInMillis()-calendar.getTimeInMillis())/1000;
+//            long diffDays = diffSec/(24*60*60);
+//            paymentStatusTv.setText("완납");
+//            ((TextView)root.findViewById(R.id.tv_tenant_home_detail)).setText("다음 납부까지 "+diffDays+"일 연체되었습니다");
+//            payNowBtn.setEnabled(false);
+//        }
+
 
         nameTv.setText(thisUnit.getTenantName());
         depositorTv.setText(thisUnit.getPayerName());

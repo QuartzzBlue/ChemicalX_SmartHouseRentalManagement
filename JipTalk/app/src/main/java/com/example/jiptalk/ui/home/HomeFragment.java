@@ -2,7 +2,6 @@ package com.example.jiptalk.ui.home;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -22,6 +21,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.jiptalk.Constant;
 import com.example.jiptalk.R;
+import com.example.jiptalk.ui.building.BuildingDetailActivity;
 import com.example.jiptalk.vo.Building;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;

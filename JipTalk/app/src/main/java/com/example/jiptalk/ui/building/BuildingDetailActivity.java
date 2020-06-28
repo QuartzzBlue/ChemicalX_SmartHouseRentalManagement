@@ -1,4 +1,4 @@
-package com.example.jiptalk.ui.home;
+package com.example.jiptalk.ui.building;
 
 import android.content.Context;
 import android.content.Intent;
@@ -18,7 +18,6 @@ import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -28,18 +27,16 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.jiptalk.MainActivity;
 import com.example.jiptalk.R;
+import com.example.jiptalk.ui.unit.UnitDetailActivity;
 import com.example.jiptalk.vo.Building;
 import com.example.jiptalk.vo.Unit;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import java.lang.reflect.Array;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;

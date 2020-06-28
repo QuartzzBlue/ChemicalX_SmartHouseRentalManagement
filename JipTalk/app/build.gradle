@@ -65,4 +65,11 @@ dependencies {
 
     // WheelView for Tenant Repair Items
     implementation 'com.github.stfalcon:universalpickerdialog:0.1.0'
+
+    // Retrofit
+    implementation 'com.squareup.retrofit2:retrofit:2.1.0'
+
+    // JSON Parsing
+    implementation 'com.google.code.gson:gson:2.6.1'
+    implementation 'com.squareup.retrofit2:converter-gson:2.1.0'
 }
