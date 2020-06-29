@@ -3,18 +3,18 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/action_more"
+        android:id="@+id/action_building_detail"
         android:title="더보기"
         android:icon="@drawable/btn_more"
         app:showAsAction="always">
         <menu>
         <item
-            android:id="@+id/more_delete"
-            android:title="삭제"
+            android:id="@+id/building_delete"
+            android:title="건물 삭제"
             app:showAsAction="never"/>
         <item
-            android:id="@+id/more_clear"
-            android:title="초기화"
+            android:id="@+id/building_clear"
+            android:title="건물 초기화"
             app:showAsAction="never"/>
         </menu>
     </item>

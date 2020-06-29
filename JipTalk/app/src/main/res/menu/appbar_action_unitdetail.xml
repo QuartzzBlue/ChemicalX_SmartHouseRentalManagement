@@ -12,10 +12,6 @@
                 android:id="@+id/unit_delete"
                 android:title="호수 삭제"
                 app:showAsAction="never"/>
-            <item
-                android:id="@+id/unit_clear"
-                android:title="호수 초기화"
-                app:showAsAction="never"/>
 
             <item
                 android:id="@+id/unit_modify"
