@@ -75,7 +75,7 @@ public class BuildingDetailActivity extends AppCompatActivity implements Adapter
     /* AppBar 에 Overflow 버튼 추가 */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.appbar_action_more, menu) ;
+        getMenuInflater().inflate(R.menu.appbar_action_buildingdetail, menu) ;
         return true ;
     }
 
@@ -86,12 +86,12 @@ public class BuildingDetailActivity extends AppCompatActivity implements Adapter
         switch (item.getItemId()) {
 
             //초기화
-            case R.id.more_clear:
+            case R.id.building_clear:
                 FirebaseDatabase.getInstance().getReference().child("units").child(thisBuildingKey).removeValue();
                 getData();
                 return true;
 
-            case R.id.more_delete:
+            case R.id.building_delete:
                 FirebaseDatabase.getInstance().getReference().child("buildings").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child(thisBuildingKey).removeValue();
                 Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                 startActivity(intent);
