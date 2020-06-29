@@ -9,6 +9,7 @@ import java.util.Map;
 @IgnoreExtraProperties
 public class Credit {
     String unitID;
+    String creditID;
     String date;
     String payerName;
     String credit;
@@ -24,9 +25,11 @@ public class Credit {
         this.status = status;
     }
 
-    public Credit(String unitID, String date, String credit, String status) {
+    public Credit(String unitID, String creditID, String date, String payerName, String credit, String status) {
         this.unitID = unitID;
+        this.creditID = creditID;
         this.date = date;
+        this.payerName = payerName;
         this.credit = credit;
         this.status = status;
     }
@@ -37,6 +40,14 @@ public class Credit {
 
     public void setUnitID(String unitID) {
         this.unitID = unitID;
+    }
+
+    public String getCreditID() {
+        return creditID;
+    }
+
+    public void setCreditID(String creditID) {
+        this.creditID = creditID;
     }
 
     public String getDate() {
