@@ -9,5 +9,15 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_tab1_creditList"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent" >
+
+    </androidx.recyclerview.widget.RecyclerView>
+
+    <TextView
+        android:id="@+id/rv_tab1_emptyView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center|center_vertical"
+        android:text="납부 내역이 존재하지 않습니다."
+        android:visibility="gone" />
 </LinearLayout>

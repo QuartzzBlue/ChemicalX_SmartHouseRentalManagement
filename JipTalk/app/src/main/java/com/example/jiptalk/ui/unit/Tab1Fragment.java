@@ -44,6 +44,7 @@ public class Tab1Fragment extends Fragment {
     private RecyclerView.LayoutManager mLayoutManager;
     private String thisUnitKey;
     private ArrayList<Credit> creditList;
+    TextView emptyView;
 
     public void onCreate(Bundle saveInstanceState) {
         super.onCreate(saveInstanceState);
@@ -51,6 +52,10 @@ public class Tab1Fragment extends Fragment {
 
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle saveInstanceState){
         final View view = inflater.inflate(R.layout.item_unit_detail_tab1,null);
+
+        emptyView = view.findViewById(R.id.rv_tab1_emptyView);
+        mRecyclerView = (RecyclerView) view.findViewById(R.id.rv_tab1_creditList);
+
         thisUnitKey = getArguments().getString("thisUnitKey");
 
         DatabaseReference creditRef = FirebaseDatabase.getInstance().getReference("credit").child(thisUnitKey);
@@ -80,13 +85,18 @@ public class Tab1Fragment extends Fragment {
                 });
                 Log.w("===", "Credit List : " + creditList.toString());
 
-                //https://androidyongyong.tistory.com/5
-                mRecyclerView = (RecyclerView) view.findViewById(R.id.rv_tab1_creditList);
-                mLayoutManager = new LinearLayoutManager(getActivity());
-                mRecyclerView.setLayoutManager(mLayoutManager);
-                mAdapter = new CreditAdapter(creditList);
-                mRecyclerView.setAdapter(mAdapter);
-                mRecyclerView.setItemAnimator(new DefaultItemAnimator());
+                if(creditList.size() == 0) {
+                    emptyView.setVisibility(View.VISIBLE);
+                    mRecyclerView.setVisibility(View.GONE);
+                } else {
+                    //https://androidyongyong.tistory.com/5
+
+                    mLayoutManager = new LinearLayoutManager(getActivity());
+                    mRecyclerView.setLayoutManager(mLayoutManager);
+                    mAdapter = new CreditAdapter(creditList);
+                    mRecyclerView.setAdapter(mAdapter);
+                    mRecyclerView.setItemAnimator(new DefaultItemAnimator());
+                }
             }
 
             @Override
