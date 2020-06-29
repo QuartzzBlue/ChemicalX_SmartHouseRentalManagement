@@ -174,9 +174,9 @@ public class AddUnitActivity extends AppCompatActivity {
                 String payerName = payerNameEt.getText().toString();
                 String startDate = startDateEt.getText().toString();
                 String endDate = endDateEt.getText().toString();
-                String deposit = depositEt.getText().toString();
-                String monthlyFee = monthlyFeeEt.getText().toString();
-                String manageFee = manageFeeEt.getText().toString();
+                String deposit = depositEt.getText().toString().replace(",", "");
+                String monthlyFee = monthlyFeeEt.getText().toString().replace(",", "");
+                String manageFee = manageFeeEt.getText().toString().replace(",", "");
                 String payDay = payDayEt.getText().toString();
 
                 leaseTypeRb = findViewById(leaseTypeRg.getCheckedRadioButtonId());
