@@ -1,7 +1,7 @@
 package com.example.jiptalk.tenant;
 
 import android.content.DialogInterface;
-import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -14,27 +14,29 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
-import androidx.lifecycle.ViewModelProviders;
 
 import com.example.jiptalk.MyDialog;
 import com.example.jiptalk.R;
-import com.example.jiptalk.Util;
 import com.example.jiptalk.vo.Unit;
 import com.example.jiptalk.vo.User;
+import com.google.android.gms.tasks.Continuation;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.database.core.Context;
+import com.google.firebase.functions.FirebaseFunctions;
+import com.google.firebase.functions.FirebaseFunctionsException;
+import com.google.firebase.functions.HttpsCallableResult;
 
 import java.text.NumberFormat;
 import java.util.Calendar;
-import java.util.Date;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 
 public class THomeFragment extends Fragment {
 
@@ -44,7 +46,7 @@ public class THomeFragment extends Fragment {
     ImageView historyBtn,contactInfoBtn;
     TableLayout contactInfo;
     Calendar calendar,target;
-    String account;
+    String buildingID,unitID;
     final static int requestCode = 1234;
     private TextView nameTv, depositorTv, phoneTv, leaseTypeTv, contractPeriodTv, depositTv, payDayTv, monthlyFeeTv, manageFeeTv, monthlyTotalFeeTv;
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -92,22 +94,33 @@ public class THomeFragment extends Fragment {
 
             @Override
             public void onClick(View v) {
-                MyDialog dialog = new MyDialog(getContext());
-                dialog.setTitle(month+"월 월세 납부");
-                //dialog.setMessage(FirebaseDatabase.getInstance().getReference().child())
-                dialog.setPositiveButton("확인", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
 
-                    }
-                });
-                dialog.setNegativeButton("취소", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.cancel();
-                    }
-                });
-                dialog.show();
+                FirebaseDatabase.getInstance().getReference().child("units").child(buildingID).child(unitID).child("isPaid").setValue("1");
+
+//                MyDialog dialog = new MyDialog(getContext());
+//                dialog.setTitle(month+"월 월세 납부");
+//                //dialog.setMessage(FirebaseDatabase.getInstance().getReference().child())
+//                dialog.setPositiveButton("확인", new DialogInterface.OnClickListener() {
+//
+//                    @Override
+//                    public void onClick(DialogInterface dialog, int which) {
+//                        Log.d("===","Clicked");
+//                        Task<String> task = addMessage("Hi");
+//                        task.addOnCompleteListener(new OnCompleteListener<String>() {
+//                            @Override
+//                            public void onComplete(@NonNull Task<String> task) {
+//                                Log.d("===","Success");
+//                            }
+//                        });
+//                    }
+//                });
+//                dialog.setNegativeButton("취소", new DialogInterface.OnClickListener() {
+//                    @Override
+//                    public void onClick(DialogInterface dialog, int which) {
+//                        dialog.cancel();
+//                    }
+//                });
+//                dialog.show();
 
             }
         });
@@ -135,8 +148,8 @@ public class THomeFragment extends Fragment {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 User user = dataSnapshot.getValue(User.class);
-                String unitID = user.getUnitID();
-                String buildingID = user.getBuildingID();
+                unitID = user.getUnitID();
+                buildingID = user.getBuildingID();
                 FirebaseDatabase.getInstance().getReference().child("units").child(buildingID).child(unitID).addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -163,21 +176,23 @@ public class THomeFragment extends Fragment {
         NumberFormat myFormatter = NumberFormat.getInstance(Locale.getDefault());
         buildingInfoTv.setText(thisUnit.getUnitNum()+"호");
 
-//        if(thisUnit.getIsPaid().equals("0")){
+        if(thisUnit.getIsPaid().equals("0")){
 //            target.set(calendar.get(Calendar.YEAR),Calendar.MONTH+1,Integer.parseInt(thisUnit.getPayDay()),0,0,0);
 //            long diffSec = (target.getTimeInMillis()-calendar.getTimeInMillis())/1000;
 //            long diffDays = diffSec/(24*60*60);
-//            paymentStatusTv.setText("미납");
 //            ((TextView)root.findViewById(R.id.tv_tenant_home_detail)).setText(diffDays+"일 연체되었습니다");
-//            payNowBtn.setEnabled(true);
-//        }else{
+            paymentStatusTv.setTextColor(Color.RED);
+            paymentStatusTv.setText("미납");
+            payNowBtn.setVisibility(View.VISIBLE);
+        }else{
 //            target.set(calendar.get(Calendar.YEAR),Calendar.MONTH+2,Integer.parseInt(thisUnit.getPayDay()),0,0,0);
 //            long diffSec = (target.getTimeInMillis()-calendar.getTimeInMillis())/1000;
 //            long diffDays = diffSec/(24*60*60);
-//            paymentStatusTv.setText("완납");
 //            ((TextView)root.findViewById(R.id.tv_tenant_home_detail)).setText("다음 납부까지 "+diffDays+"일 연체되었습니다");
-//            payNowBtn.setEnabled(false);
-//        }
+            paymentStatusTv.setTextColor(Color.BLUE);
+            paymentStatusTv.setText("완납");
+            payNowBtn.setVisibility(View.GONE);
+        }
 
 
         nameTv.setText(thisUnit.getTenantName());
@@ -192,5 +207,28 @@ public class THomeFragment extends Fragment {
         int totalFee = Integer.parseInt(thisUnit.getMonthlyFee().replace(",", "")) + Integer.parseInt(thisUnit.getMngFee().replace(",", ""));
         monthlyTotalFeeTv.setText(myFormatter.format(totalFee) + "원");
         monthlyFee1Tv.setText(myFormatter.format(totalFee) + "원");
+    }
+
+    public Task<String> addMessage(String text) {
+        FirebaseFunctions mFunctions = FirebaseFunctions.getInstance();
+        // Create the arguments to the callable function.
+        Map<String, Object> data = new HashMap<>();
+        data.put("text", text);
+        data.put("push", true);
+
+        return mFunctions
+                .getHttpsCallable("addMessage")
+                .call(data)
+                .continueWith(new Continuation<HttpsCallableResult, String>() {
+                    @Override
+                    public String then(@NonNull Task<HttpsCallableResult> task) throws Exception {
+                        // This continuation runs on either success or failure, but if the task
+                        // has failed then getResult() will throw an Exception which will be
+                        // propagated down.
+                        String result = (String) task.getResult().getData();
+                        Log.d("===","result : "+result);
+                        return result;
+                    }
+                });
     }
 }
