@@ -102,9 +102,9 @@
                     android:id="@+id/btn_tenant_home_payNow"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/round_btn_ghost2"
+                    android:background="@drawable/round_button_1"
                     android:text="납부하기"
-                    android:textColor="@color/colorPrimary"
+                    android:textColor="@color/white"
                     android:textSize="20sp" />
 
             </LinearLayout>

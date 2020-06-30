@@ -30,31 +30,19 @@ public class MyDialog extends AlertDialog.Builder {
     }
 
     private String title;
-    private CharSequence account;
-    private CharSequence amount;
+    private String amount;
     private String positiveBtnStr;
     private String negativeBtnStr;
-    private ListAdapter adapter;
-    private AdapterView.OnItemClickListener listener;
-    private String[] multiChoiceItems;
-    private boolean[] multiChoiceCheckedItems;
-    private AdapterView.OnItemClickListener multiChoiceListener;
-    private String[] singleChoiceItems;
-    private int singleChoiceCheckedItem;
-    private AdapterView.OnItemClickListener singleChoiceListener;
+
 
     @Override
     public AlertDialog.Builder setTitle(@Nullable CharSequence title) {
         this.title = String.valueOf(title);
         return super.setTitle("");
     }
-    @Override
-    public AlertDialog.Builder setMessage(@Nullable CharSequence message) {
-        this.account = message;
-        return super.setMessage("");
-    }
-    public AlertDialog.Builder setDetailMessage(@Nullable CharSequence detailMessage) {
-        this.amount = detailMessage;
+
+    public AlertDialog.Builder setAmount(@Nullable CharSequence amount) {
+        this.amount = String.valueOf(amount);
         return super.setMessage("");
     }
     @Override
@@ -68,138 +56,41 @@ public class MyDialog extends AlertDialog.Builder {
         return super.setNegativeButton("", listener);
     }
 
-    public AlertDialog.Builder setAdapter(ListAdapter adapter, AdapterView.OnItemClickListener listener) {
-        this.adapter = adapter;
-        this.listener = listener;
-        return this;
-    }
-
-    public AlertDialog.Builder setMultiChoiceItems(String[] items, boolean[] checkedItems, AdapterView.OnItemClickListener multiChoiceListener) {
-        this.multiChoiceItems = items;
-        this.multiChoiceCheckedItems = checkedItems;
-        this.multiChoiceListener = multiChoiceListener;
-        return this;
-    }
-
-    public AlertDialog.Builder setSingleChoiceItems(String[] items, int checkedItem, AdapterView.OnItemClickListener listener) {
-        this.singleChoiceItems = items;
-        this.singleChoiceCheckedItem = checkedItem;
-        this.singleChoiceListener = listener;
-        return this;
-    }
-
     @Override
     public AlertDialog show() {
-        LayoutInflater inflater = (LayoutInflater) getContext().getApplicationContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
+        LayoutInflater inflater = (LayoutInflater) getContext().getApplicationContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View view = inflater.inflate(R.layout.km_alert_dialog_default, null);
 
         TextView tvTitle = view.findViewById(R.id.tvTitle);
-        TextView tvAccount = view.findViewById(R.id.tv_account);
         TextView tvAmount = view.findViewById(R.id.tv_amount);
         LinearLayout twoBtn = view.findViewById(R.id.twoBtn);
         Button btnPositive = view.findViewById(R.id.btnPositive);
         Button btnNegative = view.findViewById(R.id.btnNegative);
 
-        if (TextUtils.isEmpty(title)) {
-            tvTitle.setVisibility(View.GONE);
-        } else {
-            tvTitle.setText(title);
-        }
-
-        if (!TextUtils.isEmpty(positiveBtnStr)) {
-            btnPositive.setText(positiveBtnStr);
-        }
-
-        if (!TextUtils.isEmpty(negativeBtnStr)) {
-            btnNegative.setText(negativeBtnStr);
-        }
-
-
+        tvTitle.setText(title);
+        tvAmount.setText(amount);
+        btnPositive.setText(positiveBtnStr);
+        btnNegative.setText(negativeBtnStr);
 
         super.setView(view);
         final AlertDialog dialog = super.create();
 
-        btnPositive.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // performClick()을 사용하면 클릭소리가 두번 들리게되므로, callOnClick()을 사용한다.
-                dialog.getButton(DialogInterface.BUTTON_POSITIVE).callOnClick();
-            }
-        });
-
-        btnPositive.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // performClick()을 사용하면 클릭소리가 두번 들리게되므로, callOnClick()을 사용한다.
-                dialog.getButton(DialogInterface.BUTTON_NEGATIVE).callOnClick();
-            }
-        });
-
-
-//        ScrollView llContents = view.findViewById(R.id.svContents);
-//        ListView listView = view.findViewById(R.id.listView);
-
-//        // 어댑터가 있으면 리스트뷰를 보여준다.
-//        if (adapter != null && listener != null) {
-//            llContents.setVisibility(View.GONE);
-//            listView.setVisibility(View.VISIBLE);
+//        btnPositive.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                // performClick()을 사용하면 클릭소리가 두번 들리게되므로, callOnClick()을 사용한다.
+//                dialog.getButton(DialogInterface.BUTTON_POSITIVE).callOnClick();
+//            }
+//        });
 //
-//            listView.setAdapter(adapter);
-//            listView.setOnItemClickListener((parent, view1, position, id) -> {
-//                dialog.dismiss();
-//                listener.onItemClick(parent, view1, position, id);
-//            });
-//        }
-
-//        // 멀티선택이 있으면 보여준다.
-//        else if (multiChoiceItems != null && multiChoiceListener != null) {
-//            llContents.setVisibility(View.GONE);
-//            listView.setVisibility(View.VISIBLE);
-//
-//            adapter = new ArrayAdapter<CharSequence>(context, android.R.layout.select_dialog_multichoice, android.R.id.text1, multiChoiceItems) {
-//                @NonNull
-//                @Override
-//                public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-//                    View view = super.getView(position, convertView, parent);
-//                    if (multiChoiceCheckedItems != null) {
-//                        boolean isItemChecked = multiChoiceCheckedItems[position];
-//                        if (isItemChecked) {
-//                            listView.setItemChecked(position, true);
-//                        }
-//                    }
-//                    return view;
-//                }
-//            };
-//            listView.setChoiceMode(AbsListView.CHOICE_MODE_MULTIPLE);
-//            listView.setAdapter(adapter);
-//            listView.setOnItemClickListener((parent, view2, position, id) -> {
-//                multiChoiceListener.onItemClick(parent, view2, position, id);
-//            });
-//        }
-//
-//        // 싱글선택이 있으면 보여준다.
-//        else if (singleChoiceItems != null && singleChoiceListener != null) {
-//            llContents.setVisibility(View.GONE);
-//            listView.setVisibility(View.VISIBLE);
-//
-//            adapter = new ArrayAdapter<CharSequence>(context, android.R.layout.select_dialog_singlechoice, android.R.id.text1, singleChoiceItems) {
-//                @NonNull
-//                @Override
-//                public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-//                    View view = super.getView(position, convertView, parent);
-//                    if (position == singleChoiceCheckedItem) {
-//                        listView.setItemChecked(position, true);
-//                    }
-//                    return view;
-//                }
-//            };
-//            listView.setChoiceMode(AbsListView.CHOICE_MODE_SINGLE);
-//            listView.setAdapter(adapter);
-//            listView.setOnItemClickListener((parent, view2, position, id) -> {
-//                singleChoiceListener.onItemClick(parent, view2, position, id);
-//            });
-//        }
+//        btnPositive.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                // performClick()을 사용하면 클릭소리가 두번 들리게되므로, callOnClick()을 사용한다.
+//                dialog.getButton(DialogInterface.BUTTON_NEGATIVE).callOnClick();
+//            }
+//        });
 
         if (dialog.getWindow() != null) {
             dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
