@@ -1,6 +1,5 @@
 package com.example.jiptalk.tenant;
 
-import android.content.DialogInterface;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
@@ -14,22 +13,21 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 
-import com.example.jiptalk.MyDialog;
 import com.example.jiptalk.R;
+import com.example.jiptalk.TenantPayDialog;
+import com.example.jiptalk.vo.Account;
 import com.example.jiptalk.vo.Unit;
 import com.example.jiptalk.vo.User;
 import com.google.android.gms.tasks.Continuation;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.functions.FirebaseFunctions;
-import com.google.firebase.functions.FirebaseFunctionsException;
 import com.google.firebase.functions.HttpsCallableResult;
 
 import java.text.NumberFormat;
@@ -49,6 +47,9 @@ public class THomeFragment extends Fragment {
     String buildingID,unitID;
     String totalFeeStr;
     private TextView nameTv, depositorTv, phoneTv, leaseTypeTv, contractPeriodTv, depositTv, payDayTv, monthlyFeeTv, manageFeeTv, monthlyTotalFeeTv;
+    private User currentUser;
+    private int totalFee;
+
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
 
@@ -95,28 +96,39 @@ public class THomeFragment extends Fragment {
             @Override
             public void onClick(View v) {
 
-                MyDialog dialog = new MyDialog(getContext());
+                Account tenantAct = new Account("국민", "22750204289916","최여진");
+                Account landlordAct = new Account(currentUser.getBank(), currentUser.getAccountNum(), currentUser.getDepositor());
 
-                dialog.setTitle(month+"월 월세 납부");
-                dialog.setAmount(totalFeeStr);
+                FragmentManager fm = getActivity().getSupportFragmentManager();
+                TenantPayDialog tenantPayDialog = new TenantPayDialog(getContext(), landlordAct, tenantAct, totalFee, buildingID, unitID);
+                tenantPayDialog.show(fm, "tenantPayFeeDialog show");
 
-                dialog.setPositiveButton("확인", new DialogInterface.OnClickListener() {
+//                FirebaseDatabase.getInstance().getReference().child("units").child(buildingID).child(unitID).child("isPaid").setValue("1");
 
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        Log.d("===","Clicked");
-
-                        FirebaseDatabase.getInstance().getReference().child("units").child(buildingID).child(unitID).child("isPaid").setValue("1");
-
-                    }
-                });
-                dialog.setNegativeButton("취소", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.cancel();
-                    }
-                });
-                dialog.show();
+//                MyDialog dialog = new MyDialog(getContext());
+//                dialog.setTitle(month+"월 월세 납부");
+//                //dialog.setMessage(FirebaseDatabase.getInstance().getReference().child())
+//                dialog.setPositiveButton("확인", new DialogInterface.OnClickListener() {
+//
+//                    @Override
+//                    public void onClick(DialogInterface dialog, int which) {
+//                        Log.d("===","Clicked");
+//                        Task<String> task = addMessage("Hi");
+//                        task.addOnCompleteListener(new OnCompleteListener<String>() {
+//                            @Override
+//                            public void onComplete(@NonNull Task<String> task) {
+//                                Log.d("===","Success");
+//                            }
+//                        });
+//                    }
+//                });
+//                dialog.setNegativeButton("취소", new DialogInterface.OnClickListener() {
+//                    @Override
+//                    public void onClick(DialogInterface dialog, int which) {
+//                        dialog.cancel();
+//                    }
+//                });
+//                dialog.show();
 
             }
         });
@@ -143,9 +155,9 @@ public class THomeFragment extends Fragment {
         FirebaseDatabase.getInstance().getReference().child("user").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                User user = dataSnapshot.getValue(User.class);
-                unitID = user.getUnitID();
-                buildingID = user.getBuildingID();
+                currentUser = dataSnapshot.getValue(User.class);
+                unitID = currentUser.getUnitID();
+                buildingID = currentUser.getBuildingID();
                 FirebaseDatabase.getInstance().getReference().child("units").child(buildingID).child(unitID).addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -191,10 +203,33 @@ public class THomeFragment extends Fragment {
         payDayTv.setText("매월 " + thisUnit.getPayDay() + "일");
         monthlyFeeTv.setText(thisUnit.getMonthlyFee() + "원");
         manageFeeTv.setText(thisUnit.getMngFee() + "원");
-        int totalFee = Integer.parseInt(thisUnit.getMonthlyFee().replace(",", "")) + Integer.parseInt(thisUnit.getMngFee().replace(",", ""));
-        totalFeeStr = myFormatter.format(totalFee)+"원";
+        totalFee = Integer.parseInt(thisUnit.getMonthlyFee().replace(",", "")) + Integer.parseInt(thisUnit.getMngFee().replace(",", ""));
+
         monthlyTotalFeeTv.setText(myFormatter.format(totalFee) + "원");
         monthlyFee1Tv.setText(myFormatter.format(totalFee) + "원");
+    }
+
+    public Task<String> addMessage(String text) {
+        FirebaseFunctions mFunctions = FirebaseFunctions.getInstance();
+        // Create the arguments to the callable function.
+        Map<String, Object> data = new HashMap<>();
+        data.put("text", text);
+        data.put("push", true);
+
+        return mFunctions
+                .getHttpsCallable("addMessage")
+                .call(data)
+                .continueWith(new Continuation<HttpsCallableResult, String>() {
+                    @Override
+                    public String then(@NonNull Task<HttpsCallableResult> task) throws Exception {
+                        // This continuation runs on either success or failure, but if the task
+                        // has failed then getResult() will throw an Exception which will be
+                        // propagated down.
+                        String result = (String) task.getResult().getData();
+                        Log.d("===","result : "+result);
+                        return result;
+                    }
+                });
     }
 
 }
