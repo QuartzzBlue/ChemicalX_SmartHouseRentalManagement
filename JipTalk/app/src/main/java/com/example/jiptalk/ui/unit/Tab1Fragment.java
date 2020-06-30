@@ -61,7 +61,7 @@ public class Tab1Fragment extends Fragment {
         DatabaseReference creditRef = FirebaseDatabase.getInstance().getReference("credit").child(thisUnitKey);
 
 //        String tempkey = creditRef.push().getKey();
-//        Credit credit = new Credit(thisUnitKey, tempkey, "2020.04.29", "이대휘", "300000", "미납");
+//        Credit credit = new Credit(thisUnitKey, tempkey, "2020.5.1", "이슬", "500000", "완납");
 //        creditRef.child(tempkey).setValue(credit);
 
         creditRef.addValueEventListener(new ValueEventListener() {

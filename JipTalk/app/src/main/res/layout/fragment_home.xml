@@ -46,9 +46,8 @@
                         android:layout_weight="1"
                         android:gravity="center"
                         android:text="납부 현황"
-                        android:textColor="@color/black"
-                        android:textSize="18sp"
-                        android:textStyle="bold" />
+                        android:textColor="@color/grey"
+                        android:textSize="20sp" />
 
                     <TextView
                         android:id="@+id/tv_home_paymentStatus"
@@ -58,8 +57,8 @@
                         android:layout_weight="1"
                         android:gravity="center"
                         android:text="/"
-                        android:textColor="@color/black"
-                        android:textSize="24sp" />
+                        android:textColor="@color/grey"
+                        android:textSize="22sp" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -75,9 +74,8 @@
                         android:layout_weight="1"
                         android:gravity="center"
                         android:text="월 총 수납금"
-                        android:textColor="@color/black"
-                        android:textSize="18sp"
-                        android:textStyle="bold" />
+                        android:textColor="@color/grey"
+                        android:textSize="20sp" />
 
                     <TextView
                         android:id="@+id/tv_home_totalMonthlyIncome"
@@ -86,8 +84,8 @@
                         android:layout_weight="1"
                         android:gravity="center"
                         android:text="원"
-                        android:textColor="@color/black"
-                        android:textSize="24sp" />
+                        android:textColor="@color/grey"
+                        android:textSize="22sp" />
                 </LinearLayout>
             </LinearLayout>
 
