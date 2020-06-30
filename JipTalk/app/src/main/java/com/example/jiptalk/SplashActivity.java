@@ -1,7 +1,6 @@
 package com.example.jiptalk;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.Activity;
 import android.content.Context;
@@ -9,10 +8,8 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
 import android.util.Log;
 
-import com.example.jiptalk.R;
 import com.example.jiptalk.vo.Building;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -202,10 +199,10 @@ class DataSync extends AsyncTask<Void,Integer,Void>{
             DatabaseReference buildingReference = firebaseDatabase.getReference("buildings");
             FirebaseUser fUser = FirebaseAuth.getInstance().getCurrentUser();
 
-            Constant.userUID = fUser.getUid();
-            Constant.userID = fUser.getEmail();
+            AppData.userUID = fUser.getUid();
+            AppData.userID = fUser.getEmail();
 
-            buildingReference.child(Constant.userUID).addValueEventListener(new ValueEventListener() {
+            buildingReference.child(AppData.userUID).addValueEventListener(new ValueEventListener() {
 
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -214,11 +211,11 @@ class DataSync extends AsyncTask<Void,Integer,Void>{
                     for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
                         Building buildingItem = postSnapshot.getValue(Building.class);
                         buildingItem.setId(postSnapshot.getKey());
-                        Constant.buildings.put(postSnapshot.getKey(), buildingItem);
+                        //AppData.buildings.put(postSnapshot.getKey(), buildingItem);
                     }
 
-                    if (Constant.buildings != null) {
-                        Log.v(TAG, "Set Constant.building : " + Constant.buildings.toString());
+                    if (AppData.buildings != null) {
+                        Log.v(TAG, "Set Constant.building : " + AppData.buildings.toString());
                         Log.v(TAG, "InitConstants() : succeed");
                         callback.onTaskFinished();
                     }
