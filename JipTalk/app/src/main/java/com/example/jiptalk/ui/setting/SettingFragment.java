@@ -25,7 +25,7 @@ public class SettingFragment extends Fragment {
 
     private ViewGroup viewGroup;
     private SettingViewModel mViewModel;
-    private Button alarmBt, infoBt, developersBt, logoutBt;
+    private Button alarmBt, infoBt, logoutBt;
     private Intent logoutIntent;
     private Context nowContext;
 
@@ -56,13 +56,6 @@ public class SettingFragment extends Fragment {
             }
         });
 
-        developersBt.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                logoutIntent = new Intent(nowContext, SettingDevelopersActivity.class);
-                startActivity(logoutIntent);
-            }
-        });
 
         logoutBt.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -99,7 +92,6 @@ public class SettingFragment extends Fragment {
     private void initialization() {
         alarmBt = viewGroup.findViewById(R.id.bt_setting_alarm);
         infoBt = viewGroup.findViewById(R.id.bt_setting_info);
-        developersBt = viewGroup.findViewById(R.id.bt_setting_developers);
         logoutBt = viewGroup.findViewById(R.id.bt_setting_logout);
         nowContext = getContext();
     }
