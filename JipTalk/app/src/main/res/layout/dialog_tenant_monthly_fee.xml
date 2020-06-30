@@ -98,9 +98,5 @@
                 android:textSize="15sp" />
 
         </LinearLayout>
-
-
-        <!-- 어댑터를 설정할때만 사용 -->
-
     </LinearLayout>
 </FrameLayout>

@@ -2,7 +2,6 @@ package com.example.jiptalk.ui.message;
 
 import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.text.format.DateFormat;
 import android.util.Log;
@@ -28,7 +27,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.jiptalk.Constant;
+import com.example.jiptalk.AppData;
 import com.example.jiptalk.R;
 import com.example.jiptalk.vo.Building;
 import com.example.jiptalk.vo.MessageVO;
@@ -48,8 +47,6 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collection;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
@@ -617,11 +614,11 @@ public class MessageFragment extends Fragment {
         });
 
         Log.d(TAG, "BuildingList : " + buildingList.toString());
-        Iterator<String> keys = Constant.buildings.keySet().iterator();
+        Iterator<String> keys = AppData.buildings.keySet().iterator();
         while (keys.hasNext()) {
 
 
-            Map<String, Unit> unitHashMap = Constant.buildings.get(keys.next()).getUnits();
+            Map<String, Unit> unitHashMap = AppData.buildings.get(keys.next()).getUnits();
 
             Iterator<String> unitKeys = unitHashMap.keySet().iterator();
             while (unitKeys.hasNext()) {

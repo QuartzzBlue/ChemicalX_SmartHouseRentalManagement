@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -16,7 +15,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 
-import com.example.jiptalk.Constant;
+import com.example.jiptalk.AppData;
 import com.example.jiptalk.R;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -65,7 +64,7 @@ public class ModUserNameDialog extends DialogFragment {
                         // 유저 이름 업데이트
                         String newName = newNameTv.getText().toString();
                         Log.w("===", "ModUserNameDialog : getText " + newName);
-                        DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference("user/"+ Constant.userUID +"/name");
+                        DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference("user/"+ AppData.userUID +"/name");
 
                         dbRef.setValue(newName)
                                 .addOnSuccessListener(new OnSuccessListener<Void>() {
