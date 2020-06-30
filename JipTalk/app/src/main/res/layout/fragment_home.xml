@@ -46,7 +46,9 @@
                         android:layout_weight="1"
                         android:gravity="center"
                         android:text="납부 현황"
-                        android:textSize="18sp" />
+                        android:textColor="@color/black"
+                        android:textSize="18sp"
+                        android:textStyle="bold" />
 
                     <TextView
                         android:id="@+id/tv_home_paymentStatus"
@@ -73,7 +75,9 @@
                         android:layout_weight="1"
                         android:gravity="center"
                         android:text="월 총 수납금"
-                        android:textSize="18sp" />
+                        android:textColor="@color/black"
+                        android:textSize="18sp"
+                        android:textStyle="bold" />
 
                     <TextView
                         android:id="@+id/tv_home_totalMonthlyIncome"
