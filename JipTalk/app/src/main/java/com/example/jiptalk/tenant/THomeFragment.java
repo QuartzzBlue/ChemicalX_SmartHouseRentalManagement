@@ -47,7 +47,7 @@ public class THomeFragment extends Fragment {
     TableLayout contactInfo;
     Calendar calendar,target;
     String buildingID,unitID;
-    final static int requestCode = 1234;
+    String totalFeeStr;
     private TextView nameTv, depositorTv, phoneTv, leaseTypeTv, contractPeriodTv, depositTv, payDayTv, monthlyFeeTv, manageFeeTv, monthlyTotalFeeTv;
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -95,32 +95,28 @@ public class THomeFragment extends Fragment {
             @Override
             public void onClick(View v) {
 
-                FirebaseDatabase.getInstance().getReference().child("units").child(buildingID).child(unitID).child("isPaid").setValue("1");
+                MyDialog dialog = new MyDialog(getContext());
 
-//                MyDialog dialog = new MyDialog(getContext());
-//                dialog.setTitle(month+"월 월세 납부");
-//                //dialog.setMessage(FirebaseDatabase.getInstance().getReference().child())
-//                dialog.setPositiveButton("확인", new DialogInterface.OnClickListener() {
-//
-//                    @Override
-//                    public void onClick(DialogInterface dialog, int which) {
-//                        Log.d("===","Clicked");
-//                        Task<String> task = addMessage("Hi");
-//                        task.addOnCompleteListener(new OnCompleteListener<String>() {
-//                            @Override
-//                            public void onComplete(@NonNull Task<String> task) {
-//                                Log.d("===","Success");
-//                            }
-//                        });
-//                    }
-//                });
-//                dialog.setNegativeButton("취소", new DialogInterface.OnClickListener() {
-//                    @Override
-//                    public void onClick(DialogInterface dialog, int which) {
-//                        dialog.cancel();
-//                    }
-//                });
-//                dialog.show();
+                dialog.setTitle(month+"월 월세 납부");
+                dialog.setAmount(totalFeeStr);
+
+                dialog.setPositiveButton("확인", new DialogInterface.OnClickListener() {
+
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Log.d("===","Clicked");
+
+                        FirebaseDatabase.getInstance().getReference().child("units").child(buildingID).child(unitID).child("isPaid").setValue("1");
+
+                    }
+                });
+                dialog.setNegativeButton("취소", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                });
+                dialog.show();
 
             }
         });
@@ -154,7 +150,6 @@ public class THomeFragment extends Fragment {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                         Unit unit = dataSnapshot.getValue(Unit.class);
-                        Log.d("===",unit.toString());
                         setData(unit);
                     }
 
@@ -177,18 +172,10 @@ public class THomeFragment extends Fragment {
         buildingInfoTv.setText(thisUnit.getUnitNum()+"호");
 
         if(thisUnit.getIsPaid().equals("0")){
-//            target.set(calendar.get(Calendar.YEAR),Calendar.MONTH+1,Integer.parseInt(thisUnit.getPayDay()),0,0,0);
-//            long diffSec = (target.getTimeInMillis()-calendar.getTimeInMillis())/1000;
-//            long diffDays = diffSec/(24*60*60);
-//            ((TextView)root.findViewById(R.id.tv_tenant_home_detail)).setText(diffDays+"일 연체되었습니다");
             paymentStatusTv.setTextColor(Color.RED);
             paymentStatusTv.setText("미납");
             payNowBtn.setVisibility(View.VISIBLE);
         }else{
-//            target.set(calendar.get(Calendar.YEAR),Calendar.MONTH+2,Integer.parseInt(thisUnit.getPayDay()),0,0,0);
-//            long diffSec = (target.getTimeInMillis()-calendar.getTimeInMillis())/1000;
-//            long diffDays = diffSec/(24*60*60);
-//            ((TextView)root.findViewById(R.id.tv_tenant_home_detail)).setText("다음 납부까지 "+diffDays+"일 연체되었습니다");
             paymentStatusTv.setTextColor(Color.BLUE);
             paymentStatusTv.setText("완납");
             payNowBtn.setVisibility(View.GONE);
@@ -205,30 +192,9 @@ public class THomeFragment extends Fragment {
         monthlyFeeTv.setText(thisUnit.getMonthlyFee() + "원");
         manageFeeTv.setText(thisUnit.getMngFee() + "원");
         int totalFee = Integer.parseInt(thisUnit.getMonthlyFee().replace(",", "")) + Integer.parseInt(thisUnit.getMngFee().replace(",", ""));
+        totalFeeStr = myFormatter.format(totalFee)+"원";
         monthlyTotalFeeTv.setText(myFormatter.format(totalFee) + "원");
         monthlyFee1Tv.setText(myFormatter.format(totalFee) + "원");
     }
 
-    public Task<String> addMessage(String text) {
-        FirebaseFunctions mFunctions = FirebaseFunctions.getInstance();
-        // Create the arguments to the callable function.
-        Map<String, Object> data = new HashMap<>();
-        data.put("text", text);
-        data.put("push", true);
-
-        return mFunctions
-                .getHttpsCallable("addMessage")
-                .call(data)
-                .continueWith(new Continuation<HttpsCallableResult, String>() {
-                    @Override
-                    public String then(@NonNull Task<HttpsCallableResult> task) throws Exception {
-                        // This continuation runs on either success or failure, but if the task
-                        // has failed then getResult() will throw an Exception which will be
-                        // propagated down.
-                        String result = (String) task.getResult().getData();
-                        Log.d("===","result : "+result);
-                        return result;
-                    }
-                });
-    }
 }
