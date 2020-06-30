@@ -26,10 +26,30 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="15dp"
-                android:layout_marginBottom="15dp"
+                android:layout_marginBottom="2dp"
                 android:gravity="center"
                 android:text="buildingName"
-                android:textSize="24sp" />
+                android:textColor="@color/grey"
+                android:textSize="24sp"
+                android:textStyle="normal" />
+
+            <TextView
+                android:id="@+id/tv_building_detail_address"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:textAlignment="center"
+                android:textColor="#80505050" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1.5dp"
+                android:layout_centerInParent="true"
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="15dp"
+                android:layout_marginBottom="10dp"
+                android:background="#4D505050"
+                android:visibility="visible" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -48,7 +68,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:gravity="center"
-                        android:text="미납" />
+                        android:text="미납"
+                        android:textColor="@color/grey" />
 
                     <TextView
                         android:id="@+id/tv_building_detail_unpaidCnt"
@@ -56,6 +77,7 @@
                         android:layout_height="wrap_content"
                         android:gravity="center"
                         android:text="호"
+                        android:textColor="@color/grey"
                         android:textSize="18sp" />
                 </LinearLayout>
 
@@ -70,7 +92,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:gravity="center"
-                        android:text="완납" />
+                        android:text="완납"
+                        android:textColor="@color/grey" />
 
                     <TextView
                         android:id="@+id/tv_building_detail_paidCnt"
@@ -78,6 +101,7 @@
                         android:layout_height="wrap_content"
                         android:gravity="center"
                         android:text="호"
+                        android:textColor="@color/grey"
                         android:textSize="18sp" />
                 </LinearLayout>
 
@@ -92,7 +116,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:gravity="center"
-                        android:text="임대중" />
+                        android:text="임대중"
+                        android:textColor="@color/grey" />
 
                     <TextView
                         android:id="@+id/tv_building_detail_occupiedCnt"
@@ -100,6 +125,7 @@
                         android:layout_height="wrap_content"
                         android:gravity="center"
                         android:text="호"
+                        android:textColor="@color/grey"
                         android:textSize="18sp" />
                 </LinearLayout>
 
@@ -114,7 +140,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:gravity="center"
-                        android:text="총 세대" />
+                        android:text="총 세대"
+                        android:textColor="@color/grey" />
 
                     <TextView
                         android:id="@+id/tv_building_detail_unitCnt"
@@ -122,6 +149,7 @@
                         android:layout_height="wrap_content"
                         android:gravity="center"
                         android:text="호"
+                        android:textColor="@color/grey"
                         android:textSize="18sp" />
                 </LinearLayout>
 
@@ -133,8 +161,8 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:gravity="center"
+        android:layout_marginTop="5dp"
+        android:gravity="left"
         android:orientation="horizontal">
 
         <Spinner
@@ -143,39 +171,13 @@
             android:layout_height="wrap_content"
             android:text="filter" />
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="right"
-            android:orientation="horizontal">
-
-            <Button
-                android:id="@+id/btn_building_detail_delete"
-                android:layout_width="70dp"
-                android:layout_height="wrap_content"
-                android:backgroundTint="@color/colorPrimary"
-                android:text="삭제"
-                android:textAlignment="center"
-                android:textColor="@color/white"
-                android:visibility="gone" />
-
-            <Button
-                android:id="@+id/btn_building_detail_complete"
-                android:layout_width="70dp"
-                android:layout_height="wrap_content"
-                android:text="완료"
-                android:textAlignment="center"
-                android:visibility="gone" />
-
-        </LinearLayout>
-
     </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_building_detail"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginTop="15dp"
+        android:layout_marginTop="10dp"
         android:layout_weight="9" />
 
     <TextView

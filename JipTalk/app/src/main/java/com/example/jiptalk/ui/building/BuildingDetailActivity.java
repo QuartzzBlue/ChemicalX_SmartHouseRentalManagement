@@ -50,7 +50,7 @@ public class BuildingDetailActivity extends AppCompatActivity implements Adapter
 
     int paidCnt,unpaidCnt,occupiedCnt,unitCnt;
     boolean flag = false;
-    TextView buildingNameTv,unpaidCntTv,paidCntTv,occupiedCntTv,unitCntTv, emptyView;
+    TextView buildingNameTv, addressTv, unpaidCntTv,paidCntTv,occupiedCntTv,unitCntTv, emptyView;
     Button addUnitBtn;
     private RecyclerView recyclerView;
     RecyclerView.LayoutManager layoutManager;
@@ -58,7 +58,7 @@ public class BuildingDetailActivity extends AppCompatActivity implements Adapter
     Spinner spinner;
     Context nowContext;
     private ArrayList<Unit> unitList,paidUnitList,unpaidUnitList;
-    private String thisBuildingKey, buildingName;
+    private String thisBuildingKey, buildingName, buildingAddress;
     private Building thisBuilding;
     private DatabaseReference dbRef;
     public NumberFormat myFormatter;
@@ -109,12 +109,14 @@ public class BuildingDetailActivity extends AppCompatActivity implements Adapter
         thisBuilding = (Building) intent.getSerializableExtra("buildingInfo");
         thisBuildingKey = thisBuilding.getId();
         buildingName = thisBuilding.getName();
+        buildingAddress = thisBuilding.getBuildingAddress();
         unitCnt = thisBuilding.getUnitCnt();
         unitList = new ArrayList<>();
         unpaidUnitList = new ArrayList<>();
         paidUnitList = new ArrayList<>();
 
         buildingNameTv = findViewById(R.id.tv_building_detail_buildingName);
+        addressTv = findViewById(R.id.tv_building_detail_address);
         unpaidCntTv = findViewById(R.id.tv_building_detail_unpaidCnt);
         paidCntTv = findViewById(R.id.tv_building_detail_paidCnt);
         occupiedCntTv = findViewById(R.id.tv_building_detail_occupiedCnt);
@@ -264,6 +266,7 @@ public class BuildingDetailActivity extends AppCompatActivity implements Adapter
 
     public void setData(){
         buildingNameTv.setText(buildingName+"");
+        addressTv.setText(buildingAddress);
         unpaidCntTv.setText(unpaidCnt+"");
         paidCntTv.setText(paidCnt+"");
         occupiedCntTv.setText(occupiedCnt+"");

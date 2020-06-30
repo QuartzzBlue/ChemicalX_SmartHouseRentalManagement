@@ -32,7 +32,8 @@
                 android:layout_gravity="center"
                 android:layout_marginLeft="10dp"
                 android:gravity="center"
-                android:textSize="36sp"
+                android:textColor="@color/lightGrey"
+                android:textSize="32sp"
                 android:textStyle="bold"
                 tools:text="unitNum" />
 
@@ -48,6 +49,7 @@
                     android:id="@+id/tv_rv_unit_userName"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:textColor="@color/lightGrey"
                     android:textSize="20sp"
                     tools:text="userName" />
 
@@ -55,6 +57,7 @@
                     android:id="@+id/tv_rv_unit_monthlyFee"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:textColor="@color/lightGrey"
                     android:textSize="16sp"
                     tools:text="monthlyFee" />
 
@@ -115,6 +118,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
+                    android:textColor="@color/lightGrey"
                     tools:text="startDate" />
 
                 <TextView
@@ -123,6 +127,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:gravity="right"
+                    android:textColor="@color/lightGrey"
                     tools:text="endDate" />
             </LinearLayout>
 

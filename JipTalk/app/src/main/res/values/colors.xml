@@ -5,6 +5,8 @@
     <color name="colorPrimaryDark">#4D01BE</color>
     <color name="colorAccent">#D81B60</color>
     <color name="black">#000000</color>
+    <color name="grey">#3c3c3c</color>
+    <color name="lightGrey">#505050</color>
     <color name="white">#ffffff</color>
     <color name="system">#0F6387</color>
     <color name="danger">#AA0000</color>
