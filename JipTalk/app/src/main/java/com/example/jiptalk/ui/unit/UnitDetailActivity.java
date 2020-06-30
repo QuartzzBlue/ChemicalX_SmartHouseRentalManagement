@@ -54,7 +54,7 @@ public class UnitDetailActivity extends AppCompatActivity {
         switch (item.getItemId()) {
 
             case R.id.unit_delete:
-                FirebaseDatabase.getInstance().getReference().child("units").child(thisBuildingKey).child(thisUnit.getUnitID()).removeValue();
+                FirebaseDatabase.getInstance().getReference().child("units").child(thisBuildingKey).child(thisUnitKey).removeValue();
                 finish();
 
                 return true;

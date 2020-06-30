@@ -7,7 +7,7 @@ import android.util.Log;
 
 import androidx.core.app.NotificationCompat;
 
-import com.example.jiptalk.Constant;
+import com.example.jiptalk.AppData;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
@@ -63,7 +63,7 @@ public class FirebaseNotificationService extends FirebaseMessagingService {
         super.onNewToken(s);
 
         Log.d(TAG, "New Token : " + s);
-        Constant.newToken = s;
+        AppData.newToken = s;
 
 
     }

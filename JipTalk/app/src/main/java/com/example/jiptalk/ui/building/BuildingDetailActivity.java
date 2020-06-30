@@ -25,8 +25,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.jiptalk.AppData;
 import com.example.jiptalk.MainActivity;
 import com.example.jiptalk.R;
+import com.example.jiptalk.ui.home.HomeFragment;
 import com.example.jiptalk.ui.unit.UnitDetailActivity;
 import com.example.jiptalk.vo.Building;
 import com.example.jiptalk.vo.Unit;
@@ -49,7 +51,6 @@ import java.util.Locale;
 public class BuildingDetailActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener{
 
     int paidCnt,unpaidCnt,occupiedCnt,unitCnt;
-    boolean flag = false;
     TextView buildingNameTv, addressTv, unpaidCntTv,paidCntTv,occupiedCntTv,unitCntTv, emptyView;
     Button addUnitBtn;
     private RecyclerView recyclerView;
@@ -58,7 +59,7 @@ public class BuildingDetailActivity extends AppCompatActivity implements Adapter
     Spinner spinner;
     Context nowContext;
     private ArrayList<Unit> unitList,paidUnitList,unpaidUnitList;
-    private String thisBuildingKey, buildingName, buildingAddress;
+    private String thisBuildingKey,buildingName, buildingAddress;
     private Building thisBuilding;
     private DatabaseReference dbRef;
     public NumberFormat myFormatter;
@@ -69,7 +70,6 @@ public class BuildingDetailActivity extends AppCompatActivity implements Adapter
         setContentView(R.layout.activity_building_detail);
 
         initialization();
-        setSpinner();
     }
 
     /* AppBar 에 Overflow 버튼 추가 */
@@ -105,12 +105,17 @@ public class BuildingDetailActivity extends AppCompatActivity implements Adapter
     }
 
     public void initialization(){
-        Intent intent = getIntent();
-        thisBuilding = (Building) intent.getSerializableExtra("buildingInfo");
-        thisBuildingKey = thisBuilding.getId();
+
+        thisBuilding = AppData.buildings.get(AppData.nowBuildingKey);
+        Log.v("===",thisBuilding.toString());
+        thisBuildingKey = AppData.nowBuildingKey;
         buildingName = thisBuilding.getName();
         buildingAddress = thisBuilding.getBuildingAddress();
         unitCnt = thisBuilding.getUnitCnt();
+        unpaidCnt = thisBuilding.getUnpaidCnt();
+        paidCnt = thisBuilding.getPaidCnt();
+        occupiedCnt = thisBuilding.getOccupiedCnt();
+
         unitList = new ArrayList<>();
         unpaidUnitList = new ArrayList<>();
         paidUnitList = new ArrayList<>();
@@ -182,95 +187,73 @@ public class BuildingDetailActivity extends AppCompatActivity implements Adapter
         dbRef = FirebaseDatabase.getInstance().getReference().child("units");
         myFormatter = NumberFormat.getInstance(Locale.getDefault());
         nowContext = this;
+
+        getData();
+
     }
 
     public void getData(){
+
+        if(AppData.unitsInBuildings.get(thisBuildingKey).size()==0){
+            setData();
+            recyclerView.setVisibility(View.GONE);
+            emptyView.setVisibility(View.VISIBLE);
+            return;
+        }
 
         unitList.clear();
         unpaidUnitList.clear();
         paidUnitList.clear();
 
-        unpaidCnt = 0;
-        paidCnt = 0;
-        occupiedCnt = 0;
-
-        dbRef.child(thisBuildingKey).addValueEventListener(new ValueEventListener() {  //addValueEventListener : 한 번만 콜백되고 즉시 삭제
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                Log.w("===", "BuildingDetail/getData : onDataChange");
-                HashMap<String,Unit> unitMap = (HashMap<String,Unit>) dataSnapshot.getValue();
-
-                // 유닛이 없는 경우에는 return
-                if(unitMap == null) {
-                    setData();
-                    Log.w("===", "BuildingDetailActivity : no Units");
-                    recyclerView.setVisibility(View.GONE);
-                    emptyView.setVisibility(View.VISIBLE);
-                    return;
-                }
-
-                for(DataSnapshot unitSnapshot : dataSnapshot.getChildren()) {
-                    Unit unitItem = unitSnapshot.getValue(Unit.class);
-                    unitItem.setUnitID(unitSnapshot.getKey());
-
-                    Log.w("===", "unitItem : " + unitItem.toString());
-
-                    //입금 확인 function 만들어 getIsPaid 를 0 또는 1 로 바꿔주기
-                    if(unitItem.getIsPaid().equals("1")){
-                        paidUnitList.add(unitItem);
-                        //monthIncome += Integer.parseInt(unitItem.getMonthlyFee())+Integer.parseInt(unitItem.getMngFee());
-                        paidCnt++;
-                    }else if (unitItem.getIsPaid().equals("0")){
-                        unpaidCnt++;
-                        unpaidUnitList.add(unitItem);
-                    }
-
-                    //임대중
-                    if(unitItem.getIsOccupied().equals("1")){
-                        occupiedCnt++;
-                    }
-
-                    //계약 만료 예정 cnt. 2달 이내
-                    Calendar endCalendar = Calendar.getInstance();
-                    Calendar todayCalendar = Calendar.getInstance();
-                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy.MM.dd");
-                    try {
-                        Date endDate = simpleDateFormat.parse(unitItem.getEndDate());
-                        endCalendar.setTime(endDate);
-
-                        //계약기간 일수
-                        long expireDay = (endCalendar.getTimeInMillis() - todayCalendar.getTimeInMillis())/1000;
-                        expireDay /= 86400; //하루는 86400초
-
-                    } catch (ParseException e) {
-                        e.printStackTrace();
-                    }
-
-                    unitList.add(unitItem);
-                }
-
-                Log.w("===", "unitList : " + unitList.toString());
-
-                setAdapter(unitList);
-                unitViewAdapter.notifyDataSetChanged();
-                setData();
-
+        for(String key : AppData.unitsInBuildings.get(thisBuildingKey).keySet()){
+            Unit unit = AppData.unitsInBuildings.get(thisBuildingKey).get(key);
+            unitList.add(unit);
+            if(unit.getIsPaid().equals("0")){
+                unpaidUnitList.add(unit);
+            }else{
+                paidUnitList.add(unit);
             }
+        }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                Log.w("===", "getPersonalInfoThread() : onCancelled", databaseError.toException());
-            }
-        });
+        //unitList.addAll(AppData.unitsInBuildings.get(thisBuildingKey).values());
+
+        setData();
     }
 
     public void setData(){
-        buildingNameTv.setText(buildingName+"");
+        buildingNameTv.setText(buildingName);
         addressTv.setText(buildingAddress);
         unpaidCntTv.setText(unpaidCnt+"");
         paidCntTv.setText(paidCnt+"");
         occupiedCntTv.setText(occupiedCnt+"");
         unitCntTv.setText(unitCnt+"");
+
+        setSpinner();
+    }
+
+    public void setSpinner(){
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,R.array.filter_list,android.R.layout.simple_spinner_dropdown_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(adapter);
+    }
+
+
+    @Override
+    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+        String item = parent.getItemAtPosition(position).toString();
+        if(item.equals("전체")){
+            setAdapter(unitList);
+        }else if (item.equals("완납")){
+            setAdapter(paidUnitList);
+
+        }else if (item.equals("미납")){
+            setAdapter(unpaidUnitList);
+        }
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> parent) {
+
     }
 
     public void setAdapter(ArrayList<Unit> list){
@@ -288,7 +271,7 @@ public class BuildingDetailActivity extends AppCompatActivity implements Adapter
             public void onItemClick(View v, int position) {
                 // 액티비티 이동
                 Intent intent = new Intent(getApplicationContext(), UnitDetailActivity.class);
-                intent.putExtra("thisBuildingKey", thisBuildingKey);
+                intent.putExtra("thisBuildingKey", AppData.nowBuildingKey);
                 intent.putExtra("thisBuildingName", thisBuilding.getName());
                 intent.putExtra("thisUnitKey", unitList.get(position).getUnitID());
                 intent.putExtra("thisUnit", unitList.get(position));
@@ -298,29 +281,7 @@ public class BuildingDetailActivity extends AppCompatActivity implements Adapter
         unitViewAdapter.notifyDataSetChanged();
     }
 
-    public void setSpinner(){
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,R.array.filter_list,android.R.layout.simple_spinner_dropdown_item);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner.setAdapter(adapter);
-    }
 
-
-    @Override
-    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-        String item = parent.getItemAtPosition(position).toString();
-        if(item.equals("전체")){
-           getData();
-        }else if (item.equals("완납")){
-            setAdapter(paidUnitList);
-        }else if (item.equals("미납")){
-            setAdapter(unpaidUnitList);
-        }
-    }
-
-    @Override
-    public void onNothingSelected(AdapterView<?> parent) {
-
-    }
 }
 
 class UnitViewAdapter extends RecyclerView.Adapter<UnitViewAdapter.MyViewHolder>{

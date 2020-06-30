@@ -13,7 +13,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.example.jiptalk.Constant;
+import com.example.jiptalk.AppData;
 import com.example.jiptalk.R;
 import com.example.jiptalk.Valid;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -176,7 +176,7 @@ public class ModUserPhoneActivity extends AppCompatActivity {
 
     private void updateUserPhone(String newPhone){
 
-        DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference("user/" + Constant.userUID + "/phone");
+        DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference("user/" + AppData.userUID + "/phone");
         dbRef.setValue(newPhone)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override

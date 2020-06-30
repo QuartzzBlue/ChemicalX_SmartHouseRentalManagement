@@ -25,6 +25,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.jiptalk.AppData;
 import com.example.jiptalk.R;
 import com.example.jiptalk.Util;
 import com.example.jiptalk.Valid;
@@ -246,7 +247,7 @@ public class AddUnitActivity extends AppCompatActivity {
         mDatabase = FirebaseDatabase.getInstance();
 //        unitRef = mDatabase.getReference("units").child(thisBuildingKey);
         unitRef = mDatabase.getReference();
-        userUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        userUid = AppData.userUID;
         totalRef = mDatabase.getReference("buildings").child(userUid);
 
         initDatePickerListener();
@@ -385,20 +386,6 @@ public class AddUnitActivity extends AppCompatActivity {
 
         util.showProgressDialog(nowContext);
 
-        totalRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                totalUnpaidCnt = Integer.parseInt(dataSnapshot.child("totalUnpaidCnt").toString());
-                totalOccupiedCnt = Integer.parseInt(dataSnapshot.child("totalOccupiedCnt").toString());
-                totalMonthlyIncome = Integer.parseInt(dataSnapshot.child("totalMonthlyIncome").toString());
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                Log.d("===", "createUnit : onCancelled " + databaseError.getDetails());
-            }
-        });
-
         Map<String, Object> childUpdates = new HashMap<>();
 
         String unitKey = unitRef.child("units").child(thisBuildingKey).push().getKey();
@@ -412,7 +399,6 @@ public class AddUnitActivity extends AppCompatActivity {
 
         childUpdates.put("units/" + thisBuildingKey + "/" + unitKey + "/", newUnit.toMap());
         childUpdates.put("registeredTenants/" + tenantKey + "/", tenant.toMap());
-//        childUpdates.put("buildings/" + userUid + "/totalOccupiedCnt/", totalOccupiedCnt+1);
 
         unitRef.updateChildren(childUpdates).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override

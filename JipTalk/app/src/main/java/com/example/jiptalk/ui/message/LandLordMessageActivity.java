@@ -29,11 +29,9 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import com.example.jiptalk.Constant;
+import com.example.jiptalk.AppData;
 import com.example.jiptalk.R;
-import com.example.jiptalk.vo.User;
 import com.google.android.gms.tasks.OnFailureListener;
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -42,11 +40,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.messaging.FirebaseMessaging;
-import com.google.firebase.messaging.RemoteMessage;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -106,7 +99,7 @@ public class LandLordMessageActivity extends AppCompatActivity {
         databaseReference = FirebaseDatabase.getInstance().getReference();
 
 
-        currentUserUID = Constant.userUID;
+        currentUserUID = AppData.userUID;
 
         chatUserUID = getIntent().getStringExtra("clientUID").toString();
         token = getIntent().getStringExtra("clientToken").toString();
@@ -156,7 +149,7 @@ public class LandLordMessageActivity extends AppCompatActivity {
         databaseReference.child("chat").child(chatUserUID).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                databaseReference.child("chat").child(chatUserUID).child(Constant.userUID).child("seen").setValue(true).addOnFailureListener(new OnFailureListener() {
+                databaseReference.child("chat").child(chatUserUID).child(AppData.userUID).child("seen").setValue(true).addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
                         Log.d("CHAT_ERROR", e.getMessage().toString());
@@ -605,7 +598,7 @@ public class LandLordMessageActivity extends AppCompatActivity {
 //        buttonInsertDate.setVisibility(View.INVISIBLE);
 //        Toast.makeText(this, "view.getId() : " + view.getId(), Toast.LENGTH_SHORT).show();
 
-        if (Constant.category.equals("집주인")) {
+        if (AppData.category.equals("집주인")) {
             final LayoutInflater inflater = (LayoutInflater) getApplicationContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             final View frameLayoutMsgInputForm = inflater.inflate(R.layout.layout_message_detail_msg_input_form_landlord, frameLayoutMsgDetail, false);
             frameLayoutMsgDetail.addView(frameLayoutMsgInputForm);

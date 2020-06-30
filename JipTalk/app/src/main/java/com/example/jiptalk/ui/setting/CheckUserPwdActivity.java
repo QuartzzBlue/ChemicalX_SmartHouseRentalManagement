@@ -16,7 +16,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.jiptalk.Constant;
+import com.example.jiptalk.AppData;
 import com.example.jiptalk.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -106,7 +106,7 @@ public class CheckUserPwdActivity extends AppCompatActivity {
     private void checkPassword() {
         Log.w("===", "CheckUserPwdActivitiy : checkPassword()");
 
-        FirebaseAuth.getInstance().signInWithEmailAndPassword(Constant.userID, userPwd)
+        FirebaseAuth.getInstance().signInWithEmailAndPassword(AppData.userID, userPwd)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
