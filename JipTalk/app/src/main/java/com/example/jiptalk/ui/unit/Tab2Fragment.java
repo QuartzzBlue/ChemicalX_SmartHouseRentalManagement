@@ -28,6 +28,7 @@ public class Tab2Fragment extends Fragment {
     private ViewGroup viewGroup;
     private TextView nameTv, depositorTv, phoneTv, leaseTypeTv, contractPeriodTv, depositTv, payDayTv, monthlyFeeTv, manageFeeTv, monthlyTotalFeeTv;
     private String thisUnitKey, thisBuildingKey;
+    private Unit thisUnit;
 
     public void onCreate(Bundle saveInstanceState) {
         super.onCreate(saveInstanceState);
@@ -61,52 +62,52 @@ public class Tab2Fragment extends Fragment {
         manageFeeTv = viewGroup.findViewById(R.id.tv_unit_detail_tab2_manageFee);
         monthlyTotalFeeTv = viewGroup.findViewById(R.id.tv_unit_detail_tab2_monthlyTotalFee);
 
-        Unit thisUnit = AppData.unitsInBuildings.get(thisBuildingKey).get(thisUnitKey);
-        nameTv.setText(thisUnit.getTenantName());
-        depositorTv.setText(thisUnit.getPayerName());
-        phoneTv.setText(thisUnit.getTenantPhone());
-        leaseTypeTv.setText(thisUnit.getLeaseType());
-        contractPeriodTv.setText(thisUnit.getStartDate() + " ~ " + thisUnit.getEndDate());
-        int deposit = Integer.parseInt(thisUnit.getDeposit());
-        depositTv.setText(myFormatter.format(deposit) + "원");
-        payDayTv.setText("매월 " + thisUnit.getPayDay() + "일");
-        int monthlyFee = Integer.parseInt(thisUnit.getMonthlyFee());
-        int manageFee = Integer.parseInt(thisUnit.getMngFee());
-        monthlyFeeTv.setText(myFormatter.format(monthlyFee) + "원");
-        manageFeeTv.setText(myFormatter.format(manageFee) + "원");
-        int totalFee = Integer.parseInt(thisUnit.getMonthlyFee().replace(",", "")) + Integer.parseInt(thisUnit.getMngFee().replace(",", ""));
-        monthlyTotalFeeTv.setText(myFormatter.format(totalFee) + "원");
+//        Unit thisUnit = AppData.unitsInBuildings.get(thisBuildingKey).get(thisUnitKey);
+//        nameTv.setText(thisUnit.getTenantName());
+//        depositorTv.setText(thisUnit.getPayerName());
+//        phoneTv.setText(thisUnit.getTenantPhone());
+//        leaseTypeTv.setText(thisUnit.getLeaseType());
+//        contractPeriodTv.setText(thisUnit.getStartDate() + " ~ " + thisUnit.getEndDate());
+//        int deposit = Integer.parseInt(thisUnit.getDeposit());
+//        depositTv.setText(myFormatter.format(deposit) + "원");
+//        payDayTv.setText("매월 " + thisUnit.getPayDay() + "일");
+//        int monthlyFee = Integer.parseInt(thisUnit.getMonthlyFee());
+//        int manageFee = Integer.parseInt(thisUnit.getMngFee());
+//        monthlyFeeTv.setText(myFormatter.format(monthlyFee) + "원");
+//        manageFeeTv.setText(myFormatter.format(manageFee) + "원");
+//        int totalFee = Integer.parseInt(thisUnit.getMonthlyFee().replace(",", "")) + Integer.parseInt(thisUnit.getMngFee().replace(",", ""));
+//        monthlyTotalFeeTv.setText(myFormatter.format(totalFee) + "원");
 
 
-//        DatabaseReference unitRef = FirebaseDatabase.getInstance().getReference("units");
-//        unitRef.child(thisBuildingKey).child(thisUnitKey).addValueEventListener(new ValueEventListener() {  //addValueEventListener : 한 번만 콜백되고 즉시 삭제
-//            @Override
-//            public void onDataChange(DataSnapshot dataSnapshot) {
-//                Log.w("===", "Tab2/initialize() : onDataChange");
-//                thisUnit = dataSnapshot.getValue(Unit.class);
-//                thisUnit.setUnitID(dataSnapshot.getKey());
-//
-//                nameTv.setText(thisUnit.getTenantName());
-//                depositorTv.setText(thisUnit.getPayerName());
-//                phoneTv.setText(thisUnit.getTenantPhone());
-//                leaseTypeTv.setText(thisUnit.getLeaseType());
-//                contractPeriodTv.setText(thisUnit.getStartDate() + " ~ " + thisUnit.getEndDate());
-//                int deposit = Integer.parseInt(thisUnit.getDeposit());
-//                depositTv.setText(myFormatter.format(deposit) + "원");
-//                payDayTv.setText("매월 " + thisUnit.getPayDay() + "일");
-//                int monthlyFee = Integer.parseInt(thisUnit.getMonthlyFee());
-//                int manageFee = Integer.parseInt(thisUnit.getMngFee());
-//                monthlyFeeTv.setText(myFormatter.format(monthlyFee) + "원");
-//                manageFeeTv.setText(myFormatter.format(manageFee) + "원");
-//                int totalFee = Integer.parseInt(thisUnit.getMonthlyFee().replace(",", "")) + Integer.parseInt(thisUnit.getMngFee().replace(",", ""));
-//                monthlyTotalFeeTv.setText(myFormatter.format(totalFee) + "원");
-//            }
-//
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError databaseError) {
-//                Log.w("===", "getPersonalInfoThread() : onCancelled", databaseError.toException());
-//            }
-//        });
+        DatabaseReference unitRef = FirebaseDatabase.getInstance().getReference("units");
+        unitRef.child(thisBuildingKey).child(thisUnitKey).addValueEventListener(new ValueEventListener() {  //addValueEventListener : 한 번만 콜백되고 즉시 삭제
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Log.w("===", "Tab2/initialize() : onDataChange");
+                thisUnit = dataSnapshot.getValue(Unit.class);
+                thisUnit.setUnitID(dataSnapshot.getKey());
+
+                nameTv.setText(thisUnit.getTenantName());
+                depositorTv.setText(thisUnit.getPayerName());
+                phoneTv.setText(thisUnit.getTenantPhone());
+                leaseTypeTv.setText(thisUnit.getLeaseType());
+                contractPeriodTv.setText(thisUnit.getStartDate() + " ~ " + thisUnit.getEndDate());
+                int deposit = Integer.parseInt(thisUnit.getDeposit());
+                depositTv.setText(myFormatter.format(deposit) + "원");
+                payDayTv.setText("매월 " + thisUnit.getPayDay() + "일");
+                int monthlyFee = Integer.parseInt(thisUnit.getMonthlyFee());
+                int manageFee = Integer.parseInt(thisUnit.getMngFee());
+                monthlyFeeTv.setText(myFormatter.format(monthlyFee) + "원");
+                manageFeeTv.setText(myFormatter.format(manageFee) + "원");
+                int totalFee = Integer.parseInt(thisUnit.getMonthlyFee().replace(",", "")) + Integer.parseInt(thisUnit.getMngFee().replace(",", ""));
+                monthlyTotalFeeTv.setText(myFormatter.format(totalFee) + "원");
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.w("===", "getPersonalInfoThread() : onCancelled", databaseError.toException());
+            }
+        });
 
     }
 
