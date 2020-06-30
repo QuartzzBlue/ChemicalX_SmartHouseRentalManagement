@@ -4,21 +4,11 @@
     android:background="@drawable/km_alert_dialog_default_background">
 
     <LinearLayout
-        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <TextView
-            android:layout_gravity="top"
-            android:id="@+id/tvTitle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="10dp"
-            android:gravity="center"
-            android:text="알림"
-            android:textColor="@color/black"
-            android:textSize="20sp"
-            android:textStyle="bold" />
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
+        android:orientation="vertical">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -39,14 +29,14 @@
                 android:textSize="16sp" />
 
             <TextView
-                android:id="@+id/textView61"
+                android:id="@+id/tv_dialog_tenant_landlordAccount"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="3"
                 android:gravity="center"
                 android:text="국민 22750204289916 최여진"
                 android:textColor="@color/black"
-                android:textSize="20sp"
+                android:textSize="15sp"
                 android:textStyle="bold" />
         </LinearLayout>
 
@@ -69,21 +59,20 @@
                 android:textSize="16sp" />
 
             <TextView
-                android:id="@+id/tv_account"
+                android:id="@+id/tv_dialog_tenant_tenantAccount"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="3"
                 android:gravity="center"
                 android:text="TextView"
                 android:textColor="@color/black"
-                android:textSize="20sp" />
+                android:textSize="15sp" />
 
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginBottom="20dp"
             android:orientation="horizontal">
 
             <TextView
@@ -99,56 +88,19 @@
                 android:textSize="16sp" />
 
             <TextView
-                android:id="@+id/tv_amount"
+                android:id="@+id/tv_dialog_tenant_amount"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="3"
                 android:gravity="center"
                 android:text="TextView"
                 android:textColor="@color/black"
-                android:textSize="20sp" />
+                android:textSize="15sp" />
 
         </LinearLayout>
 
 
         <!-- 어댑터를 설정할때만 사용 -->
-
-        <LinearLayout
-            android:layout_gravity="bottom"
-            android:id="@+id/twoBtn"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <Button
-                android:id="@+id/btnNegative"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:background="@color/white"
-                android:padding="5dp"
-                android:text="취소"
-                android:textSize="20sp"
-                android:textColor="@color/black" />
-
-            <View
-                android:background="@color/colorPrimaryLight"
-                android:layout_width="1dp"
-                android:layout_height="match_parent"/>
-
-            <Button
-                android:id="@+id/btnPositive"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:background="@color/white"
-                android:padding="5dp"
-                android:text="확인"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                android:textColor="@color/colorPrimary" />
-
-        </LinearLayout>
 
     </LinearLayout>
 </FrameLayout>
