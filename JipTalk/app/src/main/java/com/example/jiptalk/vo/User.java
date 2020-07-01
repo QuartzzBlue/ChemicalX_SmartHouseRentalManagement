@@ -17,8 +17,6 @@ public class User implements Serializable {
     String category;    // 임대인 or 임차인
     Boolean isAlarmOn;
     String token;
-
-    /* 임대인 */
     String depositor;  // 예금자명
     String bank;    // 은행
     String accountNum; //  계좌번호

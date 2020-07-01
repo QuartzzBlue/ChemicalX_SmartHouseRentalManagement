@@ -114,14 +114,6 @@ public class SettingUserInfoActivity extends AppCompatActivity {
                 emailTv.setText(currentUser.getEmail());
                 nameTv.setText(currentUser.getName());
 
-                // 임대인 계정일 경우에만 계좌 정보 변경 버튼 보여줌
-                if(currentUser.getCategory().trim().equals("임대인")){
-                    modAccountBt.setVisibility(View.VISIBLE);
-
-                } else {
-                    modAccountBt.setVisibility(View.GONE);
-                }
-
             }
 
             @Override
