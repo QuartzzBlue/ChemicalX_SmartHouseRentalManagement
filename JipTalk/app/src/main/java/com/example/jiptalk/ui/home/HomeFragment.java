@@ -228,7 +228,7 @@ public class HomeFragment extends Fragment {
                     buildings.add(buildingItem);
 
                 }
-
+                Log.d("===", "buildings : " + buildings.toString());
                 setData();
                 setRecyclerView();
 

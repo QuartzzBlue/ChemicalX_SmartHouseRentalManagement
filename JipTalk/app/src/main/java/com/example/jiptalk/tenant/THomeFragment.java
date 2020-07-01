@@ -63,6 +63,7 @@ public class THomeFragment extends Fragment {
     }
 
     public void initialize(){
+        landlordAct = new Account();
         historyBtn = root.findViewById(R.id.btn_tenant_home_checkHistory);
         contactInfoBtn = root.findViewById(R.id.btn_tenant_home_contactInfo);
         payNowBtn= root.findViewById(R.id.btn_tenant_home_payNow);
