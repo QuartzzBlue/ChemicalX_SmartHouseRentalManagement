@@ -80,7 +80,7 @@ public class Tab2Fragment extends Fragment {
 
 
         DatabaseReference unitRef = FirebaseDatabase.getInstance().getReference("units");
-        unitRef.child(thisBuildingKey).child(thisUnitKey).addValueEventListener(new ValueEventListener() {  //addValueEventListener : 한 번만 콜백되고 즉시 삭제
+        unitRef.child(thisBuildingKey).child(thisUnitKey).addListenerForSingleValueEvent(new ValueEventListener() {  //addValueEventListener : 한 번만 콜백되고 즉시 삭제
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 Log.w("===", "Tab2/initialize() : onDataChange");
