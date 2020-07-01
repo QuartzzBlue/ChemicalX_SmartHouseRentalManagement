@@ -159,13 +159,13 @@ public class HomeFragment extends Fragment {
 
                 // 유닛이 없는 경우에는 return
                 if(dataSnapshot.getValue() == null) {
+                    getBuildingInfo(AppData.userUID);
                     return;
                 }
 
                 //cnt
                 int occupiedCnt = 0;
                 int paidCnt = 0;
-                int unitCnt = 0;
 
                 for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
                     Unit unitItem = postSnapshot.getValue(Unit.class);
