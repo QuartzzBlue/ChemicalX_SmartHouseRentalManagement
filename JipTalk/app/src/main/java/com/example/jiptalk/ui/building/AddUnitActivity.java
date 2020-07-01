@@ -31,6 +31,7 @@ import com.example.jiptalk.Util;
 import com.example.jiptalk.Valid;
 import com.example.jiptalk.vo.Tenant;
 import com.example.jiptalk.vo.Unit;
+import com.example.jiptalk.vo.User;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -185,6 +186,7 @@ public class AddUnitActivity extends AppCompatActivity {
 
 //                Unit newUnit = new Unit(unitNum, leaseType, tenantName, tenantPhone, payerName, deposit, manageFee, monthlyFee, payDay, startDate, endDate);
                 Unit newUnit = new Unit(unitNum, leaseType, tenantName, tenantPhone, payerName, deposit, manageFee, monthlyFee, payDay, startDate, endDate,"0","1");
+
                 Log.v("===","unit created : "+newUnit.toString());
                 /* 유효성 검사 */
                 //if (!isValid(newUnit)) return false;
@@ -381,43 +383,63 @@ public class AddUnitActivity extends AppCompatActivity {
     private void createUnit(final Unit newUnit) {
 
         Log.d("===", "createUnit()");
-
-        final Util util = new Util();
-
         util.showProgressDialog(nowContext);
 
-        Map<String, Object> childUpdates = new HashMap<>();
+        final Util util = new Util();
+        final String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
-        String unitKey = unitRef.child("units").child(thisBuildingKey).push().getKey();
-        String tenantKey = unitRef.child("tenants").push().getKey();
-
-        Tenant tenant = new Tenant();
-        tenant.setName(newUnit.getTenantName());
-        tenant.setPhone(newUnit.getTenantPhone());
-        tenant.setUnitID(unitKey);
-        tenant.setBuildingID(thisBuildingKey);
-
-        childUpdates.put("units/" + thisBuildingKey + "/" + unitKey + "/", newUnit.toMap());
-        childUpdates.put("registeredTenants/" + tenantKey + "/", tenant.toMap());
-
-        unitRef.updateChildren(childUpdates).addOnSuccessListener(new OnSuccessListener<Void>() {
+        DatabaseReference userReference = FirebaseDatabase.getInstance().getReference("user");
+        userReference.child(uid).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
-            public void onSuccess(Void aVoid) {
-                Log.d("===", "insertUnitToDatabase : succeed");
-                Toast.makeText(nowContext, "성공적으로 등록되었습니다.", Toast.LENGTH_SHORT).show();
-                util.hideProgressDialog();
-                finish();
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                Log.d("===","createBuilding : onDataChange");
+                User currentUser = dataSnapshot.getValue(User.class);
 
+                newUnit.setLlBank(currentUser.getBank());
+                newUnit.setLlAccountNum(currentUser.getAccountNum());
+                newUnit.setLlDepositor(currentUser.getDepositor());
+
+                Map<String, Object> childUpdates = new HashMap<>();
+
+                String unitKey = unitRef.child("units").child(thisBuildingKey).push().getKey();
+                String tenantKey = unitRef.child("tenants").push().getKey();
+
+                Tenant tenant = new Tenant();
+                tenant.setName(newUnit.getTenantName());
+                tenant.setPhone(newUnit.getTenantPhone());
+                tenant.setUnitID(unitKey);
+                tenant.setBuildingID(thisBuildingKey);
+
+                childUpdates.put("units/" + thisBuildingKey + "/" + unitKey + "/", newUnit.toMap());
+                childUpdates.put("registeredTenants/" + tenantKey + "/", tenant.toMap());
+
+                unitRef.updateChildren(childUpdates).addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d("===", "insertUnitToDatabase : succeed");
+                        Toast.makeText(nowContext, "성공적으로 등록되었습니다.", Toast.LENGTH_SHORT).show();
+                        util.hideProgressDialog();
+                        finish();
+
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(nowContext, "세대 등록이 실패하였습니다.", Toast.LENGTH_SHORT).show();
+                        Log.w("===", "insertBuildingToDatabase : Failed");
+                        util.hideProgressDialog();
+                        return;
+                    }
+                });
             }
-        }).addOnFailureListener(new OnFailureListener() {
+
             @Override
-            public void onFailure(@NonNull Exception e) {
-                Toast.makeText(nowContext, "세대 등록이 실패하였습니다.", Toast.LENGTH_SHORT).show();
-                Log.w("===", "insertBuildingToDatabase : Failed");
-                util.hideProgressDialog();
-                return;
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.d("===","createBuilding : onCancelled");
             }
         });
+
+
 
 
     }

@@ -106,9 +106,12 @@ public class TenantPayDialog extends DialogFragment {
         landlordAccountTv = getDialog().findViewById(R.id.tv_dialog_tenant_landlordAccount);
         tenantAccountTv = getDialog().findViewById(R.id.tv_dialog_tenant_tenantAccount);
         amountTv = getDialog().findViewById(R.id.tv_dialog_tenant_amount);
-
-        landlordAccountTv.setText(landlordAct.getBank() + " " + landlordAct.getAccountNum() + " " + landlordAct.getDepositor());
-        tenantAccountTv.setText(tenantAct.getBank() + " " + tenantAct.getAccountNum() + " " + tenantAct.getDepositor());
+        if(landlordAct != null){
+            landlordAccountTv.setText(landlordAct.getBank() + " " + landlordAct.getAccountNum() + " " + landlordAct.getDepositor());
+        }
+        if(tenantAct.getBank() != null && tenantAct.getAccountNum() != null && tenantAct.getDepositor() != null){
+            tenantAccountTv.setText(tenantAct.getBank() + " " + tenantAct.getAccountNum() + " " + tenantAct.getDepositor());
+        }
         amountTv.setText(amount + " 원");
     }
 
