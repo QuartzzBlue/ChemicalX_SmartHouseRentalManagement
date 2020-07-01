@@ -8,14 +8,12 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -23,10 +21,11 @@ import com.example.jiptalk.AppData;
 import com.example.jiptalk.R;
 import com.example.jiptalk.ui.building.BuildingDetailActivity;
 import com.example.jiptalk.vo.Building;
+import com.example.jiptalk.vo.Credit;
 import com.example.jiptalk.vo.Unit;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -35,9 +34,9 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
 
-import java.lang.reflect.Array;
 import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -47,157 +46,26 @@ public class HomeFragment extends Fragment {
     View root;
 
     RecyclerView recyclerView;
-    RecyclerView.LayoutManager layoutManager; //어댑터에서 getView 역할을 하는것
-    // (뷰홀더 지정. 뷰홀더 : 화면에 표시될 아이템 뷰를 저장하는 객체)
     MyRecyclerViewAdapter myRecycleViewAdapter;
+
+    int totalMonthlyIncome,totalUnitCnt,totalPaidCnt;
+    ArrayList<Building> buildings;
+    HashMap<String,HashMap<String,Unit>> unitsInBuildings;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
 
         root = inflater.inflate(R.layout.fragment_home, container, false);
 
-        getData();
         initialization();
 
         return root;
     }
 
-
-
-    private void getData() {
-
-        getCurrentUser();
-        getBuildingInfo(AppData.userUID);
-        setToken();
-
-    }
-
-    public void getCurrentUser(){
-        AppData.userUID = FirebaseAuth.getInstance().getCurrentUser().getUid();
-    }
-
-    public void getBuildingInfo(String userUID){
-
-
-        FirebaseDatabase.getInstance().getReference("buildings").child(userUID).addValueEventListener(new ValueEventListener() {
-
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-                Log.v("===","getBuildingInfo executed");
-
-                //buildingMap = (HashMap<String, Building>) dataSnapshot.getValue();
-                AppData.buildings.clear();
-
-                for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
-                    Building buildingItem = postSnapshot.getValue(Building.class);
-                    buildingItem.setId(postSnapshot.getKey());
-
-                    AppData.buildings.put(buildingItem.getId(),buildingItem);
-                    AppData.unitsInBuildings.put(buildingItem.getId(),new HashMap<String, Unit>());
-
-                    getUnitInfo(buildingItem.getId());
-
-                }
-
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                Log.v("===", "InitConstants() : onCancelled", databaseError.toException());
-            }
-
-        });
-    }
-
-    public void getUnitInfo(final String buildingUID){
-
-        FirebaseDatabase.getInstance().getReference("units").child(buildingUID).addValueEventListener(new ValueEventListener(){
-
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-                Log.v("===","getUnitInfo executed");
-
-                // 유닛이 없는 경우에는 return
-                if(dataSnapshot.getValue() == null) {
-                    return;
-                }
-
-                for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
-                    Unit unitItem = postSnapshot.getValue(Unit.class);
-                    unitItem.setUnitID(postSnapshot.getKey());
-
-                    AppData.unitsInBuildings.get(buildingUID).put(unitItem.getUnitID(),unitItem);
-                }
-
-                paymentCnt();
-
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-    }
-
-    public void paymentCnt(){
-
-        Log.v("===","paymentCnt executed");
-
-        AppData.totalMonthlyIncome =0;
-        AppData.totalUnitCnt =0;
-        AppData.totalPaidCnt =0;
-
-        //buildings
-        for(String buildingKey : AppData.unitsInBuildings.keySet()){
-
-            int occupiedCnt = 0;
-            int paidCnt = 0;
-            int monthIncome = 0;
-
-            //units
-            for(String unitKey : AppData.unitsInBuildings.get(buildingKey).keySet()){
-                if(AppData.unitsInBuildings.get(buildingKey).get(unitKey).getIsPaid().equals("1")){
-                    paidCnt++;
-                }
-
-                if(AppData.unitsInBuildings.get(buildingKey).get(unitKey).getIsOccupied().equals("1")){
-                    occupiedCnt++;
-                }
-                monthIncome += Integer.parseInt(AppData.unitsInBuildings.get(buildingKey).get(unitKey).getMngFee())
-                        +Integer.parseInt(AppData.unitsInBuildings.get(buildingKey).get(unitKey).getMonthlyFee());
-
-            }
-            if(AppData.buildings.get(buildingKey)!=null){
-                AppData.buildings.get(buildingKey).setPaidCnt(paidCnt);
-                AppData.buildings.get(buildingKey).setOccupiedCnt(occupiedCnt);
-                AppData.buildings.get(buildingKey).setUnpaidCnt(occupiedCnt-paidCnt);
-                AppData.buildings.get(buildingKey).setMonthlyIncome(monthIncome);
-
-            }
-
-
-            AppData.totalMonthlyIncome += monthIncome;
-            AppData.totalUnitCnt += occupiedCnt;
-            AppData.totalPaidCnt += paidCnt;
-        }
-
-        setData();
-        setAdapter();
-
-    }
-
-    private void setData(){
-
-        NumberFormat myFormatter = NumberFormat.getInstance(Locale.getDefault());
-        ((TextView)root.findViewById(R.id.tv_home_totalMonthlyIncome)).setText(myFormatter.format(AppData.totalMonthlyIncome)+"원");
-        ((TextView)root.findViewById(R.id.tv_home_paymentStatus)).setText(AppData.totalPaidCnt+"/"+AppData.totalUnitCnt);
-
-    }
-
     public void initialization(){
+
+        buildings = new ArrayList<>();
+        unitsInBuildings = new HashMap<>();
 
         // Add New Building Btn
         root.findViewById(R.id.btn_home_addBuilding).setOnClickListener(new View.OnClickListener(){
@@ -210,18 +78,181 @@ public class HomeFragment extends Fragment {
             }
         });
 
-        recyclerView = root.findViewById(R.id.rv_home);
-        recyclerView.setHasFixedSize(true);
-        layoutManager = new LinearLayoutManager(getContext().getApplicationContext());
-        recyclerView.setLayoutManager(layoutManager);
+        getCurrentUser();
+        setToken();
+    }
+
+    public void getCurrentUser(){
+        AppData.userUID = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        getBuildingKeyToUpdate(AppData.userUID);
+    }
+
+    public void getBuildingKeyToUpdate(String userUID){
+
+        FirebaseDatabase.getInstance().getReference("buildings").child(userUID).addValueEventListener(new ValueEventListener() {
+
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                Log.v("===","getBuildingKey executed");
+
+                for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
+                    Building buildingItem = postSnapshot.getValue(Building.class);
+                    buildingItem.setId(postSnapshot.getKey());
+
+                    getTotalMonthlyIncome(postSnapshot.getKey());
+                    countNUpdate(buildingItem);
+                }
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.v("===", "InitConstants() : onCancelled", databaseError.toException());
+            }
+
+        });
+    }
+
+    public void getTotalMonthlyIncome(String buildingUID){
+
+        FirebaseDatabase.getInstance().getReference("credit").child(buildingUID).addValueEventListener(new ValueEventListener() {
+
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                Log.v("===","getTotalMonthlyIncome executed");
+
+                for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
+
+                    Calendar calendar = Calendar.getInstance();
+                    String thisDate = calendar.get(Calendar.YEAR)+"."+(calendar.get(Calendar.MONTH)+1);
+                    Credit creditItem = postSnapshot.getValue(Credit.class);
+                    if(creditItem.getDate().equals(thisDate)){
+                        totalMonthlyIncome+=Integer.parseInt(creditItem.getCredit());
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.v("===", "getTotalMonthlyIncome : onCancelled", databaseError.toException());
+            }
+
+        });
 
     }
 
-    public void setAdapter(){
-        final ArrayList<Building> buildingList = new ArrayList<>();
-        buildingList.addAll(AppData.buildings.values());
+    public void countNUpdate(final Building building){
 
-        myRecycleViewAdapter = new MyRecyclerViewAdapter(buildingList);
+        FirebaseDatabase.getInstance().getReference("units").child(building.getId()).addValueEventListener(new ValueEventListener(){
+
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                Log.v("===","countNUpdate executed");
+
+                // 유닛이 없는 경우에는 return
+                if(dataSnapshot.getValue() == null) {
+                    return;
+                }
+
+                //cnt
+                int occupiedCnt = 0;
+                int paidCnt = 0;
+                int unitCnt = 0;
+
+                for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
+                    Unit unitItem = postSnapshot.getValue(Unit.class);
+                    unitItem.setUnitID(postSnapshot.getKey());
+
+                    if (unitItem.getIsPaid().equals("1")){
+                        paidCnt++;
+                    }
+                    if (unitItem.getIsOccupied().equals("1")){
+                        occupiedCnt++;
+                    }
+                    unitCnt++;
+                }
+
+                building.setPaidCnt(paidCnt);
+                building.setUnpaidCnt(occupiedCnt-paidCnt);
+                building.setOccupiedCnt(occupiedCnt);
+                building.setEmptyCnt(building.getUnitCnt()-occupiedCnt);
+                building.setUnitCnt(unitCnt);
+
+                totalPaidCnt+=paidCnt;
+                totalUnitCnt+=occupiedCnt;
+
+                //update
+                FirebaseDatabase.getInstance().getReference("buildings").child(AppData.userUID).child(building.getId()).setValue(building).addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        getBuildingInfo(AppData.userUID);
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+
+                    }
+                });
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    public void getBuildingInfo(String userUID){
+
+        FirebaseDatabase.getInstance().getReference("buildings").child(userUID).addValueEventListener(new ValueEventListener() {
+
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                Log.v("===","getBuildingInfo executed");
+
+                buildings.clear();
+
+                for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
+
+                    Building buildingItem = postSnapshot.getValue(Building.class);
+                    buildingItem.setId(postSnapshot.getKey());
+
+                    buildings.add(buildingItem);
+
+                }
+
+                setData();
+                setRecyclerView();
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.v("===", "getBuildingInfo : onCancelled", databaseError.toException());
+            }
+
+        });
+    }
+
+    private void setData(){
+
+        ((TextView)root.findViewById(R.id.tv_home_totalMonthlyIncome)).setText(NumberFormat.getInstance(Locale.getDefault()).format(AppData.totalMonthlyIncome)+"원");
+        ((TextView)root.findViewById(R.id.tv_home_paymentStatus)).setText(totalPaidCnt+"/"+totalUnitCnt);
+
+    }
+
+    public void setRecyclerView(){
+
+        recyclerView = root.findViewById(R.id.rv_home);
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext().getApplicationContext()));
+
+        myRecycleViewAdapter = new MyRecyclerViewAdapter(buildings);
         recyclerView.setAdapter(myRecycleViewAdapter);
 
         // 리사이클러뷰의 아이템 클릭 시 해당 아이템(빌딩) 의 BuildingDetailActivity 로 이동
@@ -230,8 +261,7 @@ public class HomeFragment extends Fragment {
             public void onItemClick(View v, int position) {
                 // 액티비티 이동
                 Intent intent = new Intent(getActivity(), BuildingDetailActivity.class);
-                //intent.putExtra("buildingInfo", buildingList.get(position));
-                AppData.nowBuildingKey = buildingList.get(position).getId();
+                intent.putExtra("buildingInfo", buildings.get(position));
                 startActivity(intent);
             }
         });
@@ -280,9 +310,6 @@ public class HomeFragment extends Fragment {
         });
 
     }
-
-
-
 
 }
 
