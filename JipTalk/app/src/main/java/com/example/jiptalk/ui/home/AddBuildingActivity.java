@@ -87,27 +87,16 @@ public class AddBuildingActivity extends AppCompatActivity {
 
         Log.d("===","createBuilding");
         FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
-        DatabaseReference userReference = firebaseDatabase.getReference("user");
         final DatabaseReference buildingReference = firebaseDatabase.getReference("buildings");
         final String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
         final Util util = new Util();
 
         util.showProgressDialog(nowContext);
 
-        userReference.child(uid).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                Log.d("===","createBuilding : onDataChange");
-                User currentUser = dataSnapshot.getValue(User.class);
-
-                newBuilding.setLlBank(currentUser.getBank());
-                newBuilding.setLlAccountNum(currentUser.getAccountNum());
-                newBuilding.setLlDepositor(currentUser.getDepositor());
-
-                String key = buildingReference.push().getKey();
-                Map<String,Object> childUpdates = new HashMap<>();
-                childUpdates.put("/"+uid+"/"+key, newBuilding.toMap());
-                buildingReference.updateChildren(childUpdates).addOnSuccessListener(new OnSuccessListener<Void>() {
+        String key = buildingReference.push().getKey();
+        Map<String,Object> childUpdates = new HashMap<>();
+        childUpdates.put("/"+uid+"/"+key, newBuilding.toMap());
+        buildingReference.updateChildren(childUpdates).addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
                         Log.d("===", "insertBuildingToDatabase: succeed");
@@ -127,16 +116,6 @@ public class AddBuildingActivity extends AppCompatActivity {
                         return;
                     }
                 });
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                Log.d("===","createBuilding : onCancelled");
-            }
-        });
-
-
-
 
     }
 

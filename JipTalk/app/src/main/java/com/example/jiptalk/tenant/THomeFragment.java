@@ -18,6 +18,7 @@ import androidx.fragment.app.FragmentManager;
 import com.example.jiptalk.R;
 import com.example.jiptalk.TenantPayDialog;
 import com.example.jiptalk.vo.Account;
+import com.example.jiptalk.vo.Building;
 import com.example.jiptalk.vo.Unit;
 import com.example.jiptalk.vo.User;
 import com.google.android.gms.tasks.Continuation;
@@ -48,6 +49,7 @@ public class THomeFragment extends Fragment {
     String totalFeeStr;
     private TextView nameTv, depositorTv, phoneTv, leaseTypeTv, contractPeriodTv, depositTv, payDayTv, monthlyFeeTv, manageFeeTv, monthlyTotalFeeTv;
     private User currentUser;
+    private Account landlordAct;
     private int totalFee;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -95,9 +97,8 @@ public class THomeFragment extends Fragment {
 
             @Override
             public void onClick(View v) {
-
-                Account tenantAct = new Account("국민", "22750204289916","최여진");
-                Account landlordAct = new Account(currentUser.getBank(), currentUser.getAccountNum(), currentUser.getDepositor());
+                Account tenantAct = new Account(currentUser.getBank(), currentUser.getAccountNum(), currentUser.getDepositor());
+//                Account landlordAct = new Account(currentUser.getBank(), currentUser.getAccountNum(), currentUser.getDepositor());
 
                 FragmentManager fm = getActivity().getSupportFragmentManager();
                 TenantPayDialog tenantPayDialog = new TenantPayDialog(getContext(), landlordAct, tenantAct, totalFee, buildingID, unitID);
@@ -207,6 +208,12 @@ public class THomeFragment extends Fragment {
 
         monthlyTotalFeeTv.setText(myFormatter.format(totalFee) + "원");
         monthlyFee1Tv.setText(myFormatter.format(totalFee) + "원");
+
+        if(thisUnit.getLlBank() != null && thisUnit.getLlAccountNum() != null && thisUnit.getLlDepositor() != null){
+            landlordAct.setBank(thisUnit.getLlBank());
+            landlordAct.setAccountNum(thisUnit.getLlAccountNum());
+            landlordAct.setDepositor(thisUnit.getLlDepositor());
+        }
     }
 
     public Task<String> addMessage(String text) {

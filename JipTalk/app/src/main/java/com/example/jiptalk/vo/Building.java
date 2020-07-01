@@ -26,11 +26,6 @@ public class Building implements Serializable {
     int unpaidCnt;
     int monthlyIncome;
     int expireCnt;
-    /* 임대인 계좌 정보 */
-    String llBank;
-    String llAccountNum;
-    String llDepositor;
-
     Map<String, Unit> units = new HashMap<>();
 
     public Building() {
@@ -65,23 +60,6 @@ public class Building implements Serializable {
         this.unpaidCnt = unpaidCnt;
         this.monthlyIncome = monthlyIncome;
         this.units = unitList;
-    }
-
-    public Building(String id, String name, String buildingAddress, int unitCnt, int occupiedCnt, int emptyCnt, int paidCnt, int unpaidCnt, int monthlyIncome, int expireCnt, String llBank, String llAccountNum, String llDepositor, Map<String, Unit> units) {
-        this.id = id;
-        this.name = name;
-        this.buildingAddress = buildingAddress;
-        this.unitCnt = unitCnt;
-        this.occupiedCnt = occupiedCnt;
-        this.emptyCnt = emptyCnt;
-        this.paidCnt = paidCnt;
-        this.unpaidCnt = unpaidCnt;
-        this.monthlyIncome = monthlyIncome;
-        this.expireCnt = expireCnt;
-        this.llBank = llBank;
-        this.llAccountNum = llAccountNum;
-        this.llDepositor = llDepositor;
-        this.units = units;
     }
 
     public String getId() {
@@ -171,29 +149,7 @@ public class Building implements Serializable {
         this.expireCnt = expireCnt;
     }
 
-    public String getLlBank() {
-        return llBank;
-    }
 
-    public void setLlBank(String llBank) {
-        this.llBank = llBank;
-    }
-
-    public String getLlAccountNum() {
-        return llAccountNum;
-    }
-
-    public void setLlAccountNum(String llAccountNum) {
-        this.llAccountNum = llAccountNum;
-    }
-
-    public String getLlDepositor() {
-        return llDepositor;
-    }
-
-    public void setLlDepositor(String llDepositor) {
-        this.llDepositor = llDepositor;
-    }
 
     @Override
     public String toString() {
@@ -208,9 +164,6 @@ public class Building implements Serializable {
                 ", unpaidCnt=" + unpaidCnt +
                 ", monthlyIncome=" + monthlyIncome +
                 ", expireCnt=" + expireCnt +
-                ", llBank='" + llBank + '\'' +
-                ", llAccountNum='" + llAccountNum + '\'' +
-                ", llDepositor='" + llDepositor + '\'' +
                 ", units=" + units +
                 '}';
     }
@@ -227,9 +180,7 @@ public class Building implements Serializable {
         result.put("unpaidCnt", unpaidCnt);
         result.put("monthlyIncome",monthlyIncome);
         result.put("expireCnt",expireCnt);
-        result.put("llBank",llBank);
-        result.put("llAccountNum",llAccountNum);
-        result.put("llDepositor",llDepositor);
+
         //result.put("units",units);
 
         return result;
