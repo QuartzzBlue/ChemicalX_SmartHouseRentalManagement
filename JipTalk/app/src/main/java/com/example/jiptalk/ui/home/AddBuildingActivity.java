@@ -21,12 +21,16 @@ import com.example.jiptalk.Util;
 import com.example.jiptalk.Valid;
 import com.example.jiptalk.ui.building.JusoWebViewActivity;
 import com.example.jiptalk.vo.Building;
+import com.example.jiptalk.vo.User;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -81,39 +85,58 @@ public class AddBuildingActivity extends AppCompatActivity {
 
     private void createBuilding(final Building newBuilding){
 
-        FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
-        DatabaseReference buildingReference = firebaseDatabase.getReference("buildings");
-        FirebaseUser fUser = FirebaseAuth.getInstance().getCurrentUser();
-
         Log.d("===","createBuilding");
-
+        FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
+        DatabaseReference userReference = firebaseDatabase.getReference("user");
+        final DatabaseReference buildingReference = firebaseDatabase.getReference("buildings");
+        final String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
         final Util util = new Util();
 
         util.showProgressDialog(nowContext);
 
-        String key = buildingReference.push().getKey();
-        Map<String,Object> childUpdates = new HashMap<>();
-        childUpdates.put("/"+fUser.getUid()+"/"+key, newBuilding.toMap());
-        buildingReference.updateChildren(childUpdates).addOnSuccessListener(new OnSuccessListener<Void>() {
-                                        @Override
-                                        public void onSuccess(Void aVoid) {
-                                            Log.d("===", "insertBuildingToDatabase: succeed");
-                                            Toast.makeText(nowContext, "성공적으로 등록되었습니다.", Toast.LENGTH_SHORT).show();
-                                            util.hideProgressDialog();
-                                            // 액티비티 이동
-                                            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                                            startActivity(intent);
-                                            finish();
-                                        }
-                                    }).addOnFailureListener(new OnFailureListener() {
-                                @Override
-                                public void onFailure(@NonNull Exception e) {
-                                    Toast.makeText(nowContext, "건물 등록이 실패하였습니다.", Toast.LENGTH_SHORT).show();
-                                    Log.w("===", "insertBuildingToDatabase : Failed");
-                                    util.hideProgressDialog();
-                                    return;
-                                }
-                            });
+        userReference.child(uid).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                Log.d("===","createBuilding : onDataChange");
+                User currentUser = dataSnapshot.getValue(User.class);
+
+                newBuilding.setLlBank(currentUser.getBank());
+                newBuilding.setLlAccountNum(currentUser.getAccountNum());
+                newBuilding.setLlDepositor(currentUser.getDepositor());
+
+                String key = buildingReference.push().getKey();
+                Map<String,Object> childUpdates = new HashMap<>();
+                childUpdates.put("/"+uid+"/"+key, newBuilding.toMap());
+                buildingReference.updateChildren(childUpdates).addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d("===", "insertBuildingToDatabase: succeed");
+                        Toast.makeText(nowContext, "성공적으로 등록되었습니다.", Toast.LENGTH_SHORT).show();
+                        util.hideProgressDialog();
+                        // 액티비티 이동
+                        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                        startActivity(intent);
+                        finish();
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(nowContext, "건물 등록이 실패하였습니다.", Toast.LENGTH_SHORT).show();
+                        Log.w("===", "insertBuildingToDatabase : Failed");
+                        util.hideProgressDialog();
+                        return;
+                    }
+                });
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.d("===","createBuilding : onCancelled");
+            }
+        });
+
+
+
 
     }
 

@@ -170,10 +170,8 @@ public class SignUpActivity extends AppCompatActivity {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 if(checkedId == R.id.rb_sign_up_landlord) { //임대인
-                    landlordLo.setVisibility(View.VISIBLE);
                     tenantLo.setVisibility(View.GONE);
                 }else{  //세입자
-                    landlordLo.setVisibility(View.GONE);
                     tenantLo.setVisibility(View.VISIBLE);
                 }
             }
@@ -204,19 +202,13 @@ public class SignUpActivity extends AppCompatActivity {
                 String name = nameEt.getText().toString().trim();
                 String sex = checkedSexRgbt.getText().toString().trim();
                 String category = checkedCategoryRgbt.getText().toString().trim();
-
-                if(category.equals("임대인")){ //임대인
-                    String depositor = depositorEt.getText().toString().trim();
-                    String accountNum = accountNumEt.getText().toString().trim();
-                    String bank = null;
-                    if(!bankSpinner.getSelectedItem().toString().equals("선택하세요")){
-                        bank = bankSpinner.getSelectedItem().toString();
-                    }
-                    newUser = new User(email, phone, name, depositor, bank, accountNum, sex, category, true, null);
-                }else{ //세입자
-                    newUser = new User(email, phone, name, null, null, null, sex, category, true, null);
+                String depositor = depositorEt.getText().toString().trim();
+                String accountNum = accountNumEt.getText().toString().trim();
+                String bank = null;
+                if(!bankSpinner.getSelectedItem().toString().equals("선택하세요")){
+                    bank = bankSpinner.getSelectedItem().toString();
                 }
-
+                newUser = new User(email, phone, name, depositor, bank, accountNum, sex, category, true, null);
 
                 Log.d("===", "newUser : " + newUser.toString());
 
@@ -273,9 +265,9 @@ public class SignUpActivity extends AppCompatActivity {
                         Log.d("===", "isTenant : true");
                         newUser.setBuildingID(myBuildingID);
                         newUser.setUnitID(myUnitID);
-                        newUser.setBank(landlordInfo.getBank());
-                        newUser.setDepositor(landlordInfo.getDepositor());
-                        newUser.setAccountNum(landlordInfo.getAccountNum());
+//                        newUser.setBank(landlordInfo.getBank());
+//                        newUser.setDepositor(landlordInfo.getDepositor());
+//                        newUser.setAccountNum(landlordInfo.getAccountNum());
                     }
 
                     Log.d("===", "final newUser : " +  newUser.toString());
