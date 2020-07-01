@@ -16,6 +16,8 @@ import androidx.viewpager.widget.ViewPager;
 
 import com.example.jiptalk.R;
 import com.example.jiptalk.vo.Unit;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.tabs.TabItem;
 import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.database.FirebaseDatabase;
@@ -54,8 +56,13 @@ public class UnitDetailActivity extends AppCompatActivity {
         switch (item.getItemId()) {
 
             case R.id.unit_delete:
-                FirebaseDatabase.getInstance().getReference().child("units").child(thisBuildingKey).child(thisUnitKey).removeValue();
-                finish();
+                FirebaseDatabase.getInstance().getReference().child("units").child(thisBuildingKey).child(thisUnitKey).removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        finish();
+                    }
+                });
+
 
                 return true;
 

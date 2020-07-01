@@ -96,6 +96,9 @@ public class HomeFragment extends Fragment {
 
                 Log.v("===","getBuildingKey executed");
 
+                totalUnitCnt=0;
+                totalPaidCnt=0;
+
                 for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
                     Building buildingItem = postSnapshot.getValue(Building.class);
                     buildingItem.setId(postSnapshot.getKey());
@@ -122,6 +125,8 @@ public class HomeFragment extends Fragment {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
                 Log.v("===","getTotalMonthlyIncome executed");
+
+                totalMonthlyIncome = 0;
 
                 for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
 
@@ -172,14 +177,12 @@ public class HomeFragment extends Fragment {
                     if (unitItem.getIsOccupied().equals("1")){
                         occupiedCnt++;
                     }
-                    unitCnt++;
                 }
 
                 building.setPaidCnt(paidCnt);
                 building.setUnpaidCnt(occupiedCnt-paidCnt);
                 building.setOccupiedCnt(occupiedCnt);
                 building.setEmptyCnt(building.getUnitCnt()-occupiedCnt);
-                building.setUnitCnt(unitCnt);
 
                 totalPaidCnt+=paidCnt;
                 totalUnitCnt+=occupiedCnt;
