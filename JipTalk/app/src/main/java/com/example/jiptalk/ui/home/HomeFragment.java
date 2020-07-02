@@ -102,8 +102,6 @@ public class HomeFragment extends Fragment {
                 for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
                     Building buildingItem = postSnapshot.getValue(Building.class);
                     buildingItem.setId(postSnapshot.getKey());
-
-                    getTotalMonthlyIncome(postSnapshot.getKey());
                     countNUpdate(buildingItem);
                 }
 
@@ -117,9 +115,9 @@ public class HomeFragment extends Fragment {
         });
     }
 
-    public void getTotalMonthlyIncome(String buildingUID){
+    public void getTotalMonthlyIncome(String unitUID){
 
-        FirebaseDatabase.getInstance().getReference("credit").child(buildingUID).addValueEventListener(new ValueEventListener() {
+        FirebaseDatabase.getInstance().getReference("credit").child(unitUID).addValueEventListener(new ValueEventListener() {
 
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -131,9 +129,10 @@ public class HomeFragment extends Fragment {
                 for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
 
                     Calendar calendar = Calendar.getInstance();
-                    String thisDate = calendar.get(Calendar.YEAR)+"."+(calendar.get(Calendar.MONTH)+1);
+                    String thisDate = calendar.get(Calendar.YEAR)+"."+(calendar.get(Calendar.MONTH)+1+".");
                     Credit creditItem = postSnapshot.getValue(Credit.class);
-                    if(creditItem.getBillingDate().equals(thisDate)){
+
+                    if(creditItem.getBillingDate().contains(thisDate)){
                         totalMonthlyIncome+=Integer.parseInt(creditItem.getCredit());
                     }
                 }
@@ -177,6 +176,7 @@ public class HomeFragment extends Fragment {
                     if (unitItem.getIsOccupied().equals("1")){
                         occupiedCnt++;
                     }
+                    getTotalMonthlyIncome(postSnapshot.getKey());
                 }
 
                 building.setPaidCnt(paidCnt);
