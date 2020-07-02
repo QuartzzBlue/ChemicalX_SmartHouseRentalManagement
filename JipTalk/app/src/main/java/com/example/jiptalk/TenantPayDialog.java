@@ -28,6 +28,7 @@ import androidx.fragment.app.DialogFragment;
 import com.example.jiptalk.ui.message.PushFCMMessageThread;
 import com.example.jiptalk.vo.Account;
 import com.example.jiptalk.vo.Building;
+import com.example.jiptalk.vo.Credit;
 import com.example.jiptalk.vo.Unit;
 import com.example.jiptalk.vo.User;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -39,26 +40,34 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.text.NumberFormat;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 
 @SuppressWarnings({"UnusedReturnValue", "WeakerAccess", "SameParameterValue", "unused"})
 public class TenantPayDialog extends DialogFragment {
     private Context context;
     private Account landlordAct, tenantAct;
-    private int amount;
-    private String buildingID, unitID,unitNum;
+    private String buildingID, unitNum;
+    private Credit credit;
+    int amount;
     TextView landlordAccountTv, tenantAccountTv, amountTv;
 
-    public TenantPayDialog(@NonNull Context context, Account landlord, Account tenant, int amount, String buildingID, String unitID,String unitNum) {
+    public TenantPayDialog(@NonNull Context context, Account landlord, Account tenant, String buildingID,String unitNum,Credit credit) {
         super();
         this.context = context;
         this.landlordAct = landlord;
         this.tenantAct = tenant;
-        this.amount = amount;
         this.buildingID = buildingID;
-        this.unitID = unitID;
         this.unitNum = unitNum;
+        if(this.credit==null){
+            this.credit = new Credit();
+            this.credit = credit;
+        }else{
+            this.credit = credit;
+        }
+        amount = Integer.parseInt(credit.getCredit());
     }
 
     @Override
@@ -85,6 +94,39 @@ public class TenantPayDialog extends DialogFragment {
                     public void onClick(final DialogInterface dialog, int id) {
                         Log.w("===", "tenantPayFeeDialog : PositiveButton Clicked");
 
+                        //Update Credit
+                        if(credit!=null){
+                            Calendar calendar = Calendar.getInstance();
+                            String thisDate = calendar.get(Calendar.YEAR)+"."+(calendar.get(Calendar.MONTH)+1)+"."+calendar.get(Calendar.DAY_OF_MONTH);
+                            credit.setStatus("완납");
+                            credit.setDepositDate(thisDate);
+                            FirebaseDatabase.getInstance().getReference().child("credit").child(credit.getUnitID()).child(credit.getCreditID()).setValue(credit)
+                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                        @Override
+                                        public void onSuccess(Void aVoid) {
+                                            Log.w("===", "updateCredit : onSuccess"); }
+                                    }).addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    Log.w("===", "updateCredit : onFailure / " + e.getStackTrace()); }
+                            });
+                        }
+
+//                        //Update Credit
+//                        if(credit!=null){
+//                            FirebaseDatabase.getInstance().getReference().child("credit").child(unitID).child(creditId).child("status")
+//                                    .setValue("완납")
+//                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+//                                        @Override
+//                                        public void onSuccess(Void aVoid) {
+//                                            Log.w("===", "updateCredit : onSuccess"); }
+//                                    }).addOnFailureListener(new OnFailureListener() {
+//                                @Override
+//                                public void onFailure(@NonNull Exception e) {
+//                                    Log.w("===", "updateCredit : onFailure / " + e.getStackTrace()); }
+//                            });
+//                        }
+
                         //FCM
 
                         //집주인 토큰 가져오기
@@ -109,7 +151,7 @@ public class TenantPayDialog extends DialogFragment {
                                 if(landlordUID != null || !landlordUID.equals("")){
                                     final String finalLandlordToken = landlordToken;
 
-                                    PushFCMMessageThread pushFCMMessageThread = new PushFCMMessageThread(finalLandlordToken,unitNum, NumberFormat.getInstance(Locale.getDefault()).format(amount)+"원 입금 되었습니다!");
+                                    PushFCMMessageThread pushFCMMessageThread = new PushFCMMessageThread(finalLandlordToken,unitNum, NumberFormat.getInstance(Locale.getDefault()).format(amount)+" 원 입금 되었습니다!");
                                     pushFCMMessageThread.run();
 
                                     //building 객체를 못불러옴 ㅠ 왜?
@@ -175,7 +217,7 @@ public class TenantPayDialog extends DialogFragment {
         if(tenantAct.getBank() != null && tenantAct.getAccountNum() != null && tenantAct.getDepositor() != null){
             tenantAccountTv.setText(tenantAct.getBank() + " " + tenantAct.getAccountNum() + " " + tenantAct.getDepositor());
         }
-        amountTv.setText(amount + " 원");
+        amountTv.setText(NumberFormat.getInstance(Locale.getDefault()).format(amount) + " 원");
     }
 
     //    private String title;
