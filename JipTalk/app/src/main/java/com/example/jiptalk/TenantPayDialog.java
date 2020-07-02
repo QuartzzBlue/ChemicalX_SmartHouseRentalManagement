@@ -25,21 +25,32 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 
+import com.example.jiptalk.ui.message.PushFCMMessageThread;
 import com.example.jiptalk.vo.Account;
+import com.example.jiptalk.vo.Building;
+import com.example.jiptalk.vo.Unit;
+import com.example.jiptalk.vo.User;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import java.text.NumberFormat;
+import java.util.HashMap;
+import java.util.Locale;
 
 @SuppressWarnings({"UnusedReturnValue", "WeakerAccess", "SameParameterValue", "unused"})
 public class TenantPayDialog extends DialogFragment {
     private Context context;
     private Account landlordAct, tenantAct;
     private int amount;
-    private String buildingID, unitID;
+    private String buildingID, unitID,unitNum;
     TextView landlordAccountTv, tenantAccountTv, amountTv;
 
-    public TenantPayDialog(@NonNull Context context, Account landlord, Account tenant, int amount, String buildingID, String unitID) {
+    public TenantPayDialog(@NonNull Context context, Account landlord, Account tenant, int amount, String buildingID, String unitID,String unitNum) {
         super();
         this.context = context;
         this.landlordAct = landlord;
@@ -47,6 +58,7 @@ public class TenantPayDialog extends DialogFragment {
         this.amount = amount;
         this.buildingID = buildingID;
         this.unitID = unitID;
+        this.unitNum = unitNum;
     }
 
     @Override
@@ -73,23 +85,74 @@ public class TenantPayDialog extends DialogFragment {
                     public void onClick(final DialogInterface dialog, int id) {
                         Log.w("===", "tenantPayFeeDialog : PositiveButton Clicked");
 
-                        DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference().child("units").child(buildingID).child(unitID).child("isPaid");
-                        dbRef.setValue("1")
-                                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                    @Override
-                                    public void onSuccess(Void aVoid) {
-                                        Log.w("===", "tenantPayFeeDialog : setValue succeed ");
-                                        Toast.makeText(context, "성공적으로 납부 처리 되었습니다.", Toast.LENGTH_LONG).show();
-                                        dialog.dismiss();
+                        //FCM
+
+                        //집주인 토큰 가져오기
+                        FirebaseDatabase.getInstance().getReference("user").addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                                String landlordToken = null;
+                                String landlordUID="";
+                                String buildingName;
+
+                                for(DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
+                                    User user = postSnapshot.getValue(User.class);
+                                    if (user.getAccountNum().equals(landlordAct.getAccountNum())) {
+                                        landlordUID = postSnapshot.getKey();
+                                        landlordToken = user.getToken();
+                                        break;
                                     }
-                                })
-                                .addOnFailureListener(new OnFailureListener() {
-                                    @Override
-                                    public void onFailure(@NonNull Exception e) {
-                                        Log.w("===", "tenantPayFeeDialog : setValue failed ");
-                                        Toast.makeText(getContext(), "에러가 발생했습니다.", Toast.LENGTH_LONG).show();
-                                    }
-                                });
+                                }
+
+                                Log.v("===","landlord token : "+landlordToken);
+                                if(landlordUID != null || !landlordUID.equals("")){
+                                    final String finalLandlordToken = landlordToken;
+
+                                    PushFCMMessageThread pushFCMMessageThread = new PushFCMMessageThread(finalLandlordToken,unitNum, NumberFormat.getInstance(Locale.getDefault()).format(amount)+"원 입금 되었습니다!");
+                                    pushFCMMessageThread.run();
+
+                                    //building 객체를 못불러옴 ㅠ 왜?
+//                                    FirebaseDatabase.getInstance().getReference("buildings").child(landlordUID).child(buildingID).addListenerForSingleValueEvent(new ValueEventListener() {
+//                                        @Override
+//                                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//                                            Log.v("===",dataSnapshot.toString());
+//                                            Building building = dataSnapshot.getValue(Building.class);
+//                                            PushFCMMessageThread pushFCMMessageThread = new PushFCMMessageThread(finalLandlordToken,building.getName()+" "+unitNum,amount+"입금 되었습니다!");
+//                                        }
+//
+//                                        @Override
+//                                        public void onCancelled(@NonNull DatabaseError databaseError) {
+//
+//                                        }
+//                                    });
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                            }
+                        });
+
+
+//                        DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference().child("units").child(buildingID).child(unitID).child("isPaid");
+//                        dbRef.setValue("1")
+//                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+//                                    @Override
+//                                    public void onSuccess(Void aVoid) {
+//                                        Log.w("===", "tenantPayFeeDialog : setValue succeed ");
+//                                        Toast.makeText(context, "성공적으로 납부 처리 되었습니다.", Toast.LENGTH_LONG).show();
+//                                        dialog.dismiss();
+//                                    }
+//                                })
+//                                .addOnFailureListener(new OnFailureListener() {
+//                                    @Override
+//                                    public void onFailure(@NonNull Exception e) {
+//                                        Log.w("===", "tenantPayFeeDialog : setValue failed ");
+//                                        Toast.makeText(getContext(), "에러가 발생했습니다.", Toast.LENGTH_LONG).show();
+//                                    }
+//                                });
                     }
                 })
                 .setNegativeButton("취소", new DialogInterface.OnClickListener() {
