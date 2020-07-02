@@ -129,7 +129,7 @@ public class HomeFragment extends Fragment {
                 for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
 
                     Calendar calendar = Calendar.getInstance();
-                    String thisDate = calendar.get(Calendar.YEAR)+"."+(calendar.get(Calendar.MONTH)+1+".");
+                    String thisDate = calendar.get(Calendar.YEAR)+"."+(calendar.get(Calendar.MONTH)+1);
                     Credit creditItem = postSnapshot.getValue(Credit.class);
 
                     if(creditItem.getBillingDate().contains(thisDate)){
