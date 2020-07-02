@@ -18,6 +18,12 @@ public class Credit {
 
     public Credit() { }
 
+    public Credit(String unitID, String payerName, String credit) {
+        this.unitID = unitID;
+        this.payerName = payerName;
+        this.credit = credit;
+    }
+
     public Credit(String unitID, String credit) {
         this.unitID = unitID;
         this.credit = credit;

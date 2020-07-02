@@ -403,7 +403,7 @@ public class AddUnitActivity extends AppCompatActivity {
                 Map<String, Object> childUpdates = new HashMap<>();
 
                 String unitKey = unitRef.child("units").child(thisBuildingKey).push().getKey();
-                String tenantKey = unitRef.child("tenants").push().getKey();
+//                String tenantKey = unitRef.child("tenants").push().getKey();
 //                String paydayKey = unitRef.child("payday").child(newUnit.getPayDay()).push().getKey();
 
                 Tenant tenant = new Tenant();
@@ -412,13 +412,13 @@ public class AddUnitActivity extends AppCompatActivity {
                 tenant.setUnitID(unitKey);
                 tenant.setBuildingID(thisBuildingKey);
 
-                int totalMonthlyFee = Integer.parseInt(newUnit.getMonthlyFee() + newUnit.getMngFee());
-                Credit payday = new Credit(unitKey, totalMonthlyFee+"");
+                int totalMonthlyFee = Integer.parseInt(newUnit.getMonthlyFee()) + Integer.parseInt(newUnit.getMngFee());
+                Credit payday = new Credit(unitKey, newUnit.getPayerName(), totalMonthlyFee+"");
 
                 childUpdates.put("units/" + thisBuildingKey + "/" + unitKey + "/", newUnit.toMap());
                 childUpdates.put("payday/" + newUnit.getPayDay() + "/" + unitKey + "/", payday.toMap());
-                childUpdates.put("registeredTenants/" + tenantKey + "/", tenant.toMap());
-
+                childUpdates.put("registeredTenants/" + unitKey + "/", tenant.toMap());
+                Log.d("===", "3");
                 unitRef.updateChildren(childUpdates).addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
