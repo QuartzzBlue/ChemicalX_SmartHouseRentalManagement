@@ -29,6 +29,7 @@ import com.example.jiptalk.AppData;
 import com.example.jiptalk.R;
 import com.example.jiptalk.Util;
 import com.example.jiptalk.Valid;
+import com.example.jiptalk.vo.Credit;
 import com.example.jiptalk.vo.Tenant;
 import com.example.jiptalk.vo.Unit;
 import com.example.jiptalk.vo.User;
@@ -403,6 +404,7 @@ public class AddUnitActivity extends AppCompatActivity {
 
                 String unitKey = unitRef.child("units").child(thisBuildingKey).push().getKey();
                 String tenantKey = unitRef.child("tenants").push().getKey();
+//                String paydayKey = unitRef.child("payday").child(newUnit.getPayDay()).push().getKey();
 
                 Tenant tenant = new Tenant();
                 tenant.setName(newUnit.getTenantName());
@@ -410,7 +412,11 @@ public class AddUnitActivity extends AppCompatActivity {
                 tenant.setUnitID(unitKey);
                 tenant.setBuildingID(thisBuildingKey);
 
+                int totalMonthlyFee = Integer.parseInt(newUnit.getMonthlyFee() + newUnit.getMngFee());
+                Credit payday = new Credit(unitKey, totalMonthlyFee+"");
+
                 childUpdates.put("units/" + thisBuildingKey + "/" + unitKey + "/", newUnit.toMap());
+                childUpdates.put("payday/" + newUnit.getPayDay() + "/" + unitKey + "/", payday.toMap());
                 childUpdates.put("registeredTenants/" + tenantKey + "/", tenant.toMap());
 
                 unitRef.updateChildren(childUpdates).addOnSuccessListener(new OnSuccessListener<Void>() {
