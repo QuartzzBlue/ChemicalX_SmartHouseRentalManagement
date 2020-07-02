@@ -13,7 +13,6 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -44,6 +43,7 @@ public class Tab1Fragment extends Fragment {
     private RecyclerView.LayoutManager mLayoutManager;
     private String thisUnitKey;
     private ArrayList<Credit> creditList;
+    private boolean isPaidFlag;
     TextView emptyView;
 
     public void onCreate(Bundle saveInstanceState) {
@@ -52,7 +52,7 @@ public class Tab1Fragment extends Fragment {
 
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle saveInstanceState){
         final View view = inflater.inflate(R.layout.item_unit_detail_tab1,null);
-
+        isPaidFlag = true;
         emptyView = view.findViewById(R.id.rv_tab1_emptyView);
         mRecyclerView = (RecyclerView) view.findViewById(R.id.rv_tab1_creditList);
 
@@ -61,7 +61,7 @@ public class Tab1Fragment extends Fragment {
         DatabaseReference creditRef = FirebaseDatabase.getInstance().getReference("credit").child(thisUnitKey);
 
 //        String tempkey = creditRef.push().getKey();
-//        Credit credit = new Credit(thisUnitKey, tempkey, "2020.5.1", "이슬", "500000", "완납");
+//        Credit credit = new Credit(thisUnitKey, tempkey, "2020.7.1", "그레이", "230000", "미납");
 //        creditRef.child(tempkey).setValue(credit);
 
         creditRef.addValueEventListener(new ValueEventListener() {
@@ -71,7 +71,9 @@ public class Tab1Fragment extends Fragment {
                 HashMap<String, Credit> creditMap = new HashMap<String, Credit>();
                 for(DataSnapshot credits : dataSnapshot.getChildren()) {
                     Credit temp = credits.getValue(Credit.class);
+                    if(temp.getStatus().equals("미납")) isPaidFlag = false;
                     creditMap.put(credits.getKey(), temp);
+
                 }
                 //map to arrayList
                 Collection<Credit> values = creditMap.values();
@@ -80,7 +82,7 @@ public class Tab1Fragment extends Fragment {
                 Collections.sort(creditList, new Comparator<Credit>() {
                     @Override
                     public int compare(Credit o1, Credit o2) {
-                        return o2.getDate().compareTo(o1.getDate());
+                        return o2.getBillingDate().compareTo(o1.getBillingDate());
                     }
                 });
                 Log.w("===", "Credit List : " + creditList.toString());
@@ -138,7 +140,7 @@ class CreditAdapter extends RecyclerView.Adapter<CreditAdapter.ViewHolder> {
     public void onBindViewHolder(@NonNull CreditAdapter.ViewHolder holder, final int position) {
         NumberFormat myFormatter = NumberFormat.getInstance(Locale.getDefault());
 
-        holder.dateTv.setText(creditList.get(position).getDate());
+        holder.dateTv.setText(creditList.get(position).getBillingDate());
         holder.payerTv.setText(creditList.get(position).getPayerName());
         int credit = Integer.parseInt(creditList.get(position).getCredit());
         holder.creditTv.setText(myFormatter.format(credit));
