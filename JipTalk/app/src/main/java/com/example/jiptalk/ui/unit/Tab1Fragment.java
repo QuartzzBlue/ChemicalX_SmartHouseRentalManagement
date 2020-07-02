@@ -11,6 +11,7 @@ import android.widget.CompoundButton;
 import android.widget.LinearLayout;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -42,9 +43,10 @@ public class Tab1Fragment extends Fragment {
     private RecyclerView mRecyclerView;
     private CreditAdapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
-    private String thisUnitKey;
+    private String thisUnitKey, thisBuildingKey;
     private ArrayList<Credit> creditList;
     private boolean isPaidFlag;
+    private Context thisContext;
     TextView emptyView;
     LinearLayout tHeader;
 
@@ -54,13 +56,14 @@ public class Tab1Fragment extends Fragment {
 
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle saveInstanceState){
         final View view = inflater.inflate(R.layout.item_unit_detail_tab1,null);
-        isPaidFlag = true;
+        thisContext = getActivity().getApplicationContext();
+
         tHeader = view.findViewById(R.id.lo_tab1_rvHeader);
         emptyView = view.findViewById(R.id.rv_tab1_emptyView);
         mRecyclerView = (RecyclerView) view.findViewById(R.id.rv_tab1_creditList);
 
         thisUnitKey = getArguments().getString("thisUnitKey");
-
+        thisBuildingKey = getArguments().getString("thisBuildingKey");
         DatabaseReference creditRef = FirebaseDatabase.getInstance().getReference("credit").child(thisUnitKey);
 
 //        String tempkey = creditRef.push().getKey();
@@ -71,12 +74,13 @@ public class Tab1Fragment extends Fragment {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 Log.w("===", "Tab1Fragment : onDataChange()");
+                isPaidFlag = true;
                 HashMap<String, Credit> creditMap = new HashMap<String, Credit>();
                 for(DataSnapshot credits : dataSnapshot.getChildren()) {
                     Credit temp = credits.getValue(Credit.class);
-                    if(temp.getStatus().equals("미납")) isPaidFlag = false;
                     creditMap.put(credits.getKey(), temp);
 
+                    if(temp.getStatus().equals("미납")) isPaidFlag = false;
                 }
                 //map to arrayList
                 Collection<Credit> values = creditMap.values();
@@ -96,13 +100,33 @@ public class Tab1Fragment extends Fragment {
                     mRecyclerView.setVisibility(View.GONE);
                 } else {
                     //https://androidyongyong.tistory.com/5
-
                     mLayoutManager = new LinearLayoutManager(getActivity());
                     mRecyclerView.setLayoutManager(mLayoutManager);
                     mAdapter = new CreditAdapter(creditList);
                     mRecyclerView.setAdapter(mAdapter);
                     mRecyclerView.setItemAnimator(new DefaultItemAnimator());
                 }
+
+
+                DatabaseReference unitRef = FirebaseDatabase.getInstance().getReference().child("units").child(thisBuildingKey).child(thisUnitKey).child("isPaid");
+                String flag = null;
+                if(isPaidFlag) flag = "1";
+                else flag = "0";
+                unitRef.setValue(flag)
+                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void aVoid) {
+                                        Log.w("===", "update isPaid : setValue succeed");
+                                        Toast.makeText(thisContext, "성공적으로 납부 처리 되었습니다.", Toast.LENGTH_LONG).show();
+                                    }
+                                })
+                                .addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        Log.w("===", "update isPaid : setValue failed ");
+                                        Toast.makeText(thisContext, "에러가 발생했습니다.", Toast.LENGTH_LONG).show();
+                                    }
+                                });
             }
 
             @Override
@@ -110,9 +134,6 @@ public class Tab1Fragment extends Fragment {
 
             }
         });
-
-
-
 
         return view;
     }

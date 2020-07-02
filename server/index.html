@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="https://ssl.daumcdn.net/dmaps/map_js_init/postcode.v2.js?autoload=false"></script>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.6.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.6.1/firebase-database.js"></script>
+    <script src="./config.js"></script>
+  </head>
+  <body>
+    <script>
+      daum.postcode.load(function(){
+          new daum.Postcode({
+              oncomplete: function(data) {
+                if(data.userSelectedType=="R"){
+                      if(data.autoJibunAddress) {
+                              window.Android.setAddress(data.zonecode, data.autoJibunAddress, data.buildingName);
+                      } else {
+                              window.Android.setAddress(data.zonecode, data.jibunAddress, data.buildingName);
+                      }
+                    }
+                    else{
+                      window.Android.setAddress(data.zonecode, data.jibunAddress, data.buildingName);
+                    }
+               }
+          }).embed(document.body);
+      });
+      </script>
+  </body>
+  <script>
+// Set the configuration for your app
+  // TODO: Replace with your project's config object
+  var firebaseConfig = {
+    apiKey: config.apiKey,
+    authDomain: config.authDomain,
+    databaseURL: config.databaseURL,
+    // storageBucket: "bucket.appspot.com"
+  };
+  firebase.initializeApp(firebaseConfig);
+
+  // Get a reference to the database service
+  var database = firebase.database();
+
+  var today;
+  var theDay;
+
+  function produceCredits() {
+    var todayDate = new Date();
+    var tmpDay = todayDate.getDate();
+   if(theDay == null || theDay != tmpDay){
+      theDay = tmpDay;
+      today = todayDate.getFullYear() + '.' + (todayDate.getMonth()+1) + '.' + theDay; 
+
+      database.ref('payday/'+theDay+'/').once('value',function(snapshot) {
+        var newCredits = [];
+        snapshot.forEach(function(childSnapshot) {
+          var childData = childSnapshot.val();
+          var unitID = childSnapshot.key;
+          console.log("unitID : " + unitID);
+          
+          // for(var key in childData) {
+          //   console.log("key : " + key + "/value : " + childData[key]);
+          // }
+        
+          newCredits.push(childData);
+        });
+        
+        for(var key in newCredits) {
+          var temp = newCredits[key];
+          var creditKey = database.ref('credit/' + temp.unitID+'/').push().key;
+          console.log("creditKey : " + creditKey);
+          database.ref('credit/'+temp.unitID+'/'+creditKey+'/').set({"unitID" : temp.unitID, "creditID" : creditKey, "payerName" : temp.payerName, "credit" : temp.credit, "status" : "미납", "billingDate" : today});
+          
+          // database.ref('credit/').ref(temp.unitID).push().set({"unitID" : temp.unitID, "credit" : temp.credit, "status" : "미납", "billingDate" : today});
+
+          }
+      });
+    };
+
+};
+  
+  setInterval(function(){
+    produceCredits();
+  }
+  , 1000 * 60);
+
+  </script>
+</html>

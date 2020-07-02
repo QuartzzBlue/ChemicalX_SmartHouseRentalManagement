@@ -135,16 +135,14 @@ public class UnitDetailActivity extends AppCompatActivity {
         @Override
         public Fragment getItem(int position) {
             Bundle bundle = new Bundle();
+            bundle.putString("thisUnitKey", thisUnitKey);
+            bundle.putString("thisBuildingKey", thisBuildingKey);
             switch(position){
                 case 0 :
-                    bundle.putString("thisUnitKey", thisUnitKey);
                     Tab1Fragment tab1 = new Tab1Fragment();
                     tab1.setArguments(bundle);
                     return tab1;
                 case 1 :
-                    bundle.putString("thisUnitKey", thisUnitKey);
-                    bundle.putString("thisBuildingKey", thisBuildingKey);
-//                    bundle.putSerializable("thisUnit", thisUnit);
                     Tab2Fragment tab2 = new Tab2Fragment();
                     tab2.setArguments(bundle);
                     return tab2;
