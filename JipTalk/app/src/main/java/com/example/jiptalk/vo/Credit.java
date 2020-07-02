@@ -10,25 +10,34 @@ import java.util.Map;
 public class Credit {
     String unitID;
     String creditID;
-    String date;
+    String billingDate; // 청구날짜
+    String depositDate; // 입금날짜
     String payerName;
     String credit;
     String status;
 
     public Credit() { }
 
-    public Credit(String unitID, String date, String payerName, String credit, String status) {
+    public Credit(String unitID, String credit) {
         this.unitID = unitID;
-        this.date = date;
+        this.credit = credit;
+    }
+
+
+    public Credit(String unitID, String creditID, String billingDate, String payerName, String credit, String status) {
+        this.unitID = unitID;
+        this.creditID = creditID;
+        this.billingDate = billingDate;
         this.payerName = payerName;
         this.credit = credit;
         this.status = status;
     }
 
-    public Credit(String unitID, String creditID, String date, String payerName, String credit, String status) {
+    public Credit(String unitID, String creditID, String billingDate, String depositDate, String payerName, String credit, String status) {
         this.unitID = unitID;
         this.creditID = creditID;
-        this.date = date;
+        this.billingDate = billingDate;
+        this.depositDate = depositDate;
         this.payerName = payerName;
         this.credit = credit;
         this.status = status;
@@ -50,12 +59,20 @@ public class Credit {
         this.creditID = creditID;
     }
 
-    public String getDate() {
-        return date;
+    public String getBillingDate() {
+        return billingDate;
     }
 
-    public void setDate(String date) {
-        this.date = date;
+    public void setBillingDate(String billingDate) {
+        this.billingDate = billingDate;
+    }
+
+    public String getDepositDate() {
+        return depositDate;
+    }
+
+    public void setDepositDate(String depositDate) {
+        this.depositDate = depositDate;
     }
 
     public String getPayerName() {
@@ -86,7 +103,8 @@ public class Credit {
     public Map<String, Object> toMap(){
         HashMap<String, Object> result = new HashMap<>();
         result.put("unitID", unitID);
-        result.put("date", date);
+        result.put("billingDate", billingDate);
+        result.put("depositDate", depositDate);
         result.put("payerName", payerName);
         result.put("credit", credit);
         result.put("status", status);
@@ -98,9 +116,9 @@ public class Credit {
     public String toString() {
         return "Credit{" +
                 "unitID='" + unitID + '\'' +
-                ", date='" + date + '\'' +
+                ", date='" + billingDate + '\'' +
                 ", payerName='" + payerName + '\'' +
-                ", credit='" + credit + '\'' +
+                ", billingDate='" + billingDate + '\'' +
                 ", status='" + status + '\'' +
                 '}';
     }

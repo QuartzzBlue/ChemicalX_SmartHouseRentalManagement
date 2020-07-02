@@ -133,7 +133,7 @@ public class HomeFragment extends Fragment {
                     Calendar calendar = Calendar.getInstance();
                     String thisDate = calendar.get(Calendar.YEAR)+"."+(calendar.get(Calendar.MONTH)+1);
                     Credit creditItem = postSnapshot.getValue(Credit.class);
-                    if(creditItem.getDate().equals(thisDate)){
+                    if(creditItem.getBillingDate().equals(thisDate)){
                         totalMonthlyIncome+=Integer.parseInt(creditItem.getCredit());
                     }
                 }

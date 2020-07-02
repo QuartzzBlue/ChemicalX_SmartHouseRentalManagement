@@ -177,6 +177,7 @@ public class SignUpActivity extends AppCompatActivity {
             }
         });
 
+        landlordPhoneEt.addTextChangedListener(new PhoneNumberFormattingTextWatcher());
     }
 
     /* AppBar 에 세이브 버튼 추가 */
