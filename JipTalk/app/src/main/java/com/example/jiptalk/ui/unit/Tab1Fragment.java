@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
+import android.widget.LinearLayout;
 import android.widget.Switch;
 import android.widget.TextView;
 
@@ -45,6 +46,7 @@ public class Tab1Fragment extends Fragment {
     private ArrayList<Credit> creditList;
     private boolean isPaidFlag;
     TextView emptyView;
+    LinearLayout tHeader;
 
     public void onCreate(Bundle saveInstanceState) {
         super.onCreate(saveInstanceState);
@@ -53,6 +55,7 @@ public class Tab1Fragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle saveInstanceState){
         final View view = inflater.inflate(R.layout.item_unit_detail_tab1,null);
         isPaidFlag = true;
+        tHeader = view.findViewById(R.id.lo_tab1_rvHeader);
         emptyView = view.findViewById(R.id.rv_tab1_emptyView);
         mRecyclerView = (RecyclerView) view.findViewById(R.id.rv_tab1_creditList);
 
@@ -88,6 +91,7 @@ public class Tab1Fragment extends Fragment {
                 Log.w("===", "Credit List : " + creditList.toString());
 
                 if(creditList.size() == 0) {
+                    tHeader.setVisibility(View.GONE);
                     emptyView.setVisibility(View.VISIBLE);
                     mRecyclerView.setVisibility(View.GONE);
                 } else {
@@ -139,8 +143,13 @@ class CreditAdapter extends RecyclerView.Adapter<CreditAdapter.ViewHolder> {
     @Override
     public void onBindViewHolder(@NonNull CreditAdapter.ViewHolder holder, final int position) {
         NumberFormat myFormatter = NumberFormat.getInstance(Locale.getDefault());
+        holder.billingDateTv.setText(creditList.get(position).getBillingDate());
 
-        holder.dateTv.setText(creditList.get(position).getBillingDate());
+        if(creditList.get(position).getDepositDate() != null) {
+            holder.depositDateTv.setText(creditList.get(position).getDepositDate());
+            holder.depositDateTv.setVisibility(View.VISIBLE);
+        }
+
         holder.payerTv.setText(creditList.get(position).getPayerName());
         int credit = Integer.parseInt(creditList.get(position).getCredit());
         holder.creditTv.setText(myFormatter.format(credit));
@@ -177,12 +186,13 @@ class CreditAdapter extends RecyclerView.Adapter<CreditAdapter.ViewHolder> {
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        TextView dateTv, payerTv, creditTv, statusTv;
+        TextView billingDateTv, depositDateTv, payerTv, creditTv, statusTv;
         Switch statusSw;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            dateTv = itemView.findViewById(R.id.tv_rv_credit_payDay);
+            billingDateTv = itemView.findViewById(R.id.tv_rv_credit_payDay);
+            depositDateTv = itemView.findViewById(R.id.tv_rv_credit_depositDate);
             payerTv = itemView.findViewById(R.id.tv_rv_credit_payerName);
             creditTv = itemView.findViewById(R.id.tv_rv_credit_credit);
             statusTv = itemView.findViewById(R.id.tv_rv_credit_status);
