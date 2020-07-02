@@ -105,28 +105,28 @@ public class Tab1Fragment extends Fragment {
                     mAdapter = new CreditAdapter(creditList);
                     mRecyclerView.setAdapter(mAdapter);
                     mRecyclerView.setItemAnimator(new DefaultItemAnimator());
+
+                    DatabaseReference unitRef = FirebaseDatabase.getInstance().getReference().child("units").child(thisBuildingKey).child(thisUnitKey).child("isPaid");
+                    String flag = null;
+                    if(isPaidFlag) flag = "1";
+                    else flag = "0";
+                    unitRef.setValue(flag)
+                            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void aVoid) {
+                                    Log.w("===", "update isPaid : setValue succeed");
+                                    Toast.makeText(thisContext, "성공적으로 납부 처리 되었습니다.", Toast.LENGTH_LONG).show();
+                                }
+                            })
+                            .addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    Log.w("===", "update isPaid : setValue failed ");
+                                    Toast.makeText(thisContext, "에러가 발생했습니다.", Toast.LENGTH_LONG).show();
+                                }
+                            });
                 }
 
-
-                DatabaseReference unitRef = FirebaseDatabase.getInstance().getReference().child("units").child(thisBuildingKey).child(thisUnitKey).child("isPaid");
-                String flag = null;
-                if(isPaidFlag) flag = "1";
-                else flag = "0";
-                unitRef.setValue(flag)
-                                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                    @Override
-                                    public void onSuccess(Void aVoid) {
-                                        Log.w("===", "update isPaid : setValue succeed");
-                                        Toast.makeText(thisContext, "성공적으로 납부 처리 되었습니다.", Toast.LENGTH_LONG).show();
-                                    }
-                                })
-                                .addOnFailureListener(new OnFailureListener() {
-                                    @Override
-                                    public void onFailure(@NonNull Exception e) {
-                                        Log.w("===", "update isPaid : setValue failed ");
-                                        Toast.makeText(thisContext, "에러가 발생했습니다.", Toast.LENGTH_LONG).show();
-                                    }
-                                });
             }
 
             @Override
