@@ -24,6 +24,7 @@ public class User implements Serializable {
     /* 세입자 */
     String buildingID;
     String unitID;
+    String landlordID;
 
 
 
@@ -168,6 +169,14 @@ public class User implements Serializable {
         this.unitID = unitID;
     }
 
+    public String getLandlordID() {
+        return landlordID;
+    }
+
+    public void setLandlordID(String landlordID) {
+        this.landlordID = landlordID;
+    }
+
     @Exclude
     public Map<String, Object> toMap() {
         HashMap<String, Object> result = new HashMap<>();
@@ -182,6 +191,7 @@ public class User implements Serializable {
         result.put("isAlarmOn", isAlarmOn);
         result.put("buildingID",buildingID);
         result.put("unitID",unitID);
+        result.put("landlordID",landlordID);
         return result;
     }
 
@@ -201,6 +211,7 @@ public class User implements Serializable {
                 ", accountNum='" + accountNum + '\'' +
                 ", buildingID='" + buildingID + '\'' +
                 ", unitID='" + unitID + '\'' +
+                ", landlordID='" + landlordID + '\'' +
                 '}';
     }
 }
