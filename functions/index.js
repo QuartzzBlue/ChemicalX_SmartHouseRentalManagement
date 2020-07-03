@@ -80,11 +80,7 @@ function produceCredits() {
         var childData = childSnapshot.val();
         var unitID = childSnapshot.key;
         console.log("unitID : " + unitID);
-        
-        // for(var key in childData) {
-        //   console.log("key : " + key + "/value : " + childData[key]);
-        // }
-      
+
         newCredits.push(childData);
       });
       
@@ -92,9 +88,7 @@ function produceCredits() {
         var temp = newCredits[key];
         var creditKey = database.ref('credit/' + temp.unitID+'/').push().key;
         console.log("creditKey : " + creditKey);
-        database.ref('credit/'+temp.unitID+'/'+creditKey+'/').set({"unitID" : temp.unitID, "creditID" : creditKey, "payerName" : temp.payerName, "credit" : temp.credit, "status" : "미납", "billingDate" : today});
-        
-        // database.ref('credit/').ref(temp.unitID).push().set({"unitID" : temp.unitID, "credit" : temp.credit, "status" : "미납", "billingDate" : today});
+        database.ref('credit/'+temp.unitID+'/'+creditKey+'/').set({"unitID" : temp.unitID, "creditID" : creditKey, "credit" : temp.credit, "status" : "미납", "billingDate" : today});
 
         }
     });
