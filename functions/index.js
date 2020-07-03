@@ -63,3 +63,51 @@ exports.recountlikes = functions.database.ref('/posts/{postid}/likes_count').onD
   const messagesData = await collectionRef.once('value');
   return await counterRef.set(messagesData.numChildren());
 });
+
+
+// Get a reference to the database service
+var database = admin.database();
+
+var today;
+var theDay;
+
+function produceCredits() {
+  var todayDate = new Date();
+  var tmpDay = todayDate.getDate();
+ if(theDay == null || theDay != tmpDay){
+    theDay = tmpDay;
+    today = todayDate.getFullYear() + '.' + (todayDate.getMonth()+1) + '.' + theDay; 
+
+    database.ref('payday/'+theDay+'/').once('value',function(snapshot) {
+      var newCredits = [];
+      snapshot.forEach(function(childSnapshot) {
+        var childData = childSnapshot.val();
+        var unitID = childSnapshot.key;
+        console.log("unitID : " + unitID);
+        
+        // for(var key in childData) {
+        //   console.log("key : " + key + "/value : " + childData[key]);
+        // }
+      
+        newCredits.push(childData);
+      });
+      
+      for(var key in newCredits) {
+        var temp = newCredits[key];
+        var creditKey = database.ref('credit/' + temp.unitID+'/').push().key;
+        console.log("creditKey : " + creditKey);
+        database.ref('credit/'+temp.unitID+'/'+creditKey+'/').set({"unitID" : temp.unitID, "creditID" : creditKey, "payerName" : temp.payerName, "credit" : temp.credit, "status" : "미납", "billingDate" : today});
+        
+        // database.ref('credit/').ref(temp.unitID).push().set({"unitID" : temp.unitID, "credit" : temp.credit, "status" : "미납", "billingDate" : today});
+
+        }
+    });
+  };
+
+};
+
+setInterval(function(){
+  produceCredits();
+  console.log("produceCredits");
+}
+, 1000 * 60);
