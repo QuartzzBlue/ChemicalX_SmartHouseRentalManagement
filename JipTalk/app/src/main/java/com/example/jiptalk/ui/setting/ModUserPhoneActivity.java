@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.telephony.PhoneNumberFormattingTextWatcher;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -81,6 +82,8 @@ public class ModUserPhoneActivity extends AppCompatActivity {
         sendCodeBt = findViewById(R.id.bt_mod_user_phone_send);
         checkBt = findViewById(R.id.bt_mod_user_phone_check);
         valid = new Valid();
+
+        newPhoneTv.addTextChangedListener(new PhoneNumberFormattingTextWatcher());
 
         /*** 인증 코드 전송 ***/
         sendCodeBt.setOnClickListener(new View.OnClickListener() {
