@@ -359,6 +359,7 @@ public class THomeFragment extends Fragment {
         }
         paymentStatusTv.setTextColor(Color.BLUE);
         paymentStatusTv.setText("완납");
+        setTotalCharge(0);
         payNowBtn.setVisibility(View.GONE);
 
 
@@ -369,11 +370,9 @@ public class THomeFragment extends Fragment {
 class CreditViewAdapter extends RecyclerView.Adapter<CreditViewAdapter.ViewHolder> {
 
     private ArrayList<Credit> creditList;
-    private DatabaseReference creditRef;
 
     CreditViewAdapter (ArrayList<Credit> creditList) {
         this.creditList = creditList;
-        creditRef = FirebaseDatabase.getInstance().getReference("credit");
     }
 
     @NonNull

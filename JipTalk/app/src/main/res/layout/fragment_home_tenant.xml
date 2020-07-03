@@ -31,11 +31,20 @@
                     android:id="@+id/tv_tenant_home_buildingInfo"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="15dp"
                     android:gravity="center"
                     android:textColor="@color/black"
                     android:textSize="32sp"
-                    tools:text="해피하우스 103호" />
+                    tools:text="" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_centerInParent="true"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginRight="15dp"
+                    android:layout_marginBottom="10dp"
+                    android:background="#80000000" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -49,7 +58,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:gravity="center"
-                        android:text="월 납부금"
+                        android:text="이번 달 납부금"
                         android:textColor="@color/black"
                         android:textSize="20sp" />
 
@@ -61,7 +70,8 @@
                         android:gravity="center"
                         android:text="0원"
                         android:textColor="@color/black"
-                        android:textSize="20sp" />
+                        android:textSize="20sp"
+                        android:textStyle="bold" />
 
                 </LinearLayout>
 
@@ -135,6 +145,7 @@
                         android:layout_margin="15dp"
                         android:layout_weight="3"
                         android:text="납부 내역"
+                        android:textColor="@color/black"
                         android:textSize="24sp" />
 
                     <ImageView
@@ -272,6 +283,7 @@
                         android:layout_margin="15dp"
                         android:layout_weight="3"
                         android:text="계약 정보"
+                        android:textColor="@color/black"
                         android:textSize="24sp" />
 
                     <ImageView

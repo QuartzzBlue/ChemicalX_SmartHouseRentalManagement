@@ -45,45 +45,47 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
-@SuppressWarnings({"UnusedReturnValue", "WeakerAccess", "SameParameterValue", "unused"})
+
 public class TenantPayDialog extends DialogFragment {
     private Context context;
-    private Account landlordAct, tenantAct;
-    private String buildingID, unitNum;
-    private Credit credit;
-    int amount;
-    TextView landlordAccountTv, tenantAccountTv, amountTv;
+    User landlord,tenant;
+    Building building;
+    Unit unit;
+    Credit credit;
 
-    public TenantPayDialog(@NonNull Context context, Account landlord, Account tenant, String buildingID,String unitNum,Credit credit) {
-        super();
+    public TenantPayDialog(Context context, User landlord, User tenant, Building building, Unit unit, Credit credit) {
         this.context = context;
-        this.landlordAct = landlord;
-        this.tenantAct = tenant;
-        this.buildingID = buildingID;
-        this.unitNum = unitNum;
-        if(this.credit==null){
-            this.credit = new Credit();
-            this.credit = credit;
-        }else{
-            this.credit = credit;
-        }
-        amount = Integer.parseInt(credit.getCredit());
+        this.landlord = landlord;
+        this.tenant = tenant;
+        this.building = building;
+        this.unit = unit;
+        this.credit = credit;
     }
 
     @Override
     public void onStart() {
-        Log.w("===", "tenantPayFeeDialog : onStart()");
         super.onStart();
         initialize();
-
     }
 
-    // 제일 먼저 실행됨
+    private void initialize() {
+
+        ((TextView)getDialog().findViewById(R.id.tv_dialog_tenant_billingDate)).setText(credit.getBillingDate());
+
+        if(landlord != null){
+            ((TextView)getDialog().findViewById(R.id.tv_dialog_tenant_landlordAccount)).setText(landlord.getBank() + " " + landlord.getAccountNum() + " " + landlord.getDepositor());
+        }
+        if(tenant!=null){
+            ((TextView)getDialog().findViewById(R.id.tv_dialog_tenant_tenantAccount)).setText(tenant.getBank() + " " + tenant.getAccountNum() + " " + tenant.getDepositor());
+        }
+
+        ((TextView)getDialog().findViewById(R.id.tv_dialog_tenant_amount)).setText(NumberFormat.getInstance(Locale.getDefault()).format(Integer.parseInt(credit.getCredit())) + " 원");
+    }
+
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
-        Log.w("===", "tenantPayFeeDialog : onCreateDialog");
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         LayoutInflater inflater = requireActivity().getLayoutInflater();
         View view = inflater.inflate(R.layout.dialog_tenant_monthly_fee, null);
 
@@ -92,114 +94,11 @@ public class TenantPayDialog extends DialogFragment {
                 .setPositiveButton("확인", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(final DialogInterface dialog, int id) {
-                        Log.w("===", "tenantPayFeeDialog : PositiveButton Clicked");
-
-                        //Update Credit
-                        if(credit!=null){
-                            Calendar calendar = Calendar.getInstance();
-                            String thisDate = calendar.get(Calendar.YEAR)+"."+(calendar.get(Calendar.MONTH)+1)+"."+calendar.get(Calendar.DAY_OF_MONTH);
-                            credit.setStatus("완납");
-                            credit.setDepositDate(thisDate);
-                            FirebaseDatabase.getInstance().getReference().child("credit").child(credit.getUnitID()).child(credit.getCreditID()).setValue(credit)
-                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                        @Override
-                                        public void onSuccess(Void aVoid) {
-                                            Log.w("===", "updateCredit : onSuccess"); }
-                                    }).addOnFailureListener(new OnFailureListener() {
-                                @Override
-                                public void onFailure(@NonNull Exception e) {
-                                    Log.w("===", "updateCredit : onFailure / " + e.getStackTrace()); }
-                            });
-                        }
-
-//                        //Update Credit
-//                        if(credit!=null){
-//                            FirebaseDatabase.getInstance().getReference().child("credit").child(unitID).child(creditId).child("status")
-//                                    .setValue("완납")
-//                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
-//                                        @Override
-//                                        public void onSuccess(Void aVoid) {
-//                                            Log.w("===", "updateCredit : onSuccess"); }
-//                                    }).addOnFailureListener(new OnFailureListener() {
-//                                @Override
-//                                public void onFailure(@NonNull Exception e) {
-//                                    Log.w("===", "updateCredit : onFailure / " + e.getStackTrace()); }
-//                            });
-//                        }
-
-                        //FCM
-
-                        //집주인 토큰 가져오기
-                        FirebaseDatabase.getInstance().getReference("user").addListenerForSingleValueEvent(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-                                String landlordToken = null;
-                                String landlordUID="";
-                                String buildingName;
-
-                                for(DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
-                                    User user = postSnapshot.getValue(User.class);
-                                    if (user.getAccountNum().equals(landlordAct.getAccountNum())) {
-                                        landlordUID = postSnapshot.getKey();
-                                        landlordToken = user.getToken();
-                                        break;
-                                    }
-                                }
-
-                                Log.v("===","landlord token : "+landlordToken);
-                                if(landlordUID != null || !landlordUID.equals("")){
-                                    final String finalLandlordToken = landlordToken;
-
-                                    PushFCMMessageThread pushFCMMessageThread = new PushFCMMessageThread(finalLandlordToken,unitNum, NumberFormat.getInstance(Locale.getDefault()).format(amount)+" 원 입금 되었습니다!");
-                                    pushFCMMessageThread.run();
-
-                                    //building 객체를 못불러옴 ㅠ 왜?
-//                                    FirebaseDatabase.getInstance().getReference("buildings").child(landlordUID).child(buildingID).addListenerForSingleValueEvent(new ValueEventListener() {
-//                                        @Override
-//                                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//                                            Log.v("===",dataSnapshot.toString());
-//                                            Building building = dataSnapshot.getValue(Building.class);
-//                                            PushFCMMessageThread pushFCMMessageThread = new PushFCMMessageThread(finalLandlordToken,building.getName()+" "+unitNum,amount+"입금 되었습니다!");
-//                                        }
-//
-//                                        @Override
-//                                        public void onCancelled(@NonNull DatabaseError databaseError) {
-//
-//                                        }
-//                                    });
-                                }
-                            }
-
-                            @Override
-                            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                            }
-                        });
-
-
-//                        DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference().child("units").child(buildingID).child(unitID).child("isPaid");
-//                        dbRef.setValue("1")
-//                                .addOnSuccessListener(new OnSuccessListener<Void>() {
-//                                    @Override
-//                                    public void onSuccess(Void aVoid) {
-//                                        Log.w("===", "tenantPayFeeDialog : setValue succeed ");
-//                                        Toast.makeText(context, "성공적으로 납부 처리 되었습니다.", Toast.LENGTH_LONG).show();
-//                                        dialog.dismiss();
-//                                    }
-//                                })
-//                                .addOnFailureListener(new OnFailureListener() {
-//                                    @Override
-//                                    public void onFailure(@NonNull Exception e) {
-//                                        Log.w("===", "tenantPayFeeDialog : setValue failed ");
-//                                        Toast.makeText(getContext(), "에러가 발생했습니다.", Toast.LENGTH_LONG).show();
-//                                    }
-//                                });
+                        updateCredit();
                     }
                 })
                 .setNegativeButton("취소", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        Log.w("===", "tenantPayFeeDialog : NegativeButton Clicked");
                         dialog.dismiss();
                     }
                 });
@@ -207,207 +106,55 @@ public class TenantPayDialog extends DialogFragment {
         return builder.create();
     }
 
-    private void initialize() {
-        landlordAccountTv = getDialog().findViewById(R.id.tv_dialog_tenant_landlordAccount);
-        tenantAccountTv = getDialog().findViewById(R.id.tv_dialog_tenant_tenantAccount);
-        amountTv = getDialog().findViewById(R.id.tv_dialog_tenant_amount);
-        if(landlordAct != null){
-            landlordAccountTv.setText(landlordAct.getBank() + " " + landlordAct.getAccountNum() + " " + landlordAct.getDepositor());
+    private void updateCredit(){
+
+        if(credit!=null){
+            Calendar calendar = Calendar.getInstance();
+            String thisDate = calendar.get(Calendar.YEAR)+"."+(calendar.get(Calendar.MONTH)+1)+"."+calendar.get(Calendar.DAY_OF_MONTH);
+            credit.setStatus("완납");
+            credit.setDepositDate(thisDate);
+            FirebaseDatabase.getInstance().getReference().child("credit").child(credit.getUnitID()).child(credit.getCreditID()).setValue(credit)
+                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            sendFCM();
+                        }
+                    })
+
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Log.w("===", "updateCredit : onFailure / " + e.getStackTrace()); }
+                    });
         }
-        if(tenantAct.getBank() != null && tenantAct.getAccountNum() != null && tenantAct.getDepositor() != null){
-            tenantAccountTv.setText(tenantAct.getBank() + " " + tenantAct.getAccountNum() + " " + tenantAct.getDepositor());
-        }
-        amountTv.setText(NumberFormat.getInstance(Locale.getDefault()).format(amount) + " 원");
+
     }
 
-    //    private String title;
-//    private CharSequence account;
-//    private CharSequence amount;
-//    private String positiveBtnStr;
-//    private String negativeBtnStr;
-//    private ListAdapter adapter;
-//    private AdapterView.OnItemClickListener listener;
-//    private String[] multiChoiceItems;
-//    private boolean[] multiChoiceCheckedItems;
-//    private AdapterView.OnItemClickListener multiChoiceListener;
-//    private String[] singleChoiceItems;
-//    private int singleChoiceCheckedItem;
-//    private AdapterView.OnItemClickListener singleChoiceListener;
+    private void sendFCM(){
 
+        //집주인 토큰 가져오기
+        FirebaseDatabase.getInstance().getReference("user").child(tenant.getLandlordID()).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-//    @Override
-//    public AlertDialog.Builder setTitle(@Nullable CharSequence title) {
-//        this.title = String.valueOf(title);
-//        return super.setTitle("");
-//    }
-//    @Override
-//    public AlertDialog.Builder setMessage(@Nullable CharSequence message) {
-//        this.account = message;
-//        return super.setMessage("");
-//    }
-//    public AlertDialog.Builder setDetailMessage(@Nullable CharSequence detailMessage) {
-//        this.amount = detailMessage;
-//        return super.setMessage("");
-//    }
-//    @Override
-//    public AlertDialog.Builder setPositiveButton(CharSequence text, DialogInterface.OnClickListener listener) {
-//        this.positiveBtnStr = String.valueOf(text);
-//        return super.setPositiveButton("", listener);
-//    }
-//    @Override
-//    public AlertDialog.Builder setNegativeButton(CharSequence text, DialogInterface.OnClickListener listener) {
-//        this.negativeBtnStr = String.valueOf(text);
-//        return super.setNegativeButton("", listener);
-//    }
-//
-//    public AlertDialog.Builder setAdapter(ListAdapter adapter, AdapterView.OnItemClickListener listener) {
-//        this.adapter = adapter;
-//        this.listener = listener;
-//        return this;
-//    }
-//
-//    public AlertDialog.Builder setMultiChoiceItems(String[] items, boolean[] checkedItems, AdapterView.OnItemClickListener multiChoiceListener) {
-//        this.multiChoiceItems = items;
-//        this.multiChoiceCheckedItems = checkedItems;
-//        this.multiChoiceListener = multiChoiceListener;
-//        return this;
-//    }
-//
-//    public AlertDialog.Builder setSingleChoiceItems(String[] items, int checkedItem, AdapterView.OnItemClickListener listener) {
-//        this.singleChoiceItems = items;
-//        this.singleChoiceCheckedItem = checkedItem;
-//        this.singleChoiceListener = listener;
-//        return this;
-//    }
-//
-//    @Override
-//    public AlertDialog show() {
-//        LayoutInflater inflater = (LayoutInflater) getContext().getApplicationContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-//
-//        View view = inflater.inflate(R.layout.dialog_tenant_monthly_fee, null);
-//
-//        TextView tvTitle = view.findViewById(R.id.tvTitle);
-//        TextView tvAccount = view.findViewById(R.id.tv_account);
-//        TextView tvAmount = view.findViewById(R.id.tv_amount);
-//        LinearLayout twoBtn = view.findViewById(R.id.twoBtn);
-//        Button btnPositive = view.findViewById(R.id.btnPositive);
-//        Button btnNegative = view.findViewById(R.id.btnNegative);
-//
-//        if (TextUtils.isEmpty(title)) {
-//            tvTitle.setVisibility(View.GONE);
-//        } else {
-//            tvTitle.setText(title);
-//        }
-//
-//        if (!TextUtils.isEmpty(positiveBtnStr)) {
-//            btnPositive.setText(positiveBtnStr);
-//        }
-//
-//        if (!TextUtils.isEmpty(negativeBtnStr)) {
-//            btnNegative.setText(negativeBtnStr);
-//        }
-//
-//
-//
-//        super.setView(view);
-//        final AlertDialog dialog = super.create();
-//
-//        btnPositive.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                // performClick()을 사용하면 클릭소리가 두번 들리게되므로, callOnClick()을 사용한다.
-//                dialog.getButton(DialogInterface.BUTTON_POSITIVE).callOnClick();
-//            }
-//        });
-//
-//        btnPositive.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                // performClick()을 사용하면 클릭소리가 두번 들리게되므로, callOnClick()을 사용한다.
-//                dialog.getButton(DialogInterface.BUTTON_NEGATIVE).callOnClick();
-//            }
-//        });
+                User landlord = dataSnapshot.getValue(User.class);
+                String landlordToken = landlord.getToken();
 
+                Log.v("===","landlord token : "+landlordToken);
+                if(landlordToken!=null){
 
-//        ScrollView llContents = view.findViewById(R.id.svContents);
-//        ListView listView = view.findViewById(R.id.listView);
+                    PushFCMMessageThread pushFCMMessageThread = new PushFCMMessageThread(landlordToken,building.getName()+" "+unit.getUnitNum()+"호", credit.getBillingDate().split(".")[0]+"년"+credit.getBillingDate().split(".")[1]+"월 월세 "+NumberFormat.getInstance(Locale.getDefault()).format(Integer.parseInt(credit.getCredit()))+" 원 입금 되었습니다!");
+                    pushFCMMessageThread.run();
 
-//        // 어댑터가 있으면 리스트뷰를 보여준다.
-//        if (adapter != null && listener != null) {
-//            llContents.setVisibility(View.GONE);
-//            listView.setVisibility(View.VISIBLE);
-//
-//            listView.setAdapter(adapter);
-//            listView.setOnItemClickListener((parent, view1, position, id) -> {
-//                dialog.dismiss();
-//                listener.onItemClick(parent, view1, position, id);
-//            });
-//        }
+                }
+            }
 
-//        // 멀티선택이 있으면 보여준다.
-//        else if (multiChoiceItems != null && multiChoiceListener != null) {
-//            llContents.setVisibility(View.GONE);
-//            listView.setVisibility(View.VISIBLE);
-//
-//            adapter = new ArrayAdapter<CharSequence>(context, android.R.layout.select_dialog_multichoice, android.R.id.text1, multiChoiceItems) {
-//                @NonNull
-//                @Override
-//                public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-//                    View view = super.getView(position, convertView, parent);
-//                    if (multiChoiceCheckedItems != null) {
-//                        boolean isItemChecked = multiChoiceCheckedItems[position];
-//                        if (isItemChecked) {
-//                            listView.setItemChecked(position, true);
-//                        }
-//                    }
-//                    return view;
-//                }
-//            };
-//            listView.setChoiceMode(AbsListView.CHOICE_MODE_MULTIPLE);
-//            listView.setAdapter(adapter);
-//            listView.setOnItemClickListener((parent, view2, position, id) -> {
-//                multiChoiceListener.onItemClick(parent, view2, position, id);
-//            });
-//        }
-//
-//        // 싱글선택이 있으면 보여준다.
-//        else if (singleChoiceItems != null && singleChoiceListener != null) {
-//            llContents.setVisibility(View.GONE);
-//            listView.setVisibility(View.VISIBLE);
-//
-//            adapter = new ArrayAdapter<CharSequence>(context, android.R.layout.select_dialog_singlechoice, android.R.id.text1, singleChoiceItems) {
-//                @NonNull
-//                @Override
-//                public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-//                    View view = super.getView(position, convertView, parent);
-//                    if (position == singleChoiceCheckedItem) {
-//                        listView.setItemChecked(position, true);
-//                    }
-//                    return view;
-//                }
-//            };
-//            listView.setChoiceMode(AbsListView.CHOICE_MODE_SINGLE);
-//            listView.setAdapter(adapter);
-//            listView.setOnItemClickListener((parent, view2, position, id) -> {
-//                singleChoiceListener.onItemClick(parent, view2, position, id);
-//            });
-//        }
-//
-//        if (dialog.getWindow() != null) {
-//            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-//        }
-//
-//        dialog.show();
-//
-//        // 크기 조정
-//        DisplayMetrics displayMetrics = new DisplayMetrics();
-//        ((Activity)context).getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-//        int widthPixel = (int)(displayMetrics.widthPixels*0.85);
-//        int heightPixel = ViewGroup.LayoutParams.WRAP_CONTENT;
-//
-//        dialog.getWindow().setLayout(widthPixel, heightPixel);
-//
-//        return null;
-//    }
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+    }
 }
 
