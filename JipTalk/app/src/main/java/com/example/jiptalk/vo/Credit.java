@@ -15,13 +15,14 @@ public class Credit {
     String payerName;
     String credit;
     String status;
+    String buildingID;
 
     public Credit() { }
 
-    public Credit(String unitID, String payerName, String credit) {
+    public Credit(String unitID, String credit, String buildingID) {
         this.unitID = unitID;
-        this.payerName = payerName;
         this.credit = credit;
+        this.buildingID = buildingID;
     }
 
     public Credit(String unitID, String credit) {

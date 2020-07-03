@@ -6,16 +6,17 @@ const functions = require('firebase-functions');
 const admin = require('firebase-admin');
 admin.initializeApp(functions.config().firebase);
 
-exports.sendPaymentNotification = functions.database.ref('/credit/{unitUid}/{creditUid}')
+exports.sendPaymentNotification = functions.database.ref('/credit/{unitUid}/{creditUid}/status')
     .onWrite(async (change, context) => {
-      const unitUid = context.params.unitUid;
+      // const unitUid = context.params.unitUid;
       
-      console.log('new Payment Updated : ',unitUid);
+      // console.log('new Payment Updated : ', unitUid);
 
-      //Get the building
-      const buildingUid = admin.database().ref(`/registeredTenants/${unitUid}/buildingID`).once('value');
-      console.log('buildingUid : '+(await buildingUid).val())
+      // //Get the building
+      // const buildingUid = admin.database().ref(`/registeredTenants/${unitUid}/buildingID`).once('value');
+      // console.log('buildingUid : '+(await buildingUid).val())
 
+      // const userUid = admin.database().ref(`/registeredTenants/${unitUid}/userUid`).once('value');
 
       // const landlordKey = admin.database().ref(`/buildings/${userUid}/${buildingUid}`).parent;
       // console.log("landlordKey : ",landlordKey);
@@ -25,7 +26,14 @@ exports.sendPaymentNotification = functions.database.ref('/credit/{unitUid}/{cre
       // console.log("landlordToken : ",landlordToken);
       // //const results = await Promise.all(land); 
 
-      return null;
+      // const load = {
+      //   notification: {
+      //       title: '집똑 알림',
+      //       body: '납부 내역을 확인해 주세요.'
+      //   }
+      // };
+      // return admin.messaging().sendToDevice(landlordToken, load);
+
     });
 
 
@@ -65,7 +73,7 @@ exports.recountlikes = functions.database.ref('/posts/{postid}/likes_count').onD
 });
 
 
-// Get a reference to the database service
+
 var database = admin.database();
 
 function produceCredits() {
@@ -89,7 +97,7 @@ function produceCredits() {
         var creditKey = database.ref('credit/' + temp.unitID+'/').push().key;
         console.log("creditKey : " + creditKey);
         database.ref('credit/'+temp.unitID+'/'+creditKey+'/').set({"unitID" : temp.unitID, "creditID" : creditKey, "credit" : temp.credit, "status" : "미납", "billingDate" : today});
-
+        database.ref('unit/'+temp.buildingID+'/'+temp.unitID+'/isPaid/').set("미납");
         }
     });
   
