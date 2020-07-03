@@ -266,6 +266,7 @@ public class SignUpActivity extends AppCompatActivity {
                         Log.d("===", "isTenant : true");
                         newUser.setBuildingID(myBuildingID);
                         newUser.setUnitID(myUnitID);
+                        newUser.setLandlordID(landlordInfo.getUID());
 //                        newUser.setBank(landlordInfo.getBank());
 //                        newUser.setDepositor(landlordInfo.getDepositor());
 //                        newUser.setAccountNum(landlordInfo.getAccountNum());

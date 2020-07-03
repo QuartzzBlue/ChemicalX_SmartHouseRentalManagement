@@ -4,7 +4,7 @@ const functions = require('firebase-functions');
 
 // The Firebase Admin SDK to access the Firebase Realtime Database.
 const admin = require('firebase-admin');
-admin.initializeApp();
+admin.initializeApp(functions.config().firebase);
 
 exports.sendPaymentNotification = functions.database.ref('/credit/{unitUid}/{creditUid}')
     .onWrite(async (change, context) => {
@@ -68,15 +68,11 @@ exports.recountlikes = functions.database.ref('/posts/{postid}/likes_count').onD
 // Get a reference to the database service
 var database = admin.database();
 
-var today;
-var theDay;
-
 function produceCredits() {
   var todayDate = new Date();
-  var tmpDay = todayDate.getDate();
- if(theDay == null || theDay != tmpDay){
-    theDay = tmpDay;
-    today = todayDate.getFullYear() + '.' + (todayDate.getMonth()+1) + '.' + theDay; 
+  var theDay = todayDate.getDate();
+  
+  var today = todayDate.getFullYear() + '.' + (todayDate.getMonth()+1) + '.' + theDay; 
 
     database.ref('payday/'+theDay+'/').once('value',function(snapshot) {
       var newCredits = [];
@@ -102,12 +98,28 @@ function produceCredits() {
 
         }
     });
-  };
+  
 
 };
 
-setInterval(function(){
+exports.scheduledFunctionCrontab = functions.pubsub.schedule('1 0 * * *')
+  .timeZone('Asia/Seoul') // Users can choose timezone
+  .onRun((context) => {
   produceCredits();
-  console.log("produceCredits");
-}
-, 1000 * 60);
+  console.log('This will be run every day at 0:01 AM!');
+  return null;
+});
+
+// exports.scheduledFunctionCrontab = functions.pubsub.schedule('1 0 * * *')
+//   .timeZone('America/New_York' + 9) // Users can choose timezone
+//   .onRun((context) => {
+//   produceCredits();
+//   console.log('This will be run every day at 0:01 AM!');
+//   return null;
+// });
+
+// exports.scheduledFunction = functions.pubsub.schedule('every 1 minutes').onRun((context) => {
+//   produceCredits();
+//   console.log('This will be run every 1 minutes!');
+//   return null;
+// });
