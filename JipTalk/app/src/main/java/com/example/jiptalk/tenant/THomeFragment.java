@@ -8,13 +8,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.CompoundButton;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.Switch;
 import android.widget.TableLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -23,9 +18,10 @@ import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.jiptalk.AppData;
 import com.example.jiptalk.R;
 import com.example.jiptalk.TenantPayDialog;
-import com.example.jiptalk.vo.Account;
+import com.example.jiptalk.vo.Building;
 import com.example.jiptalk.vo.Credit;
 import com.example.jiptalk.vo.Unit;
 import com.example.jiptalk.vo.User;
@@ -38,6 +34,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.lang.reflect.Array;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -50,20 +47,13 @@ import java.util.Locale;
 public class THomeFragment extends Fragment {
 
     View root;
-    Button payNowBtn;
-    TextView buildingInfoTv,monthTv,monthlyFee1Tv,paymentStatusTv,emptyView;
-    ImageView historyBtn,contactInfoBtn;
-    TableLayout contactInfo;
+    Credit credit;
+    Building building;
+    Unit unit;
+    User tenantUser,landlordUser;
+    TextView paymentStatusTv;
     RecyclerView creditHistoryRv;
-    Calendar calendar,target;
-    String buildingID,unitID;
-    String unitNum;
-    Credit recentCredit;
-    private TextView nameTv, depositorTv, phoneTv, leaseTypeTv, contractPeriodTv, depositTv, payDayTv, monthlyFeeTv, manageFeeTv, monthlyTotalFeeTv;
-    private User currentUser;
-    private Account landlordAct;
-    private int totalFee;
-    boolean isPaidFlag = true;
+    Button payNowBtn;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -76,47 +66,42 @@ public class THomeFragment extends Fragment {
     }
 
     public void initialize(){
-        landlordAct = new Account();
-        historyBtn = root.findViewById(R.id.btn_tenant_home_checkHistory);
-        contactInfoBtn = root.findViewById(R.id.btn_tenant_home_contactInfo);
-        payNowBtn= root.findViewById(R.id.btn_tenant_home_payNow);
-        contactInfo = root.findViewById(R.id.tl_tenant_home);
-        calendar = Calendar.getInstance();
-        target = Calendar.getInstance();
-        monthlyFee1Tv = root.findViewById(R.id.tv_tenant_home_monthlyFee1);
-        buildingInfoTv = root.findViewById(R.id.tv_tenant_home_buildingInfo);
-        monthTv = root.findViewById(R.id.tv_tenant_home_Month);
-        paymentStatusTv = root.findViewById(R.id.tv_tenant_home_paymentStatus);
-        nameTv=root.findViewById(R.id.tv_tenant_home_name);
-        depositorTv=root.findViewById(R.id.tv_tenant_home_depositor);
-        phoneTv=root.findViewById(R.id.tv_tenant_home_phone);
-        leaseTypeTv=root.findViewById(R.id.tv_tenant_home_leaseType);
-        contractPeriodTv=root.findViewById(R.id.tv_tenant_home_contractPeriod);
-        depositTv=root.findViewById(R.id.tv_tenant_home_deposit);
-        payDayTv=root.findViewById(R.id.tv_tenant_home_payDay);
-        monthlyFeeTv = root.findViewById(R.id.tv_tenant_home_monthlyFee);
-        manageFeeTv=root.findViewById(R.id.tv_tenant_home_manageFee);
-        monthlyTotalFeeTv = root.findViewById(R.id.tv_tenant_home_monthlyTotalFee);
-        creditHistoryRv=root.findViewById(R.id.CreditHistoryRv);
-        emptyView = root.findViewById(R.id.rv_tenant_home_emptyView);
 
+        paymentStatusTv = root.findViewById(R.id.tv_tenant_home_paymentStatus);
+        payNowBtn = root.findViewById(R.id.btn_tenant_home_payNow);
+
+        //지금 납부
+        payNowBtn.setOnClickListener(new View.OnClickListener(){
+
+            @Override
+            public void onClick(View v) {
+
+                FragmentManager fm = getActivity().getSupportFragmentManager();
+                TenantPayDialog tenantPayDialog = new TenantPayDialog(getContext(), landlordUser, tenantUser,building,unit,credit);
+                tenantPayDialog.show(fm, "tenantPayFeeDialog show");
+
+            }
+        });
+
+        creditHistoryRv=root.findViewById(R.id.CreditHistoryRv);
+        final TableLayout contactInfo = root.findViewById(R.id.tl_tenant_home);
 
         //납부 내역
-        ((LinearLayout)(root.findViewById(R.id.CreditHistoryLayout))).setOnClickListener(new View.OnClickListener(){
+        ((root.findViewById(R.id.CreditHistoryLayout))).setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
                 if(creditHistoryRv.getVisibility()==View.GONE){
                     creditHistoryRv.setVisibility(View.VISIBLE);
-                    ((LinearLayout)(root.findViewById(R.id.tenant_home_rvHeader))).setVisibility(View.VISIBLE);
+                    ((root.findViewById(R.id.tenant_home_rvHeader))).setVisibility(View.VISIBLE);
                 }else{
                     creditHistoryRv.setVisibility(View.GONE);
-                    ((LinearLayout)(root.findViewById(R.id.tenant_home_rvHeader))).setVisibility(View.GONE);
+                    ((root.findViewById(R.id.tenant_home_rvHeader))).setVisibility(View.GONE);
                 }
             }
         });
 
         //계약 정보
-        ((LinearLayout)(root.findViewById(R.id.ContactInfoLayout))).setOnClickListener(new View.OnClickListener(){
+        ((root.findViewById(R.id.ContactInfoLayout))).setOnClickListener(new View.OnClickListener(){
 
             @Override
             public void onClick(View v) {
@@ -128,44 +113,24 @@ public class THomeFragment extends Fragment {
             }
         });
 
-        //지금 납부 - 카카오 api
-        payNowBtn.setOnClickListener(new View.OnClickListener(){
-
-            @Override
-            public void onClick(View v) {
-                Account tenantAct = new Account(currentUser.getBank(), currentUser.getAccountNum(), currentUser.getDepositor());
-//                Account landlordAct = new Account(currentUser.getBank(), currentUser.getAccountNum(), currentUser.getDepositor());
-
-                FragmentManager fm = getActivity().getSupportFragmentManager();
-                TenantPayDialog tenantPayDialog = new TenantPayDialog(getContext(), landlordAct, tenantAct, buildingID,unitNum,recentCredit);
-                tenantPayDialog.show(fm, "tenantPayFeeDialog show");
-
-            }
-        });
-
-        getContractData();
+        getUserUid();
     }
 
-    public void getContractData(){
-        FirebaseDatabase.getInstance().getReference().child("user").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).addValueEventListener(new ValueEventListener() {
+    private void getUserUid(){
+
+        AppData.userUID = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        getTenantUser();
+    }
+
+    public void getTenantUser(){
+
+        FirebaseDatabase.getInstance().getReference().child("user").child(AppData.userUID).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                currentUser = dataSnapshot.getValue(User.class);
-                unitID = currentUser.getUnitID();
-                buildingID = currentUser.getBuildingID();
-                FirebaseDatabase.getInstance().getReference().child("units").child(buildingID).child(unitID).addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        Unit unit = dataSnapshot.getValue(Unit.class);
-                        setData(unit);
-                        getCreditHistoryData();
-                    }
+                tenantUser = dataSnapshot.getValue(User.class);
 
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                getLandlordUser();
 
-                    }
-                });
             }
 
             @Override
@@ -175,28 +140,115 @@ public class THomeFragment extends Fragment {
         });
     }
 
-    public void getCreditHistoryData(){
-        DatabaseReference creditRef = FirebaseDatabase.getInstance().getReference("credit").child(unitID);
-
-        creditRef.addValueEventListener(new ValueEventListener() {
+    public void getLandlordUser(){
+        FirebaseDatabase.getInstance().getReference().child("user").child(tenantUser.getLandlordID()).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                landlordUser = dataSnapshot.getValue(User.class);
+                getBuilding();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    private void getBuilding(){
+        FirebaseDatabase.getInstance().getReference().child("buildings").child(tenantUser.getLandlordID()).child(tenantUser.getBuildingID()).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                building = dataSnapshot.getValue(Building.class);
+                getUnit();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    private void getUnit(){
+
+        FirebaseDatabase.getInstance().getReference().child("units").child(tenantUser.getBuildingID()).child(tenantUser.getUnitID()).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                unit = dataSnapshot.getValue(Unit.class);
+                unit.setUnitID(dataSnapshot.getKey());
+
+                setUnitInfo();
+                setContractData();
+                getCredit();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    //홈 상단부
+    public void setUnitInfo(){
+
+        ((TextView)root.findViewById(R.id.tv_tenant_home_buildingInfo)).setText(building.getName()+" "+unit.getUnitNum()+"호");
+    }
+
+    //계약 정보
+    public void setContractData(){
+
+        NumberFormat myFormatter = NumberFormat.getInstance(Locale.getDefault());
+
+        //세입자명
+        ((TextView)root.findViewById(R.id.tv_tenant_home_name)).setText(unit.getTenantName());
+        //입금자명
+        ((TextView)root.findViewById(R.id.tv_tenant_home_depositor)).setText(unit.getPayerName());
+        //연락처
+        ((TextView)root.findViewById(R.id.tv_tenant_home_phone)).setText(unit.getTenantPhone());
+        //계약 형태
+        ((TextView)root.findViewById(R.id.tv_tenant_home_leaseType)).setText(unit.getLeaseType());
+        //계약기간
+        ((TextView)root.findViewById(R.id.tv_tenant_home_contractPeriod)).setText(unit.getStartDate() + " ~ " + unit.getEndDate());
+        //보증금
+        ((TextView)root.findViewById(R.id.tv_tenant_home_deposit)).setText(myFormatter.format(Integer.parseInt(unit.getDeposit())) + "원");
+        //입금일
+        ((TextView)root.findViewById(R.id.tv_tenant_home_payDay)).setText("매월 " + unit.getPayDay() + "일");
+        //월세
+        ((TextView)root.findViewById(R.id.tv_tenant_home_monthlyFee)).setText(myFormatter.format(Integer.parseInt(unit.getMonthlyFee())) + "원");
+        //관리비
+        ((TextView)root.findViewById(R.id.tv_tenant_home_manageFee)).setText(myFormatter.format(Integer.parseInt(unit.getMngFee())) + "원");
+        //월 납부 총액
+        int totalFee = Integer.parseInt(unit.getMonthlyFee()) + Integer.parseInt(unit.getMngFee());
+        ((TextView)root.findViewById(R.id.tv_tenant_home_monthlyTotalFee)).setText(myFormatter.format(totalFee) + "원");
+
+    }
+
+    public void getCredit(){
+
+        FirebaseDatabase.getInstance().getReference("credit").child(unit.getUnitID()).addValueEventListener(new ValueEventListener() {
+
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                ArrayList<Credit> unpaidCreditList = new ArrayList<>();
 
                 Log.w("===", "getCreditHistoryData executed");
 
                 HashMap<String, Credit> creditMap = new HashMap<String, Credit>();
                 for(DataSnapshot credits : dataSnapshot.getChildren()) {
-                    Credit temp = credits.getValue(Credit.class);
-                    if(temp.getStatus().equals("미납")) {
-                        isPaidFlag = false;
+                    Credit credit = credits.getValue(Credit.class);
+                    if(credit.getStatus().equals("미납")) {
+                       unpaidCreditList.add(credit);
                     }
-                    creditMap.put(credits.getKey(), temp);
+                    creditMap.put(credits.getKey(), credit);
                 }
                 //map to arrayList
                 Collection<Credit> values = creditMap.values();
                 ArrayList<Credit> creditList = new ArrayList<>(values);
 
-                // 날짜 최신순으로 정렬
+                //모든 Credit List 날짜 최신순으로 정렬
                 Collections.sort(creditList, new Comparator<Credit>() {
                     @Override
                     public int compare(Credit o1, Credit o2) {
@@ -204,39 +256,48 @@ public class THomeFragment extends Fragment {
                     }
                 });
 
+                boolean isPaidFlag = true;
+
+                //미납 내역이 있다면
+                if(unpaidCreditList.size()!=0){
+
+                    isPaidFlag=false;
+
+                    //총 미납 요금 세기
+                    getTotalCharge(unpaidCreditList);
+
+                    // unPaidCreditList 날짜 오래된 순으로 정렬
+                    unpaidCreditList.sort(new Comparator<Credit>(){
+
+                        @Override
+                        public int compare(Credit o1, Credit o2) {
+                            return o1.getBillingDate().compareTo(o2.getBillingDate());
+                        }
+                    });
+
+                    //제일 오래된 미납 내역
+                    credit = unpaidCreditList.get(0);
+
+
+                }
+
+                updateIsPaid(building.getId(),unit.getUnitID(),isPaidFlag);
+
+                TextView emptyView = root.findViewById(R.id.rv_tenant_home_emptyView);
+
+                //청구 내역이 없다면
                 if(creditList.size() == 0) {
                     emptyView.setVisibility(View.VISIBLE);
                     creditHistoryRv.setVisibility(View.GONE);
-                } else {
-
-                    recentCredit = creditList.get(0);
-                    //https://androidyongyong.tistory.com/5
+                } else { //청구 내역이 있다면 RecyclerView 로 보여주기
 
                     LinearLayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
                     creditHistoryRv.setLayoutManager(mLayoutManager);
                     CreditViewAdapter creditAdapter = new CreditViewAdapter(creditList);
                     creditHistoryRv.setAdapter(creditAdapter);
                     creditHistoryRv.setItemAnimator(new DefaultItemAnimator());
-
-                    DatabaseReference unitRef = FirebaseDatabase.getInstance().getReference().child("units").child(buildingID).child(unitID).child("isPaid");
-                    Log.w("===", "isPaid : "+isPaidFlag);
-                    String flag = null;
-                    if(isPaidFlag) flag = "1";
-                    else flag = "0";
-                    unitRef.setValue(flag)
-                            .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                @Override
-                                public void onSuccess(Void aVoid) {
-                                    Log.w("===", "update isPaid : setValue succeed");
-                                }
-                            })
-                            .addOnFailureListener(new OnFailureListener() {
-                                @Override
-                                public void onFailure(@NonNull Exception e) {
-                                    Log.w("===", "update isPaid : setValue failed ");
-                                }
-                            });
                 }
+
             }
 
             @Override
@@ -246,42 +307,63 @@ public class THomeFragment extends Fragment {
         });
     }
 
-    public void setData(Unit thisUnit){
-        NumberFormat myFormatter = NumberFormat.getInstance(Locale.getDefault());
+    public void getTotalCharge(ArrayList<Credit> unpaidCreditList){
+        int totalCharge=0;
 
-        unitNum = thisUnit.getUnitNum()+"호";
-        buildingInfoTv.setText(unitNum);
+        for (Credit credit:unpaidCreditList) {
+            totalCharge+=Integer.parseInt(credit.getCredit());
+        }
+        Log.v("===","totalCharge : "+totalCharge);
+        setTotalCharge(totalCharge);
+    }
 
-        if(thisUnit.getIsPaid().equals("0")){
+    public void setTotalCharge(int totalCharge){
+        Log.v("===","set totalCharge : "+totalCharge);
+        int thisMonth = Calendar.getInstance().get(Calendar.MONTH)+1;
+        ((TextView)root.findViewById(R.id.tv_tenant_home_Month)).setText(thisMonth+"월 납부금");
+        ((TextView)root.findViewById(R.id.tv_tenant_home_monthlyFee1)).setText(NumberFormat.getInstance().format(totalCharge) + "원");
+    }
+
+    public void updateIsPaid(String buildingID, String unitID, final boolean isPaidFlag){
+
+        if(!isPaidFlag) {
+            setPaymentStatus(isPaidFlag);
+            Log.w("===", "is not Paid : "+isPaidFlag);
+            return;
+        }
+
+        FirebaseDatabase.getInstance().getReference().child("units").child(buildingID).child(unitID).child("isPaid").setValue("1")
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        setPaymentStatus(isPaidFlag);
+                        Log.w("===", "is Paid : "+isPaidFlag);
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w("===", "update isPaid : setValue failed ");
+                    }
+                });
+    }
+
+    public void setPaymentStatus(boolean isPaidFlag){
+
+        if(!isPaidFlag){
             paymentStatusTv.setTextColor(Color.RED);
             paymentStatusTv.setText("미납");
             payNowBtn.setVisibility(View.VISIBLE);
-        }else{
-            paymentStatusTv.setTextColor(Color.BLUE);
-            paymentStatusTv.setText("완납");
-            payNowBtn.setVisibility(View.GONE);
+
+            return;
         }
+        paymentStatusTv.setTextColor(Color.BLUE);
+        paymentStatusTv.setText("완납");
+        payNowBtn.setVisibility(View.GONE);
 
-        nameTv.setText(thisUnit.getTenantName());
-        depositorTv.setText(thisUnit.getPayerName());
-        phoneTv.setText(thisUnit.getTenantPhone());
-        leaseTypeTv.setText(thisUnit.getLeaseType());
-        contractPeriodTv.setText(thisUnit.getStartDate() + " ~ " + thisUnit.getEndDate());
-        depositTv.setText(myFormatter.format(Integer.parseInt(thisUnit.getDeposit())) + "원");
-        payDayTv.setText("매월 " + thisUnit.getPayDay() + "일");
-        monthlyFeeTv.setText(thisUnit.getMonthlyFee() + "원");
-        manageFeeTv.setText(thisUnit.getMngFee() + "원");
-        totalFee = Integer.parseInt(thisUnit.getMonthlyFee().replace(",", "")) + Integer.parseInt(thisUnit.getMngFee().replace(",", ""));
 
-        monthlyTotalFeeTv.setText(myFormatter.format(totalFee) + "원");
-        monthlyFee1Tv.setText(myFormatter.format(totalFee) + "원");
-
-        if(thisUnit.getLlBank() != null && thisUnit.getLlAccountNum() != null && thisUnit.getLlDepositor() != null){
-            landlordAct.setBank(thisUnit.getLlBank());
-            landlordAct.setAccountNum(thisUnit.getLlAccountNum());
-            landlordAct.setDepositor(thisUnit.getLlDepositor());
-        }
     }
+
 }
 
 class CreditViewAdapter extends RecyclerView.Adapter<CreditViewAdapter.ViewHolder> {
