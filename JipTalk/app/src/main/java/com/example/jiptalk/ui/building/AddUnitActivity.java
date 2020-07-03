@@ -407,7 +407,7 @@ public class AddUnitActivity extends AppCompatActivity {
                 tenant.setBuildingID(thisBuildingKey);
 
                 int totalMonthlyFee = Integer.parseInt(newUnit.getMonthlyFee()) + Integer.parseInt(newUnit.getMngFee());
-                Credit payday = new Credit(unitKey, newUnit.getPayerName(), totalMonthlyFee+"");
+                Credit payday = new Credit(unitKey,totalMonthlyFee+"", thisBuildingKey);
 
                 childUpdates.put("units/" + thisBuildingKey + "/" + unitKey + "/", newUnit.toMap());
                 childUpdates.put("payday/" + newUnit.getPayDay() + "/" + unitKey + "/", payday.toMap());
