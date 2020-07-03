@@ -115,7 +115,6 @@ public class Tab1Fragment extends Fragment {
                                 @Override
                                 public void onSuccess(Void aVoid) {
                                     Log.w("===", "update isPaid : setValue succeed");
-                                    Toast.makeText(thisContext, "성공적으로 납부 처리 되었습니다.", Toast.LENGTH_LONG).show();
                                 }
                             })
                             .addOnFailureListener(new OnFailureListener() {
