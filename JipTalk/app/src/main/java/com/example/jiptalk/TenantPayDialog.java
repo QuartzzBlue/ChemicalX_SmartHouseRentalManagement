@@ -113,6 +113,7 @@ public class TenantPayDialog extends DialogFragment {
             String thisDate = calendar.get(Calendar.YEAR)+"."+(calendar.get(Calendar.MONTH)+1)+"."+calendar.get(Calendar.DAY_OF_MONTH);
             credit.setStatus("완납");
             credit.setDepositDate(thisDate);
+            credit.setPayerName(unit.getPayerName());
             FirebaseDatabase.getInstance().getReference().child("credit").child(credit.getUnitID()).child(credit.getCreditID()).setValue(credit)
                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
@@ -143,8 +144,10 @@ public class TenantPayDialog extends DialogFragment {
                 Log.v("===","landlord token : "+landlordToken);
                 if(landlordToken!=null){
 
-                    PushFCMMessageThread pushFCMMessageThread = new PushFCMMessageThread(landlordToken,building.getName()+" "+unit.getUnitNum()+"호", credit.getBillingDate().split(".")[0]+"년"+credit.getBillingDate().split(".")[1]+"월 월세 "+NumberFormat.getInstance(Locale.getDefault()).format(Integer.parseInt(credit.getCredit()))+" 원 입금 되었습니다!");
-                    pushFCMMessageThread.run();
+                    //credit.getBillingDate().split(".")[0]+"년"+credit.getBillingDate().split(".")[1]+"월 월세 "
+
+                    PushFCMMessageThread pushFCMMessageThread = new PushFCMMessageThread(landlordToken,building.getName()+" "+unit.getUnitNum()+"호", NumberFormat.getInstance(Locale.getDefault()).format(Integer.parseInt(credit.getCredit()))+" 원 입금 되었습니다!");
+                    new Thread(pushFCMMessageThread).start();
 
                 }
             }
