@@ -20,57 +20,52 @@
 
         <TextView
             android:id="@+id/tv_rv_credit_payDay_tenant"
-            android:layout_width="60dp"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="2020.01.20"
+            android:textAlignment="center"
             android:textColor="@color/black" />
 
         <TextView
             android:id="@+id/tv_rv_credit_depositDate_tenant"
-            android:layout_width="60dp"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="5dp"
-            android:layout_marginRight="5dp"
             android:layout_weight="1"
             android:text="2020.01.21"
+            android:textAlignment="center"
             android:textColor="@color/black"
             android:visibility="invisible" />
 
         <TextView
             android:id="@+id/tv_rv_credit_payerName_tenant"
-            android:layout_width="40dp"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginRight="5dp"
             android:layout_weight="1"
+            android:gravity="center"
             android:text="최여진"
             android:textColor="@color/black" />
 
         <TextView
             android:id="@+id/tv_rv_credit_credit_tenant"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:gravity="center"
             android:paddingRight="5dp"
             android:text="200,000"
-            android:textAlignment="textEnd"
-            android:textColor="@color/black" />
-
-        <TextView
-            android:id="@+id/textView101"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingRight="10dp"
-            android:text="원"
+            android:textAlignment="center"
             android:textColor="@color/black" />
 
         <TextView
             android:id="@+id/tv_rv_credit_status_tenant"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
             android:paddingRight="10dp"
             android:text="미납"
-            android:textAlignment="textEnd"
+            android:textAlignment="center"
             android:textColor="@color/danger" />
     </LinearLayout>
 
