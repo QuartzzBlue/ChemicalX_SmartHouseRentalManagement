@@ -31,11 +31,6 @@ public class Unit implements Serializable {
     String isPaid;
     String isOccupied;
 
-    /* 임대인 계좌 정보 */
-    String llBank;
-    String llAccountNum;
-    String llDepositor;
-
     public Unit() {
     }
 
@@ -224,29 +219,6 @@ public class Unit implements Serializable {
         this.isOccupied = isOccupied;
     }
 
-    public String getLlBank() {
-        return llBank;
-    }
-
-    public void setLlBank(String llBank) {
-        this.llBank = llBank;
-    }
-
-    public String getLlAccountNum() {
-        return llAccountNum;
-    }
-
-    public void setLlAccountNum(String llAccountNum) {
-        this.llAccountNum = llAccountNum;
-    }
-
-    public String getLlDepositor() {
-        return llDepositor;
-    }
-
-    public void setLlDepositor(String llDepositor) {
-        this.llDepositor = llDepositor;
-    }
     
     @Override
     public String toString() {
@@ -286,9 +258,6 @@ public class Unit implements Serializable {
         result.put("endDate", endDate);
         result.put("isPaid", isPaid);
         result.put("isOccupied", isOccupied);
-        result.put("llBank",llBank);
-        result.put("llAccountNum",llAccountNum);
-        result.put("llDepositor",llDepositor);
         return result;
     }
 }
