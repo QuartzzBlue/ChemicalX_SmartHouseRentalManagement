@@ -396,15 +396,9 @@ public class AddUnitActivity extends AppCompatActivity {
                 Log.d("===","createBuilding : onDataChange");
                 User currentUser = dataSnapshot.getValue(User.class);
 
-                newUnit.setLlBank(currentUser.getBank());
-                newUnit.setLlAccountNum(currentUser.getAccountNum());
-                newUnit.setLlDepositor(currentUser.getDepositor());
-
                 Map<String, Object> childUpdates = new HashMap<>();
 
                 String unitKey = unitRef.child("units").child(thisBuildingKey).push().getKey();
-//                String tenantKey = unitRef.child("tenants").push().getKey();
-//                String paydayKey = unitRef.child("payday").child(newUnit.getPayDay()).push().getKey();
 
                 Tenant tenant = new Tenant();
                 tenant.setName(newUnit.getTenantName());
@@ -444,10 +438,6 @@ public class AddUnitActivity extends AppCompatActivity {
                 Log.d("===","createBuilding : onCancelled");
             }
         });
-
-
-
-
     }
 
 }
