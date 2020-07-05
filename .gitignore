@@ -464,7 +464,7 @@ dist
 .runtimeconfig.json
 .firebase/
 **/server/*.js
-**/package-lock.json
-**/firebase.json
+**/app/google-services.json
 **/database.rules.json
+**/package-lock.json
 # End of https://www.toptal.com/developers/gitignore/api/python,flask,visualstudiocode
