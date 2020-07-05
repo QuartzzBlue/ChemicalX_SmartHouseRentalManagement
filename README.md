@@ -10,11 +10,7 @@
 [이슬](https://github.com/QuartzzBlue)
 
 ## Using Technology 
-  - Firebase Auth
-  - Firebase Realtime DB
-  - Firebase Cloud Messaging
-  - Firebase Hosting
-  - Firebase Cloud Function
+![image](https://user-images.githubusercontent.com/58680458/86533100-9d20ba00-bf09-11ea-8199-4601c3727462.png)
 
 ## ERD
 ![image](https://user-images.githubusercontent.com/58680458/86531210-4364c380-befa-11ea-9aa4-21f377ffd9ef.png)
