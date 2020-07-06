@@ -149,7 +149,14 @@ public class SplashActivity extends Activity {
         Log.v(TAG,"AutoLogin : " + autoLoginFlag);
         String email = appData.getString("email","");
         String password = appData.getString("password","");
+
+        getCurrentUser();
+
         return;
+    }
+
+    public void getCurrentUser(){
+        AppData.userUID = FirebaseAuth.getInstance().getCurrentUser().getUid();
     }
 
 
