@@ -19,7 +19,6 @@
         android:usesCleartextTraffic="true">
 
         <activity android:name=".ui.message.AddNotiActivity"></activity>
-        <activity android:name=".tenant.TPayActivity"></activity>
         <activity android:name=".ui.unit.ModUnitDetailActivity" />
         <activity android:name=".ui.setting.CheckUserAccountActivity" />
         <activity android:name=".ui.setting.ModUserAccountActivity" />

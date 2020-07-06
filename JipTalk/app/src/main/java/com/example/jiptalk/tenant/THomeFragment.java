@@ -33,6 +33,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
 
 import java.lang.reflect.Array;
 import java.text.NumberFormat;
@@ -43,6 +45,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 
 public class THomeFragment extends Fragment {
 
@@ -61,6 +64,7 @@ public class THomeFragment extends Fragment {
         root = inflater.inflate(R.layout.fragment_home_tenant, container, false);
 
         initialize();
+        setToken();
 
         return root;
     }
@@ -114,6 +118,7 @@ public class THomeFragment extends Fragment {
         });
 
         getUserUid();
+
     }
 
     private void getUserUid(){
@@ -362,6 +367,48 @@ public class THomeFragment extends Fragment {
         setTotalCharge(0);
         payNowBtn.setVisibility(View.GONE);
 
+    }
+
+    public void setToken(){
+        final DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
+        if (AppData.newToken != null) { // 새로운 토큰 생성할 시 DB에 token 업데이트 및 token static 변수에 값 저장.
+            AppData.token = AppData.newToken;
+            Map map = new HashMap();
+            map.put("token", AppData.token);
+            reference.child("user").child(AppData.userUID).updateChildren(map);
+        }
+
+        // DB로부터 값을 가져와서 token & category static 변수에 값 저장.
+        reference.child("user").child(AppData.userUID).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                final HashMap hashMap = (HashMap) dataSnapshot.getValue();
+                Object tokenFromDB = hashMap.get("token");
+                if (tokenFromDB == null) { // DB에 token 값이 없는 경우, token 값을 다시 가져와 DB에 저장한다.
+                    FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener(getActivity(), new OnSuccessListener<InstanceIdResult>() {
+                        @Override
+                        public void onSuccess(InstanceIdResult instanceIdResult) {
+                            String newToken = instanceIdResult.getToken();
+                            Map map = new HashMap();
+                            map.put("token", newToken);
+                            reference.child("user").child(AppData.userUID).updateChildren(map);
+                            AppData.token = newToken;
+                            AppData.category = hashMap.get("category").toString();
+                        }
+                    });
+
+                } else {
+                    Log.d("===", "token0 : " + tokenFromDB);
+                    AppData.token = tokenFromDB.toString();
+                    AppData.category = hashMap.get("category").toString();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
 
     }
 

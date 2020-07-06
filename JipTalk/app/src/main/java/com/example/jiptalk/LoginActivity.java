@@ -51,33 +51,6 @@ public class LoginActivity extends AppCompatActivity {
 
         mAuth = FirebaseAuth.getInstance();
 
-
-        /*** Firebase Authentication ***/
-        //FirebaseAuth 인스턴스 가져오기
-//        mAuthListener = new FirebaseAuth.AuthStateListener() {
-//            @Override
-//            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) { //콜백함수(로그인되거나 로그아웃될때)
-//                FirebaseUser user = firebaseAuth.getCurrentUser();
-//                if (user != null) {
-//                    // User is signed in
-//                    Log.d("===", "onAuthStateChanged:signed_in:" + user.getUid());
-//
-//
-////                    Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-//                    Intent intent = new Intent(getApplicationContext(), SampleLoginActivity.class);
-//                    intent.putExtra("userID", user.getEmail());
-//                    intent.putExtra("userUID", user.getUid());
-//                    startActivity(intent);
-////                  finish();
-//                    /****/
-//
-//                } else {
-//                    // User is signed out
-//                    Log.d("===", "onAuthStateChanged:signed_out");
-//                }
-//            }
-//        }; //[End AuthStateListener]
-
         /*** 로그인 ***/
         loginBt.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -148,29 +121,9 @@ public class LoginActivity extends AppCompatActivity {
 
                             /* Version 업데이트 되면서 굳이 콜백함수 안 쓰고 바로 user 정보 불러와서 해결하는듯 */
                             FirebaseUser user = mAuth.getCurrentUser();
-                            //Constant.userUID = mAuth.getUid();
-//                            FirebaseDatabase.getInstance().getReference().child("users").child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
-//                                @Override
-//                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//                                    User user = dataSnapshot.getValue(User.class);
-//                                    if(user.getCategory().equals("세입자")) {
-//                                        Toast.makeText(LoginActivity.this,"세입자 로그인",Toast.LENGTH_LONG).show();
-//                                        Intent intent = new Intent(nowContext,TMainActivity.class);
-//                                        startActivity(intent);
-//                                    }else if (user.getCategory().equals("임대인")){
-//                                        Toast.makeText(LoginActivity.this,"임대인 로그인",Toast.LENGTH_LONG).show();
-//                                        Intent intent = new Intent(nowContext,MainActivity.class);
-//                                        startActivity(intent);
-//                                    }
-//                                }
-//
-//                                @Override
-//                                public void onCancelled(@NonNull DatabaseError databaseError) {
-//
-//                                }
-//                            });
-                        Intent intent = new Intent(nowContext,MainActivity.class);
-                        startActivity(intent);
+
+                            Intent intent = new Intent(nowContext,MainActivity.class);
+                            startActivity(intent);
                         }
 
                     }
@@ -190,8 +143,6 @@ public class LoginActivity extends AppCompatActivity {
         signUpBt = findViewById(R.id.signUpBt);
         checkBox = findViewById(R.id.checkBox);
 
-
-
     }
 
     private boolean isValid(String email, String password){
@@ -201,20 +152,10 @@ public class LoginActivity extends AppCompatActivity {
         }else{
             return true;
         }
-
-
     }
 
     @Override
     public void onStart() {
         super.onStart();
-
-//        FirebaseUser currentUser = mAuth.getCurrentUser();
-//        /*** user 정보 있냐 없냐에 따라 자동 로그인 ? ***/
-//        if (currentUser != null) {
-//            FirebaseAuth.getInstance().signOut();   //로그아웃
-//        }
     }
-
-
 }
