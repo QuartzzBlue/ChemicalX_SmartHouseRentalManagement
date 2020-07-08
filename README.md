@@ -76,7 +76,7 @@
 
 |IMG|기능|
 |-----|-----|
-|img|- 다음 도로명 주소 검색 API (Firebase Hosting)|
+|img|- 다음 도로명 주소 검색 API (Firebase Hosting)<br>- WebView<br>- Firebase Hosting|
 
 ### 2.3 건물 관리
 
@@ -95,4 +95,4 @@
 
 |IMG|기능|
 |-----|-----|
-|img||
+|img|-납부 버튼 클릭 시 해당 건물 임대인에게 실시간 알림 (FCM)<br>- 납부 내역 확인<br>- 계약 정보 확인|
