@@ -42,7 +42,7 @@
 
 |IMG|기능|
 |-----|-----|
-|![로그인](https://user-images.githubusercontent.com/31427119/87041133-bccb2180-c22c-11ea-8e54-f5ca73121ce4.gif){: width="200" height="500"}|- SharedPreference를 사용한 자동 로그인 설정<br>- 등록된 User 의 Category 에 따라 세입자 홈화면,  임대인 홈화면으로 분기|
+|![로그인](https://user-images.githubusercontent.com/31427119/87041133-bccb2180-c22c-11ea-8e54-f5ca73121ce4.gif =200x500)|- SharedPreference를 사용한 자동 로그인 설정<br>- 등록된 User 의 Category 에 따라 세입자 홈화면,  임대인 홈화면으로 분기|
 
 ### 1.4 메시지
 
