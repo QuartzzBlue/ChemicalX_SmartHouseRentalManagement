@@ -42,7 +42,7 @@
 
 |IMG|기능|
 |-----|-----|
-|img|- 자동 로그인 설정<br>- 등록된 User 의 Category 에 따라 세입자 홈화면,  임대인 홈화면으로 분기|
+|img|- SharedPreference를 사용한 자동 로그인 설정<br>- 등록된 User 의 Category 에 따라 세입자 홈화면,  임대인 홈화면으로 분기|
 
 ### 1.4 메시지
 
@@ -70,25 +70,25 @@
 
 |IMG|기능|
 |-----|-----|
-|img|- 납부 현황<br>- 월 총 납입금<br>- 소유 건물 및 미납 현황 파악|
+|img|- 납부 현황 및 월 총 납입금 요약<br>- 소유 건물 및 미납 현황 파악(Recycler View)|
 
 ### 2.2 건물 추가
 
 |IMG|기능|
 |-----|-----|
-|img|- 다음 도로명 주소 검색 API (Firebase Hosting)<br>- WebView<br>- Firebase Hosting|
+|img|- 다음 도로명 주소 검색 API 사용(Firebase Hosting 서비스로 서버 호스팅, WebView)|
 
 ### 2.3 건물 관리
 
 |IMG|기능|
 |-----|-----|
-|img||
+|img|- 건물정보, 납부 및 임대 현황 확인 가능<br>- 미납/완납 Sorting<br>- 각 호수의 세입자 및 납부 현황, 계약 기간 한눈에 파악(Recycler View)|
 
 ### 2.4 세입자 관리
 
 |IMG|기능|
 |-----|-----|
-|img||
+|img|- 입금 내역 표시(Cloud Function 사용하여 DB 업데이트)<br>- 계약 정보 확인 및 수정<br>- 비고 란 |
 
 ## 3. 세입자
 ### 3.1 홈 화면
