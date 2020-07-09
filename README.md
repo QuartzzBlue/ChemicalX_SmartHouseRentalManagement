@@ -11,9 +11,11 @@
 - 8주차 (6월 29일 ~ 7월 5일) : 파이널 보고서 작성
 
 ## 구성원 및 역할
-[조현민](https://github.com/JHM9191)
-[최여진](https://github.com/yeojini)
-[이슬](https://github.com/QuartzzBlue)
+|이름|역할|
+|-----|-----|
+|[조현민](https://github.com/JHM9191)|- 1:1 대화<br>- |
+|[최여진](https://github.com/yeojini)|- 임대인,세입자 홈화면<br>- 건물 추가, 건물 관리|
+|[이슬](https://github.com/QuartzzBlue)|- 회원가입<br>- 아이디/비밀번호 찾기<br>- 로그인<br>- 세입자 관리|
 
 ## Using Technology 
 ![image](https://user-images.githubusercontent.com/58680458/86533100-9d20ba00-bf09-11ea-8199-4601c3727462.png)
@@ -88,7 +90,7 @@
 
 |IMG|기능|
 |-----|-----|
-|img|- 입금 내역 표시(Cloud Function 사용하여 DB 업데이트, Recycler View)<br>- 계약 정보 확인 및 수정<br>- 비고 란 표시|
+|img|- TabView<br> - 입금 내역 표시(Cloud Function 사용하여 DB 업데이트, Recycler View)<br>- 계약 정보 확인 및 수정<br>- 비고 란 표시|
 
 ## 3. 세입자
 ### 3.1 홈 화면
