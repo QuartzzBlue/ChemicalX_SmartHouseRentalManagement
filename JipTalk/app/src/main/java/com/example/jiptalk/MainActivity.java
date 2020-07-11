@@ -59,7 +59,6 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
-
     }
 
     private void setNavigation(String category){
@@ -67,7 +66,7 @@ public class MainActivity extends AppCompatActivity {
         if(category.equals("임대인")){
             setContentView(R.layout.activity_main);
             BottomNavigationView navView1 = findViewById(R.id.nav_view);
-            Toast.makeText(nowContext,"임대인 로그인",Toast.LENGTH_LONG).show();
+//            Toast.makeText(nowContext,"임대인 로그인",Toast.LENGTH_LONG).show();
             AppBarConfiguration appBarConfiguration= new AppBarConfiguration.Builder(
                     R.id.navigation_home, R.id.navigation_message, R.id.navigation_setting)
                     .build();
@@ -78,7 +77,7 @@ public class MainActivity extends AppCompatActivity {
         }else if (category.equals("세입자")){
             setContentView(R.layout.activity_tmain);
             BottomNavigationView navView2 = findViewById(R.id.nav_view_tenant);
-            Toast.makeText(nowContext,"세입자 로그인",Toast.LENGTH_LONG).show();
+//            Toast.makeText(nowContext,"세입자 로그인",Toast.LENGTH_LONG).show();
             AppBarConfiguration appBarConfiguration= new AppBarConfiguration.Builder(
                     R.id.tnavigation_home, R.id.navigation_message, R.id.navigation_setting)
                     .build();
@@ -86,6 +85,5 @@ public class MainActivity extends AppCompatActivity {
             NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
             NavigationUI.setupWithNavController(navView2, navController);
         }
-
     }
 }

@@ -116,8 +116,8 @@ public class LoginActivity extends AppCompatActivity {
                                     Toast.LENGTH_LONG).show();
                         }else {
                             Log.w("===", "LoginAuthentication: succeed", task.getException());
-                            Toast.makeText(LoginActivity.this, "로그인 성공",
-                                    Toast.LENGTH_SHORT).show();
+//                            Toast.makeText(LoginActivity.this, "로그인 성공",
+//                                    Toast.LENGTH_SHORT).show();
 
                             /* Version 업데이트 되면서 굳이 콜백함수 안 쓰고 바로 user 정보 불러와서 해결하는듯 */
                             FirebaseUser user = mAuth.getCurrentUser();

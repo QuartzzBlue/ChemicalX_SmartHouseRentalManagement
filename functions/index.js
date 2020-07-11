@@ -112,16 +112,3 @@ exports.scheduledFunctionCrontab = functions.pubsub.schedule('1 0 * * *')
   return null;
 });
 
-// exports.scheduledFunctionCrontab = functions.pubsub.schedule('1 0 * * *')
-//   .timeZone('America/New_York' + 9) // Users can choose timezone
-//   .onRun((context) => {
-//   produceCredits();
-//   console.log('This will be run every day at 0:01 AM!');
-//   return null;
-// });
-
-// exports.scheduledFunction = functions.pubsub.schedule('every 1 minutes').onRun((context) => {
-//   produceCredits();
-//   console.log('This will be run every 1 minutes!');
-//   return null;
-// });

@@ -326,7 +326,7 @@ public class MessageFragment extends Fragment {
                                     final String last_message = dataSnapshot.child("message").getValue(String.class);
                                     final Long message_time = dataSnapshot.child("time").getValue(Long.class);
 
-
+                                    Log.d("===","chatUserUID: "+ chatUserUID);
                                     holder.setName(getChatUserName(chatUserUID));
                                     holder.setContent(last_message);
                                     holder.setTime(getDate(message_time));
