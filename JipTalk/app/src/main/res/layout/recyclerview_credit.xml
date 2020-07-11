@@ -24,7 +24,8 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="2020.01.20"
-            android:textColor="@color/black" />
+            android:textColor="@color/black"
+            android:textSize="12sp" />
 
         <TextView
             android:id="@+id/tv_rv_credit_depositDate"
@@ -35,6 +36,7 @@
             android:layout_weight="1"
             android:text="2020.01.21"
             android:textColor="@color/black"
+            android:textSize="12sp"
             android:visibility="invisible" />
 
         <TextView
@@ -44,7 +46,8 @@
             android:layout_marginRight="5dp"
             android:layout_weight="1"
             android:text="최여진"
-            android:textColor="@color/black" />
+            android:textColor="@color/black"
+            android:textSize="12sp" />
 
         <TextView
             android:id="@+id/tv_rv_credit_credit"
@@ -54,7 +57,8 @@
             android:paddingRight="5dp"
             android:text="200,000"
             android:textAlignment="textEnd"
-            android:textColor="@color/black" />
+            android:textColor="@color/black"
+            android:textSize="12sp" />
 
         <TextView
             android:id="@+id/textView100"
@@ -62,7 +66,8 @@
             android:layout_height="wrap_content"
             android:paddingRight="10dp"
             android:text="원"
-            android:textColor="@color/black" />
+            android:textColor="@color/black"
+            android:textSize="12sp" />
 
         <TextView
             android:id="@+id/tv_rv_credit_status"
@@ -71,7 +76,8 @@
             android:paddingRight="10dp"
             android:text="미납"
             android:textAlignment="textEnd"
-            android:textColor="@color/danger" />
+            android:textColor="@color/danger"
+            android:textSize="12sp" />
 
         <Switch
             android:id="@+id/sw_rv_credit_status"
