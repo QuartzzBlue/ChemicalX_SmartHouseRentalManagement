@@ -13,9 +13,9 @@
 ## 구성원 및 역할
 |이름|역할|
 |-----|-----|
-|[조현민](https://github.com/JHM9191)|- 1:1 대화<br>- |
+|[조현민](https://github.com/JHM9191)|- 1:1 대화<br>- 공지사항|
 |[최여진](https://github.com/yeojini)|- 임대인,세입자 홈화면<br>- 건물 추가, 건물 관리|
-|[이슬](https://github.com/QuartzzBlue)|- 회원가입<br>- 아이디/비밀번호 찾기<br>- 로그인<br>- 세입자 관리|
+|[이슬](https://github.com/QuartzzBlue)|- 회원가입 및 로그인 <br>- 아이디/비밀번호 찾기<br>- 설정<br>- 세입자 관리|
 
 ## Using Technology 
 ![image](https://user-images.githubusercontent.com/58680458/86533100-9d20ba00-bf09-11ea-8199-4601c3727462.png)
