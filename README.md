@@ -44,7 +44,7 @@
 
 |IMG|기능|
 |-----|-----|
-|<img src="https://user-images.githubusercontent.com/31427119/87041133-bccb2180-c22c-11ea-8e54-f5ca73121ce4.gif" height="330" width="200" >|- SharedPreference를 사용한 자동 로그인 설정<br>- 등록된 User 의 Category 에 따라 세입자 홈화면,  임대인 홈화면으로 분기|
+|<img src="https://user-images.githubusercontent.com/31427119/87041133-bccb2180-c22c-11ea-8e54-f5ca73121ce4.gif" height="350" width="200" >|- SharedPreference를 사용한 자동 로그인 설정<br>- 등록된 User 의 Category 에 따라 세입자 홈화면,  임대인 홈화면으로 분기|
 
 ### 1.4 메시지
 
@@ -90,7 +90,7 @@
 
 |IMG|기능|
 |-----|-----|
-|img|- TabView<br> - 입금 내역 표시(Cloud Function 사용하여 DB 업데이트, Recycler View)<br>- 계약 정보 확인 및 수정<br>- 비고 란 표시|
+|<img src="https://user-images.githubusercontent.com/31427119/87228417-145bbf80-c3dc-11ea-88b9-047d13f05873.gif" height="350" width="200" >|- TabView<br> - 입금 내역 표시(Cloud Function 사용하여 DB 업데이트, Recycler View)<br>- 계약 정보 확인 및 수정<br>- 비고 란 표시|
 
 ## 3. 세입자
 ### 3.1 홈 화면
