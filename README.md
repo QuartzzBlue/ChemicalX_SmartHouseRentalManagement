@@ -31,7 +31,7 @@
 
 |IMG|기능|
 |-----|-----|
-|<img src="https://user-images.githubusercontent.com/31427119/87227360-66e5ad80-c3d5-11ea-9a62-bc96b5e97b83.gif" height="320" width="150" >|- Firebase Authentification을 사용한 Email과 핸드폰 번호 인증 <br>- (세입자) 임대인이 먼저 가입한 상태에서만 가입 가능 <br>- (세입자) 임대인이 세입자를 미리 등록했다면 해당 계약 정보 자동으로 표시됨 |
+|<img src="https://user-images.githubusercontent.com/31427119/87227360-66e5ad80-c3d5-11ea-9a62-bc96b5e97b83.gif" height="350" width="200" >|- Firebase Authentification을 사용한 Email과 핸드폰 번호 인증 <br>- (세입자) 임대인이 먼저 가입한 상태에서만 가입 가능 <br>- (세입자) 임대인이 세입자를 미리 등록했다면 해당 계약 정보 자동으로 표시됨 |
 
 
 ### 1.2 아이디/비밀번호 찾기
@@ -44,7 +44,7 @@
 
 |IMG|기능|
 |-----|-----|
-|<img src="https://user-images.githubusercontent.com/31427119/87041133-bccb2180-c22c-11ea-8e54-f5ca73121ce4.gif" height="280" width="150" >|- SharedPreference를 사용한 자동 로그인 설정<br>- 등록된 User 의 Category 에 따라 세입자 홈화면,  임대인 홈화면으로 분기|
+|<img src="https://user-images.githubusercontent.com/31427119/87041133-bccb2180-c22c-11ea-8e54-f5ca73121ce4.gif" height="320" width="200" >|- SharedPreference를 사용한 자동 로그인 설정<br>- 등록된 User 의 Category 에 따라 세입자 홈화면,  임대인 홈화면으로 분기|
 
 ### 1.4 메시지
 
