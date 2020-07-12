@@ -66,7 +66,7 @@
 
 |IMG|기능|
 |-----|-----|
-|<img src="https://user-images.githubusercontent.com/31427119/87247761-a6250480-c490-11ea-9a51-e99244ee221b.gif" height="350" width="200" > <img src="https://user-images.githubusercontent.com/31427119/87247770-b5a44d80-c490-11ea-82f3-46840a2bb14a.gif" height="350" width="200" > <img src="https://user-images.githubusercontent.com/31427119/87247901-83dfb680-c491-11ea-8f2d-c92a0097bd63.gif" height="350" width="200" >|- 알림 설정 기능<br>- 유저 정보 수정(Firebase Authentification 사용한 비밀번호 변경)<br>- 로그아웃 기능|
+|<img src="https://user-images.githubusercontent.com/31427119/87247761-a6250480-c490-11ea-9a51-e99244ee221b.gif" height="350" width="200" > <img src="https://user-images.githubusercontent.com/31427119/87247770-b5a44d80-c490-11ea-82f3-46840a2bb14a.gif" height="350" width="200" > <img src="https://user-images.githubusercontent.com/31427119/87247901-83dfb680-c491-11ea-8f2d-c92a0097bd63.gif" height="350" width="200" >|- 알림 설정 기능<br>- 유저 정보 수정<br>  (Firebase Authentification 사용)<br>- 로그아웃 기능|
 
 ## 2. 임대인
 
