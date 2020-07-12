@@ -24,6 +24,8 @@
 ![image](https://user-images.githubusercontent.com/58680458/86531210-4364c380-befa-11ea-9aa4-21f377ffd9ef.png)
 
 # UI
+※이미지를 클릭하면 큰 화면으로 볼 수 있습니다.
+
 
 ## 1. 공통 기능
 
