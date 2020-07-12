@@ -22,6 +22,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
+import android.widget.ToggleButton;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -81,7 +82,8 @@ public class TenantMessageActivity extends AppCompatActivity {
             buttonTitleBldgConstruction, buttonTitleNoise, buttonTitleRecycle;
     private LinearLayout linearLayoutDate;
     private TextView textViewMsgPreview;
-    private Button buttonInsertDateStart, buttonInsertDateEnd, buttonInsertTime, buttonSendMsg, buttonRepairItem;
+    private Button buttonInsertDateStart, buttonInsertDateEnd, buttonInsertTime, buttonSendMsg;
+    private ToggleButton buttonRepairItem;
 
 
     private FrameLayout frameLayoutMsgDetail;
@@ -700,7 +702,6 @@ public class TenantMessageActivity extends AppCompatActivity {
             public void onClick(View v) {
                 buttonSendMsg.setEnabled(false);
                 Log.d(TAG, "clicked dark area");
-                Toast.makeText(TenantMessageActivity.this, "hello?", Toast.LENGTH_SHORT).show();
                 frameLayoutMsgDetail.removeAllViews();
             }
         });
@@ -750,11 +751,71 @@ public class TenantMessageActivity extends AppCompatActivity {
                 linearLayoutDate.setVisibility(View.GONE);
                 textViewMsgPreview.setText("안녕하세요 세입자 입니다. \n0000가 고장났습니다. \n수리 바랍니다.");
                 subject = "repairment";
+                buttonRepairItem.setText("무엇이 고장났나요?");
                 buttonRepairItem.setVisibility(View.VISIBLE);
+
                 buttonRepairItem.setOnClickListener(new View.OnClickListener() {
+
                     @Override
                     public void onClick(View v) {
                         Log.d(TAG, "Clicked repair list button");
+                        if (buttonRepairItem.isChecked()) {
+                            buttonTitleAppointment.setText("화장실 변기");
+                            buttonTitleAppointment.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    textViewMsgPreview.setText("안녕하세요 세입자 입니다. \n화장실 변기가 고장났습니다. \n수리 바랍니다.");
+                                }
+                            });
+                            buttonTitleRepair.setText("인덕션");
+                            buttonTitleRepair.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    textViewMsgPreview.setText("안녕하세요 세입자 입니다. \n인덕션이 고장났습니다. \n수리 바랍니다.");
+                                }
+                            });
+                            buttonTitleMonthlyPayment.setText("보일러");
+                            buttonTitleMonthlyPayment.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    textViewMsgPreview.setText("안녕하세요 세입자 입니다. \n보일러가 고장났습니다. \n수리 바랍니다.");
+                                }
+                            });
+                            buttonTitleBldgConstruction.setText("엘레베이터");
+                            buttonTitleBldgConstruction.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    textViewMsgPreview.setText("안녕하세요 세입자 입니다. \n엘레베이터가 고장났습니다. \n수리 바랍니다.");
+                                }
+                            });
+                            buttonTitleNoise.setText("도어락");
+                            buttonTitleNoise.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    textViewMsgPreview.setText("안녕하세요 세입자 입니다. \n도어락이 고장났습니다. \n수리 바랍니다.");
+                                }
+                            });
+                            buttonTitleRecycle.setText("문짝");
+                            buttonTitleRecycle.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    textViewMsgPreview.setText("안녕하세요 세입자 입니다. \n문짝이 고장났습니다. \n수리 바랍니다.");
+                                }
+                            });
+                            buttonRepairItem.setText("뒤로가기");
+
+                        } else {
+                            textViewMsgPreview.setText("안녕하세요 세입자 입니다. \n0000가 고장났습니다. \n수리 바랍니다.");
+                            buttonTitleAppointment.setText("방문");
+                            buttonTitleRepair.setText("수리");
+                            buttonTitleMonthlyPayment.setText("월세");
+                            buttonTitleBldgConstruction.setText("건물공사");
+                            buttonTitleNoise.setText("층간소음");
+                            buttonTitleRecycle.setText("재활용");
+                            buttonRepairItem.setText("무엇이 고장났나요?");
+                        }
+
+
 //                        new UniversalPickerDialog.Builder(v.getContext())
 //                                .setTitle("TEST")
 //                                .setListener(new UniversalPickerDialog.OnPickListener() {
@@ -801,7 +862,7 @@ public class TenantMessageActivity extends AppCompatActivity {
         buttonTitleNoise.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                textViewMsgPreview.setText("안녕하세요 세입자 입니다. \n밤 중 층간소음이 너무 심해 항의 드립니다.\n.");
+                textViewMsgPreview.setText("안녕하세요 세입자 입니다. \n밤 중 층간소음이 너무 심해 항의 드립니다.");
                 linearLayoutDate.setVisibility(View.GONE);
                 buttonRepairItem.setVisibility(View.GONE);
                 subject = "층간소음 주의";
@@ -830,13 +891,13 @@ public class TenantMessageActivity extends AppCompatActivity {
                 sYear = year;
                 sMonth = month;
                 sDay = dayOfMonth;
-                textViewMsgPreview.setText("안녕하세요 세입자 입니다. \n" + year + "년 " + month + "월 " + dayOfMonth + "일 "
+                textViewMsgPreview.setText("안녕하세요 세입자 입니다. \n" + year + "년 " + (month + 1) + "월 " + dayOfMonth + "일 "
                         + hour + "시 " + min + "분에 만날 수 있는지 여쭤봅니다.");
 
                 break;
             case "buildingconstruction":
                 if (dateStartEnd.equals("start")) {
-                    textViewMsgPreview.setText("안녕하세요 세입자 입니다. \n" + year + "년 " + month + "월 " + dayOfMonth + "일 ~ "
+                    textViewMsgPreview.setText("안녕하세요 세입자 입니다. \n" + year + "년 " + (month + 1) + "월 " + dayOfMonth + "일 ~ "
                             + eYear + "년 " + eMonth + "월 " + eDay + "일 공사가 있습니다.\n소음에 양해부탁드립니다.");
                 } else {
                     textViewMsgPreview.setText("안녕하세요 집주인 입니다. \n" + sYear + "년 " + sMonth + "월 " + sDay + "일 ~ "
@@ -894,7 +955,7 @@ public class TenantMessageActivity extends AppCompatActivity {
             public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
                 hour = hourOfDay;
                 min = minute;
-                textViewMsgPreview.setText("안녕하세요 세입자 입니다. \n" + sYear + "년 " + sMonth + "월 " + sDay + "일 "
+                textViewMsgPreview.setText("안녕하세요 세입자 입니다. \n" + sYear + "년 " + (sMonth + 1) + "월 " + sDay + "일 "
                         + hour + "시 " + minute + "분에 만날 수 있는지 여쭤봅니다.");
             }
         };
