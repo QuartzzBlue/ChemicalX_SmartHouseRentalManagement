@@ -683,7 +683,6 @@ public class LandLordMessageActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Log.d(TAG, "clicked dark area");
-                Toast.makeText(LandLordMessageActivity.this, "hello?", Toast.LENGTH_SHORT).show();
                 frameLayoutMsgDetail.removeAllViews();
             }
         });
@@ -780,7 +779,7 @@ public class LandLordMessageActivity extends AppCompatActivity {
             public void onClick(View v) {
                 dateStartEnd = "start";
                 Calendar calendar = Calendar.getInstance(TimeZone.getDefault());
-                DatePickerDialog dialog = new DatePickerDialog(frameLayoutMsgDetail.getContext(), callbackMethodDatePicker, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), Calendar.DAY_OF_MONTH);
+                DatePickerDialog dialog = new DatePickerDialog(frameLayoutMsgDetail.getContext(), callbackMethodDatePicker, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH + 1), Calendar.DAY_OF_MONTH);
                 dialog.show();
             }
         });
@@ -790,7 +789,7 @@ public class LandLordMessageActivity extends AppCompatActivity {
             public void onClick(View v) {
                 dateStartEnd = "end";
                 Calendar calendar = Calendar.getInstance(TimeZone.getDefault());
-                DatePickerDialog dialog = new DatePickerDialog(frameLayoutMsgDetail.getContext(), callbackMethodDatePicker, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), Calendar.DAY_OF_MONTH);
+                DatePickerDialog dialog = new DatePickerDialog(frameLayoutMsgDetail.getContext(), callbackMethodDatePicker, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH + 1), Calendar.DAY_OF_MONTH);
                 dialog.show();
             }
         });
