@@ -66,7 +66,7 @@
 
 |IMG|기능|
 |-----|-----|
-|<img src="https://user-images.githubusercontent.com/31427119/87247761-a6250480-c490-11ea-9a51-e99244ee221b.gif" height="350" width="200" > <img src="https://user-images.githubusercontent.com/31427119/87247770-b5a44d80-c490-11ea-82f3-46840a2bb14a.gif" height="350" width="200" > <img src="https://user-images.githubusercontent.com/31427119/87247901-83dfb680-c491-11ea-8f2d-c92a0097bd63.gif" height="350" width="200" >|- 알림 설정 기능<br>- 유저 정보 수정<br>  (Firebase Authentification 사용)<br>- 로그아웃 기능|
+|<img src="https://user-images.githubusercontent.com/31427119/87247761-a6250480-c490-11ea-9a51-e99244ee221b.gif" height="350" width="200" > <img src="https://user-images.githubusercontent.com/31427119/87247770-b5a44d80-c490-11ea-82f3-46840a2bb14a.gif" height="350" width="200" > <img src="https://user-images.githubusercontent.com/31427119/87247901-83dfb680-c491-11ea-8f2d-c92a0097bd63.gif" height="350" width="200" >|- 알림 설정 기능<br>- 유저 정보 수정<br>   (Firebase Authentification 사용)<br>- 로그아웃 기능|
 
 ## 2. 임대인
 
@@ -92,7 +92,7 @@
 
 |IMG|기능|
 |-----|-----|
-|<img src="https://user-images.githubusercontent.com/31427119/87228417-145bbf80-c3dc-11ea-88b9-047d13f05873.gif" height="350" width="200" > <img src="https://user-images.githubusercontent.com/31427119/87229578-1164cd00-c3e4-11ea-9f8b-f09e8c2d5a4e.gif" height="350" width="200" >|- TabView<br> - 입금 내역 표시<br> (Cloud Function 활용하여 납부일마다 청구내역서 업데이트, Recycler View)<br>- 세입자 계약 정보 확인 및 수정<br>- 비고 란 표시|
+|<img src="https://user-images.githubusercontent.com/31427119/87228417-145bbf80-c3dc-11ea-88b9-047d13f05873.gif" height="350" width="200" > <img src="https://user-images.githubusercontent.com/31427119/87229578-1164cd00-c3e4-11ea-9f8b-f09e8c2d5a4e.gif" height="350" width="200" >|- TabView<br> - 입금 내역 표시<br>   (Cloud Function 활용하여 납부일마다 청구내역서 업데이트, Recycler View)<br>- 세입자 계약 정보 확인 및 수정<br>- 비고 란 표시|
 
 ## 3. 세입자
 ### 3.1 홈 화면
