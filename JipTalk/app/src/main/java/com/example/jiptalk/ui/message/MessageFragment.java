@@ -36,8 +36,12 @@ import com.example.jiptalk.vo.Unit;
 import com.example.jiptalk.vo.User;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.GetTokenResult;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -275,13 +279,20 @@ public class MessageFragment extends Fragment {
             @Override
             protected void onBindViewHolder(@NonNull final MessageViewHolder holder, final int position, @NonNull final MessageVO model) {
                 final String chatUserUID = getRef(position).getKey();
+                String chatUserToken = "";
 
+                for (User u : clientList) {
+                    if (u.getUID().equals(chatUserUID)) {
+                        chatUserToken = u.getToken();
+                    }
+                }
                 Log.d(TAG, "chatUserUID : " + chatUserUID);
                 DatabaseReference mRootChat = rootRef.child("chat");
 
+                final String finalChatUserToken = chatUserToken;
                 mRootChat.addValueEventListener(new ValueEventListener() {
                     @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
+                    public void onDataChange(final DataSnapshot dataSnapshot) {
 
                         if (dataSnapshot.child(currentUserUID).child(chatUserUID).child("lastMessageId").getValue() != null) {
                             String lastMessageId = dataSnapshot.child(currentUserUID).child(chatUserUID).child("lastMessageId").getValue().toString();
@@ -290,16 +301,14 @@ public class MessageFragment extends Fragment {
                                 @Override
                                 public void onClick(View v) {
                                     Intent intent = null;
-                                    if (category.equals("집주인")) {
+                                    if (category.equals("집주인") | category.equals("임대인")) {
                                         intent = new Intent(getContext(), LandLordMessageActivity.class);
                                     } else if (category.equals("세입자")) {
                                         intent = new Intent(getContext(), TenantMessageActivity.class);
                                     }
-
-
                                     intent.putExtra("clientName", getChatUserName(chatUserUID));
                                     intent.putExtra("clientUID", chatUserUID);
-                                    intent.putExtra("clientToken", model.getToken());
+                                    intent.putExtra("clientToken", finalChatUserToken);
                                     startActivity(intent);
                                 }
                             });
@@ -326,7 +335,7 @@ public class MessageFragment extends Fragment {
                                     final String last_message = dataSnapshot.child("message").getValue(String.class);
                                     final Long message_time = dataSnapshot.child("time").getValue(Long.class);
 
-                                    Log.d("===","chatUserUID: "+ chatUserUID);
+                                    Log.d("===", "chatUserUID: " + chatUserUID);
                                     holder.setName(getChatUserName(chatUserUID));
                                     holder.setContent(last_message);
                                     holder.setTime(getDate(message_time));
@@ -483,7 +492,7 @@ public class MessageFragment extends Fragment {
                             public void onClick(View v) {
                                 if (clientSelected != null) {
                                     Intent intent = null;
-                                    if (category.equals("집주인")) {
+                                    if (category.equals("집주인") | category.equals("임대인")) {
                                         intent = new Intent(getContext(), LandLordMessageActivity.class);
                                     } else if (category.equals("세입자")) {
                                         intent = new Intent(getContext(), TenantMessageActivity.class);

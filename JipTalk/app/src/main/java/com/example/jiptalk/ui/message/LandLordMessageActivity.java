@@ -598,7 +598,7 @@ public class LandLordMessageActivity extends AppCompatActivity {
 //        buttonInsertDate.setVisibility(View.INVISIBLE);
 //        Toast.makeText(this, "view.getId() : " + view.getId(), Toast.LENGTH_SHORT).show();
 
-        if (AppData.category.equals("집주인")) {
+        if (AppData.category.equals("집주인") || AppData.category.equals("임대인")) {
             final LayoutInflater inflater = (LayoutInflater) getApplicationContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             final View frameLayoutMsgInputForm = inflater.inflate(R.layout.layout_message_detail_msg_input_form_landlord, frameLayoutMsgDetail, false);
             frameLayoutMsgDetail.addView(frameLayoutMsgInputForm);
