@@ -693,7 +693,8 @@ public class LandLordMessageActivity extends AppCompatActivity {
             public void onClick(View v) {
                 textViewMsgPreview.setText("안녕하세요 집주인 입니다. \n0000년 00월 00일 00시 00분에 방문 가능한지 여쭤봅니다.");
                 buttonInsertDateStart.setVisibility(View.VISIBLE);
-                buttonInsertDateEnd.setVisibility(View.VISIBLE);
+                buttonInsertDateStart.setText("날짜 입력하기");
+                buttonInsertDateEnd.setVisibility(View.GONE);
                 buttonInsertTime.setVisibility(View.VISIBLE);
                 titleClicked = "appointment";
                 subject = "약속잡기";
@@ -703,9 +704,9 @@ public class LandLordMessageActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 textViewMsgPreview.setText("안녕하세요 집주인 입니다. \n관리비가 아직 입금이 안되었습니다. 확인 후 입금 바랍니다.");
-                buttonInsertDateStart.setVisibility(View.INVISIBLE);
-                buttonInsertDateEnd.setVisibility(View.INVISIBLE);
-                buttonInsertTime.setVisibility(View.INVISIBLE);
+                buttonInsertDateStart.setVisibility(View.GONE);
+                buttonInsertDateEnd.setVisibility(View.GONE);
+                buttonInsertTime.setVisibility(View.GONE);
                 subject = "관리비 청구 요청";
             }
         });
@@ -714,9 +715,9 @@ public class LandLordMessageActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 textViewMsgPreview.setText("안녕하세요 집주인 입니다. \n월세가 아직 입금이 안되었습니다. 확인 후 입금 바랍니다.");
-                buttonInsertDateStart.setVisibility(View.INVISIBLE);
-                buttonInsertDateEnd.setVisibility(View.INVISIBLE);
-                buttonInsertTime.setVisibility(View.INVISIBLE);
+                buttonInsertDateStart.setVisibility(View.GONE);
+                buttonInsertDateEnd.setVisibility(View.GONE);
+                buttonInsertTime.setVisibility(View.GONE);
                 subject = "월세 청구 요청";
             }
         });
@@ -726,9 +727,10 @@ public class LandLordMessageActivity extends AppCompatActivity {
             public void onClick(View v) {
                 textViewMsgPreview.setText("안녕하세요 집주인 입니다. \n0000년 00월 00일 ~ 0000년 00월 00일 공사가 있습니다.\n소음에 양해부탁드립니다.");
                 buttonInsertDateStart.setVisibility(View.VISIBLE);
+                buttonInsertDateStart.setText("시작 날짜 입력하기");
                 buttonInsertDateEnd.setVisibility(View.VISIBLE);
                 titleClicked = "bldgConstruction";
-                buttonInsertTime.setVisibility(View.INVISIBLE);
+                buttonInsertTime.setVisibility(View.GONE);
                 subject = "건물공사 공지";
             }
         });
@@ -736,9 +738,9 @@ public class LandLordMessageActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 textViewMsgPreview.setText("안녕하세요 집주인 입니다. \n층간소음에 대해 항의 연락을 보고받았습니다.\n늦은 저녁 이웃간 층간 소음에 주의해주시길 바랍니다.");
-                buttonInsertDateStart.setVisibility(View.INVISIBLE);
-                buttonInsertDateEnd.setVisibility(View.INVISIBLE);
-                buttonInsertTime.setVisibility(View.INVISIBLE);
+                buttonInsertDateStart.setVisibility(View.GONE);
+                buttonInsertDateEnd.setVisibility(View.GONE);
+                buttonInsertTime.setVisibility(View.GONE);
                 subject = "층간소음 주의";
             }
         });
@@ -746,9 +748,9 @@ public class LandLordMessageActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 textViewMsgPreview.setText("안녕하세요 집주인 입니다. \n분리수거에 신경써 주시길 바랍니다.");
-                buttonInsertDateStart.setVisibility(View.INVISIBLE);
-                buttonInsertDateEnd.setVisibility(View.INVISIBLE);
-                buttonInsertTime.setVisibility(View.INVISIBLE);
+                buttonInsertDateStart.setVisibility(View.GONE);
+                buttonInsertDateEnd.setVisibility(View.GONE);
+                buttonInsertTime.setVisibility(View.GONE);
                 subject = "분리수거";
             }
         });
