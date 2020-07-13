@@ -33,7 +33,7 @@
 
 |IMG|기능|
 |-----|-----|
-|<img src="https://user-images.githubusercontent.com/31427119/87227360-66e5ad80-c3d5-11ea-9a62-bc96b5e97b83.gif" height="350" width="200" >|- Firebase Authentification을 사용한 Email과 핸드폰 번호 인증 <br>- (세입자) 임대인이 먼저 가입한 상태에서만 가입 가능 <br>- (세입자) 임대인이 세입자를 미리 등록했다면 해당 계약 정보 자동으로 표시됨 |
+|<img src="https://user-images.githubusercontent.com/31427119/87297837-0e80ee00-c544-11ea-8fa6-b4d0f8bf74b0.gif" height="350" width="200" >|- Firebase Authentification을 사용한 Email과 핸드폰 번호 인증 <br>- (세입자) 임대인이 먼저 가입한 상태에서만 가입 가능 <br>- (세입자) 임대인이 세입자를 미리 등록했다면 해당 계약 정보 자동으로 표시됨 |
 
 
 ### 1.2 아이디/비밀번호 찾기
