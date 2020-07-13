@@ -40,7 +40,7 @@
 
 |IMG|기능|
 |-----|-----|
-|img|- Firebase Authentification을 사용하여 비밀번호 재설정 링크 전송|
+|<img src="https://user-images.githubusercontent.com/31427119/87296686-1e97ce00-c542-11ea-8ade-da6a5333906a.gif" height="350" width="200" >|- DB에서 이름과 휴대폰 번호로 아이디 검색  <br>- Firebase Authentification을 사용하여 비밀번호 재설정 링크 전송|
 
 ### 1.3 로그인
 
