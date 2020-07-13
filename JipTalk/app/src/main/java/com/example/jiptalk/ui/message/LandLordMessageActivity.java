@@ -32,6 +32,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import com.example.jiptalk.AppData;
 import com.example.jiptalk.R;
 import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -41,8 +42,12 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -757,7 +762,9 @@ public class LandLordMessageActivity extends AppCompatActivity {
     }
 
     int sYear, sMonth, sDay;
-    int eYear, eMonth, eDay;
+    int aYear, aMonth, aDay;
+    boolean isStartDateEntered = false;
+    boolean isDateEntered = false;
 
     public void initializeDatePickerListenr() {
         callbackMethodDatePicker = new DatePickerDialog.OnDateSetListener() {
@@ -768,20 +775,31 @@ public class LandLordMessageActivity extends AppCompatActivity {
                     sYear = year;
                     sMonth = month;
                     sDay = dayOfMonth;
-                    textViewMsgPreview.setText("안녕하세요 집주인 입니다. \n" + year + "년 " + month + "월 " + dayOfMonth + "일 ~ "
-                            + eYear + "년 " + eMonth + "월 " + eDay + "일 공사가 있습니다.\n소음에 양해부탁드립니다.");
+                    textViewMsgPreview.setText("안녕하세요 집주인 입니다. \n" + year + "년 " + (month + 1) + "월 " + dayOfMonth + "일 ~ 0000년 00월 00일 공사가 있습니다.\n소음에 양해부탁드립니다.");
+                    isStartDateEntered = true;
                 } else if (dateStartEnd.equals("end")) {
-                    textViewMsgPreview.setText("안녕하세요 집주인 입니다. \n" + sYear + "년 " + sMonth + "월 " + sDay + "일 ~ "
-                            + year + "년 " + month + "월 " + dayOfMonth + "일 공사가 있습니다.\n소음에 양해부탁드립니다.");
+                    textViewMsgPreview.setText("안녕하세요 집주인 입니다. \n" + sYear + "년 " + (sMonth + 1) + "월 " + sDay + "일 ~ "
+                            + year + "년 " + (month + 1) + "월 " + dayOfMonth + "일 공사가 있습니다.\n소음에 양해부탁드립니다.");
+                } else if (dateStartEnd.equals("date")) {
+                    aYear = year;
+                    aMonth = month;
+                    aDay = dayOfMonth;
+                    textViewMsgPreview.setText("안녕하세요 집주인 입니다. \n" + aYear + "년 " + (aMonth + 1) + "월 " + aDay + "일 00시 00분에 방문 가능한지 여쭤봅니다.");
+                    isDateEntered = true;
                 }
             }
         };
         buttonInsertDateStart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                dateStartEnd = "start";
-                Calendar calendar = Calendar.getInstance(TimeZone.getDefault());
-                DatePickerDialog dialog = new DatePickerDialog(frameLayoutMsgDetail.getContext(), callbackMethodDatePicker, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH + 1), Calendar.DAY_OF_MONTH);
+
+                if (buttonInsertDateStart.getText().equals("날짜 입력하기")) {
+                    dateStartEnd = "date";
+                } else {
+                    dateStartEnd = "start";
+                }
+                Calendar calendar = Calendar.getInstance();
+                DatePickerDialog dialog = new DatePickerDialog(frameLayoutMsgDetail.getContext(), callbackMethodDatePicker, calendar.get(Calendar.YEAR) - 2, calendar.get(Calendar.MONTH + 1), Calendar.DAY_OF_MONTH);
                 dialog.show();
             }
         });
@@ -789,9 +807,13 @@ public class LandLordMessageActivity extends AppCompatActivity {
         buttonInsertDateEnd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (!isStartDateEntered) {
+                    Toast.makeText(LandLordMessageActivity.this, "시작 날짜를 먼저 입력해 주세요.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 dateStartEnd = "end";
                 Calendar calendar = Calendar.getInstance(TimeZone.getDefault());
-                DatePickerDialog dialog = new DatePickerDialog(frameLayoutMsgDetail.getContext(), callbackMethodDatePicker, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH + 1), Calendar.DAY_OF_MONTH);
+                DatePickerDialog dialog = new DatePickerDialog(frameLayoutMsgDetail.getContext(), callbackMethodDatePicker, calendar.get(Calendar.YEAR) - 2, calendar.get(Calendar.MONTH + 1), Calendar.DAY_OF_MONTH);
                 dialog.show();
             }
         });
@@ -800,7 +822,7 @@ public class LandLordMessageActivity extends AppCompatActivity {
         callbackMethodTimePicker = new TimePickerDialog.OnTimeSetListener() {
             @Override
             public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-
+                textViewMsgPreview.setText("안녕하세요 집주인 입니다. \n" + aYear + "년 " + (aMonth + 1) + "월 " + aDay + "일 " + hourOfDay + "시 " + minute + "분에 방문 가능한지 여쭤봅니다.");
             }
         };
 
@@ -808,6 +830,10 @@ public class LandLordMessageActivity extends AppCompatActivity {
         buttonInsertTime.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (!isDateEntered) {
+                    Toast.makeText(LandLordMessageActivity.this, "날짜를 먼저 입력해 주세요.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 TimePickerDialog dialog = new TimePickerDialog(frameLayoutMsgDetail.getContext(), callbackMethodTimePicker, 0, 0, true);
                 dialog.show();
             }
