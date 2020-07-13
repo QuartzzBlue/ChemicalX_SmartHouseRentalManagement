@@ -46,7 +46,7 @@
 
 |IMG|기능|
 |-----|-----|
-|<img src="https://user-images.githubusercontent.com/31427119/87041133-bccb2180-c22c-11ea-8e54-f5ca73121ce4.gif" height="350" width="200" >|- SharedPreference를 사용한 자동 로그인 설정<br>- 등록된 User 의 Category 에 따라 세입자 홈화면,  임대인 홈화면으로 분기|
+|<img src="https://user-images.githubusercontent.com/31427119/87041133-bccb2180-c22c-11ea-8e54-f5ca73121ce4.gif" height="350" width="200" >|- SharedPreference를 사용한 자동 로그인 설정<br>- Firebase Authentification(이메일/비밀번호) 로그인 <br>- 등록된 User 의 Category 에 따라 세입자 홈화면,  임대인 홈화면으로 분기|
 
 ### 1.4 메시지
 
