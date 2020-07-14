@@ -179,82 +179,11 @@ public class MessageFragment extends Fragment {
             @Override
             protected void onBindViewHolder(@NonNull final NotiViewHolder holder, int i, @NonNull final Noti noti) {
 
-                DatabaseReference notiRef = rootRef.child("noti").child(currentUserUID);
-                notiRef.addChildEventListener(new ChildEventListener() {
-                    @Override
-                    public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                        Noti notiDataSnapshot = dataSnapshot.getValue(Noti.class);
-                        Log.d(TAG, "notiDataSnapshot : " + notiDataSnapshot.toString());
-
-                        holder.setBuildingName(notiDataSnapshot.getBuildingName());
-                        holder.setTitle(notiDataSnapshot.getTitle());
-                        holder.setContent(notiDataSnapshot.getContent());
-                        holder.setTime(getDate(notiDataSnapshot.getTime()));
-                    }
-
-                    @Override
-                    public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-                    }
-
-                    @Override
-                    public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-
-                    }
-
-                    @Override
-                    public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                    }
-                });
-                notiRef.addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        if (dataSnapshot.getChildrenCount() == 0) {
-                            return;
-                        }
-
-//                        Noti notiDataSnapshot = dataSnapshot.getValue(Noti.class);
-//                        Log.d(TAG, "notiDataSnapshot : " + notiDataSnapshot.toString());
-//
-//                        String key = dataSnapshot.getKey();
-//                        Log.d(TAG, "noti key : " + key);
-//                        Log.d(TAG, "noti value : " + dataSnapshot.getValue());
-//                        Map<String, Object> notiMap = (Map<String, Object>) dataSnapshot.getValue();
-//                        Iterator<String> notiKeyIterator = notiMap.keySet().iterator();
-//                        while (notiKeyIterator.hasNext()) {
-//                            String notiKey = notiKeyIterator.next();
-//                            Log.d(TAG, "notiKey : " + notiKey);
-//                            Object obj = notiMap.get(notiKey);
-//                            Map notiObjMap = (Map) obj;
-//                            Log.d(TAG, "noti VO buildingName : " + notiObjMap.get("buildingName").toString());
-//
-//
-//                            final String buildingName = notiObjMap.get("buildingName").toString();
-//                            final String title = notiObjMap.get("title").toString();
-//                            final String content = notiObjMap.get("content").toString();
-//                            final Long time = (Long) notiObjMap.get("time");
-//
-//                            Log.d(TAG, "noti added : " + title);
-//
-//
-//                            holder.setBuildingName(buildingName);
-//                            holder.setTitle(title);
-//                            holder.setContent(content);
-//                        }
-
-                    }
-
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-                        Log.d("mOursMessage: ", databaseError.getMessage());
-                    }
-                });
+                Log.d(TAG, "notinoti : " + noti.toString());
+                holder.setBuildingName(noti.getBuildingName());
+                holder.setTitle(noti.getTitle());
+                holder.setContent(noti.getContent());
+                holder.setTime(getDate(noti.getTime()));
             }
 
             @NonNull
