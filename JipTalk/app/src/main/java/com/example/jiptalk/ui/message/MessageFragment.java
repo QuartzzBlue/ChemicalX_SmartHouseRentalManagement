@@ -1,6 +1,7 @@
 package com.example.jiptalk.ui.message;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.format.DateFormat;
@@ -22,6 +23,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -184,6 +186,17 @@ public class MessageFragment extends Fragment {
                 holder.setTitle(noti.getTitle());
                 holder.setContent(noti.getContent());
                 holder.setTime(getDate(noti.getTime()));
+                holder.noticeLayout.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                        builder.setTitle(noti.getBuildingName()).setMessage("제목: " + noti.getTitle() + "\n\n내용:\n" + noti.getContent());
+                        builder.setNegativeButton("닫기", null);
+                        AlertDialog alertDialog = builder.create();
+                        alertDialog.show();
+                    }
+                });
+
             }
 
             @NonNull
