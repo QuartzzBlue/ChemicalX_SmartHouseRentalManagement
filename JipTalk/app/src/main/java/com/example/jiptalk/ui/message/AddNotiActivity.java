@@ -8,6 +8,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.jiptalk.R;
@@ -63,6 +64,15 @@ public class AddNotiActivity extends AppCompatActivity {
         String title = ((EditText) findViewById(R.id.editTextNotiTitle)).getText().toString();
         String content = ((EditText) findViewById(R.id.editTextNotiContent)).getText().toString();
 
+        if (title.equals("") || title == null || content.equals("") || content == null) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("알림").setMessage("제목과 내용 모두 입력해주세요.").setIcon(R.drawable.ic_notifications_black_24dp);
+            builder.setNegativeButton("닫기", null);
+            AlertDialog alertDialog = builder.create();
+            alertDialog.show();
+            return;
+        }
+
         Map notiMap = new HashMap();
         notiMap.put("key", pushID);
         notiMap.put("title", title);
@@ -83,6 +93,6 @@ public class AddNotiActivity extends AppCompatActivity {
                 }
             }
         });
-
+        finish();
     }
 }
