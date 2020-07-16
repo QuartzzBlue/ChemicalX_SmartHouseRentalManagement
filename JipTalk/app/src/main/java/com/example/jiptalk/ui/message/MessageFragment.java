@@ -94,7 +94,7 @@ public class MessageFragment extends Fragment {
     private String category;
     private DatabaseReference rootRef, chatData, userData, myData, buildingData, notiData;
     private FirebaseRecyclerOptions<MessageVO> messageOptions;
-    public FirebaseRecyclerAdapter<MessageVO, MessageViewHolder> messageAdapter;
+    public FirebaseRecyclerAdapter<MessageVO, RecyclerView.ViewHolder> messageAdapter;
 
     private FirebaseRecyclerOptions<Noti> notiOptions;
     public FirebaseRecyclerAdapter<Noti, NotiViewHolder> notiAdapter;
@@ -161,10 +161,19 @@ public class MessageFragment extends Fragment {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 Log.d(TAG, "category : " + dataSnapshot.child("category").getValue().toString());
                 category = dataSnapshot.child("category").getValue().toString();
+                ImageView imageViewDeleteNotice = null;
+                imageViewDeleteNotice = root.findViewById(R.id.imageViewDeleteNotice);
                 if (category.equals("세입자")) {
-                    ImageView imageViewDeleteNotice = root.findViewById(R.id.imageViewDeleteNotice);
                     imageViewDeleteNotice.setVisibility(View.INVISIBLE);
+                } else {
+                    imageViewDeleteNotice.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Toast.makeText(getContext(), "imageViewDeleteNotice Clicked", Toast.LENGTH_SHORT).show();
+                        }
+                    });
                 }
+
             }
 
             @Override
@@ -196,7 +205,6 @@ public class MessageFragment extends Fragment {
                         alertDialog.show();
                     }
                 });
-
             }
 
             @NonNull
@@ -209,7 +217,7 @@ public class MessageFragment extends Fragment {
         };
 
         messageOptions = new FirebaseRecyclerOptions.Builder<MessageVO>().setQuery(chatData, MessageVO.class).build();
-        messageAdapter = new FirebaseRecyclerAdapter<MessageVO, MessageViewHolder>(messageOptions) {
+        messageAdapter = new FirebaseRecyclerAdapter<MessageVO, RecyclerView.ViewHolder>(messageOptions) {
 
             int viewType = VIEWTYPE_NORMAL;
 
@@ -219,68 +227,72 @@ public class MessageFragment extends Fragment {
 
 
             @Override
-            protected void onBindViewHolder(@NonNull final MessageViewHolder holder, final int position, @NonNull final MessageVO model) {
-                final String chatUserUID = getRef(position).getKey();
-                String chatUserToken = "";
+            protected void onBindViewHolder(@NonNull final RecyclerView.ViewHolder holder, final int position, @NonNull final MessageVO model) {
 
-                for (User u : clientList) {
-                    if (u.getUID().equals(chatUserUID)) {
-                        chatUserToken = u.getToken();
+                if (holder instanceof MessageViewHolder) {
+
+
+                    final String chatUserUID = getRef(position).getKey();
+                    String chatUserToken = "";
+
+                    for (User u : clientList) {
+                        if (u.getUID().equals(chatUserUID)) {
+                            chatUserToken = u.getToken();
+                        }
                     }
-                }
-                Log.d(TAG, "chatUserUID : " + chatUserUID);
-                DatabaseReference mRootChat = rootRef.child("chat");
+                    Log.d(TAG, "chatUserUID : " + chatUserUID);
+                    DatabaseReference mRootChat = rootRef.child("chat");
 
-                final String finalChatUserToken = chatUserToken;
-                mRootChat.addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(final DataSnapshot dataSnapshot) {
+                    final String finalChatUserToken = chatUserToken;
+                    mRootChat.addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(final DataSnapshot dataSnapshot) {
 
-                        if (dataSnapshot.child(currentUserUID).child(chatUserUID).child("lastMessageId").getValue() != null) {
-                            String lastMessageId = dataSnapshot.child(currentUserUID).child(chatUserUID).child("lastMessageId").getValue().toString();
-                            holder.chatLayout.setVisibility(View.VISIBLE);
-                            holder.chatLayout.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    Intent intent = null;
-                                    if (category.equals("집주인") | category.equals("임대인")) {
-                                        intent = new Intent(getContext(), LandLordMessageActivity.class);
-                                    } else if (category.equals("세입자")) {
-                                        intent = new Intent(getContext(), TenantMessageActivity.class);
+                            if (dataSnapshot.child(currentUserUID).child(chatUserUID).child("lastMessageId").getValue() != null) {
+                                String lastMessageId = dataSnapshot.child(currentUserUID).child(chatUserUID).child("lastMessageId").getValue().toString();
+                                ((MessageViewHolder) holder).chatLayout.setVisibility(View.VISIBLE);
+                                ((MessageViewHolder) holder).chatLayout.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        Intent intent = null;
+                                        if (category.equals("집주인") | category.equals("임대인")) {
+                                            intent = new Intent(getContext(), LandLordMessageActivity.class);
+                                        } else if (category.equals("세입자")) {
+                                            intent = new Intent(getContext(), TenantMessageActivity.class);
+                                        }
+                                        intent.putExtra("clientName", getChatUserName(chatUserUID));
+                                        intent.putExtra("clientUID", chatUserUID);
+                                        intent.putExtra("clientToken", finalChatUserToken);
+                                        startActivity(intent);
                                     }
-                                    intent.putExtra("clientName", getChatUserName(chatUserUID));
-                                    intent.putExtra("clientUID", chatUserUID);
-                                    intent.putExtra("clientToken", finalChatUserToken);
-                                    startActivity(intent);
-                                }
-                            });
+                                });
 
-                            holder.chatLayout.setOnLongClickListener(new View.OnLongClickListener() {
-                                @Override
-                                public boolean onLongClick(View v) {
-                                    Toast.makeText(getContext(), position + " Long Clicked", Toast.LENGTH_SHORT).show();
+                                ((MessageViewHolder) holder).chatLayout.setOnLongClickListener(new View.OnLongClickListener() {
+                                    @Override
+                                    public boolean onLongClick(View v) {
+                                        Toast.makeText(getContext(), position + " Long Clicked", Toast.LENGTH_SHORT).show();
 
 
-                                    return false;
-                                }
-                            });
-
-
-                            DatabaseReference mOursMessage = rootRef.child("messages").child(currentUserUID).child(chatUserUID).child(lastMessageId);
-                            mOursMessage.addValueEventListener(new ValueEventListener() {
-                                @Override
-                                public void onDataChange(DataSnapshot dataSnapshot) {
-                                    if (dataSnapshot.getChildrenCount() == 0) {
-                                        return;
+                                        return false;
                                     }
-                                    final String fromID = dataSnapshot.child("from").getValue(String.class);
-                                    final String last_message = dataSnapshot.child("message").getValue(String.class);
-                                    final Long message_time = dataSnapshot.child("time").getValue(Long.class);
+                                });
 
-                                    Log.d("===", "chatUserUID: " + chatUserUID);
-                                    holder.setName(getChatUserName(chatUserUID));
-                                    holder.setContent(last_message);
-                                    holder.setTime(getDate(message_time));
+
+                                DatabaseReference mOursMessage = rootRef.child("messages").child(currentUserUID).child(chatUserUID).child(lastMessageId);
+                                mOursMessage.addValueEventListener(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(DataSnapshot dataSnapshot) {
+                                        if (dataSnapshot.getChildrenCount() == 0) {
+                                            return;
+                                        }
+                                        final String fromID = dataSnapshot.child("from").getValue(String.class);
+                                        final String last_message = dataSnapshot.child("message").getValue(String.class);
+                                        final Long message_time = dataSnapshot.child("time").getValue(Long.class);
+
+                                        Log.d("===", "chatUserUID: " + chatUserUID);
+                                        ((MessageViewHolder) holder).setName(getChatUserName(chatUserUID));
+                                        ((MessageViewHolder) holder).setContent(last_message);
+                                        ((MessageViewHolder) holder).setTime(getDate(message_time));
 //
 
 //                                    View.OnClickListener deleteButtonListener = new View.OnClickListener() {
@@ -295,26 +307,28 @@ public class MessageFragment extends Fragment {
 //                                            holder.linearLayoutDeleteMessage.setVisibility(View.VISIBLE);
 //                                        }
 //                                    });
-                                    //imageViewDeleteMessages.setOnClickListener(deleteButtonListener);
+                                        //imageViewDeleteMessages.setOnClickListener(deleteButtonListener);
 
-                                }
+                                    }
 
-                                @Override
-                                public void onCancelled(DatabaseError databaseError) {
-                                    Log.d("mOursMessage: ", databaseError.getMessage());
-                                }
-                            });
-                        } else {
-                            holder.chatLayout.setVisibility(View.GONE);
+                                    @Override
+                                    public void onCancelled(DatabaseError databaseError) {
+                                        Log.d("mOursMessage: ", databaseError.getMessage());
+                                    }
+                                });
+                            } else {
+                                ((MessageViewHolder) holder).chatLayout.setVisibility(View.GONE);
+                            }
                         }
-                    }
 
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-                        Log.d("mRootChat: ", databaseError.getMessage());
-                    }
-                });
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+                            Log.d("mRootChat: ", databaseError.getMessage());
+                        }
+                    });
+                } else if (holder instanceof MessageDeleteViewHolder) {
 
+                }
 
             }
 
@@ -335,8 +349,6 @@ public class MessageFragment extends Fragment {
                     button.setVisibility(View.VISIBLE);
                 }
             }
-
-
         };
 
         //notiItemAdapter = new NotiItemAdapter(notiList);
@@ -685,6 +697,37 @@ public class MessageFragment extends Fragment {
         }
 
     }
+
+    public static class MessageDeleteViewHolder extends RecyclerView.ViewHolder {
+        LinearLayout chatLayout;
+        LinearLayout linearLayoutDeleteMessage;
+        TextView textViewName, textViewTitle, textViewContent;
+
+        public MessageDeleteViewHolder(final View itemView) {
+            super(itemView);
+            chatLayout = itemView.findViewById(R.id.linearLayoutDeleteMessageItem);
+            textViewName = itemView.findViewById(R.id.textViewDeleteMsgName);
+            textViewTitle = itemView.findViewById(R.id.textViewDeleteMsgTitle);
+            textViewContent = itemView.findViewById(R.id.textViewDeleteMsgContent);
+            linearLayoutDeleteMessage = itemView.findViewById(R.id.linearLayoutDeleteMessage);
+
+        }
+
+        public void setName(String name) {
+            textViewName.setText(name);
+        }
+
+        public void setTitle(String title) {
+            textViewTitle.setText(title);
+        }
+
+        public void setContent(String content) {
+            textViewContent.setText(content);
+        }
+
+
+    }
+
 
     // Noti ViewHolder for Firebase RecyclerView Adapter
     public static class NotiViewHolder extends RecyclerView.ViewHolder {
