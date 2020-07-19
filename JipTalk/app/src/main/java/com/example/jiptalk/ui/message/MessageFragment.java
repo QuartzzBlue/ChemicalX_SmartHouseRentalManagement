@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.view.contentcapture.DataRemovalRequest;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -35,6 +36,7 @@ import com.example.jiptalk.R;
 import com.example.jiptalk.vo.Building;
 import com.example.jiptalk.vo.MessageVO;
 import com.example.jiptalk.vo.Noti;
+import com.example.jiptalk.vo.Tenant;
 import com.example.jiptalk.vo.Unit;
 import com.example.jiptalk.vo.User;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
@@ -92,7 +94,7 @@ public class MessageFragment extends Fragment {
     private View mView;
     private String currentUserUID;
     private String category;
-    private DatabaseReference rootRef, chatData, userData, myData, buildingData, notiData;
+    private DatabaseReference rootRef, chatData, tenantData, myData, buildingData, notiData;
     private FirebaseRecyclerOptions<MessageVO> messageOptions;
     public FirebaseRecyclerAdapter<MessageVO, RecyclerView.ViewHolder> messageAdapter;
 
@@ -109,6 +111,7 @@ public class MessageFragment extends Fragment {
     private ArrayList<String> clientList2 = new ArrayList<>();
     private ArrayList<String> buildingNameList = new ArrayList<>();
     private ArrayList<Building> buildingList = new ArrayList<>();
+    private ArrayList<String> buildingKeyList = new ArrayList<>();
 
 
 //    private MessageViewModel notificationsViewModel;
@@ -445,26 +448,34 @@ public class MessageFragment extends Fragment {
          * @author: JHM9191
          * @detail: set name of clients in spinner when add new message button clicked to add new message
          */
-//        userData = FirebaseDatabase.getInstance().getReference().child("client"); // data should be fetched from client collection
-        userData = FirebaseDatabase.getInstance().getReference().child("user"); // let's just get data from user from now.
+//        tenantData = FirebaseDatabase.getInstance().getReference().child("client"); // data should be fetched from client collection
+        tenantData = FirebaseDatabase.getInstance().getReference().child("registeredTenants"); // let's just get data from user from now.
 
 //        userData.addListenerForSingleValueEvent(new ValueEventListener() {
-        userData.addValueEventListener(new ValueEventListener() {
+        tenantData.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                Log.d(TAG, "tenantData dataSnapshot : " + dataSnapshot);
 
-                for (DataSnapshot userSnapshot : dataSnapshot.getChildren()) {
-                    Log.d(TAG, "Entered MessageFragment addListenerForSingleValueEvent");
+                for (DataSnapshot tenantSnapshot : dataSnapshot.getChildren()) {
+                    Log.d(TAG, "Entered MessageFragment addValueEventListener");
+                    Log.d(TAG, "tenantSnapshot : " + tenantSnapshot);
+                    Tenant tenant = tenantSnapshot.getValue(Tenant.class);
+                    Log.d(TAG, "tenant : " + tenant.toString());
+                    for (String key : buildingKeyList) {
+                        if (key.equals(tenant.getBuildingID())) {
 
-                    User client = userSnapshot.getValue(User.class);
-                    client.setUID(userSnapshot.getKey());
-                    Log.d(TAG, client.toString());
-                    Log.d(TAG, client.getUID() + "");
-
-                    if (client != null) {
-                        clientList.add(client);
-                        clientNameList.add(client.getName());
+                            clientNameList.add(tenant.getName());
+                            Log.d(TAG, "clientNameList : " + clientNameList);
+                        }
                     }
+//                    Log.d(TAG, "" + client.toString());
+//                    Log.d(TAG, client.getUID() + "");
+//
+//                    if (client != null) {
+//                        clientList.add(client);
+//                        clientNameList.add(client.getName());
+//                    }
                 }
                 arrayAdapterNoti = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_dropdown_item, buildingNameList);
                 spinnerBuildingList.setAdapter(arrayAdapterNoti);
@@ -610,6 +621,7 @@ public class MessageFragment extends Fragment {
 
         buildingData = rootRef.child("buildings").child(currentUserUID);
         buildingData.addValueEventListener(new ValueEventListener() {
+
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
@@ -617,7 +629,11 @@ public class MessageFragment extends Fragment {
                     buildingItem.setId(postSnapshot.getKey());
                     buildingList.add(buildingItem);
                     buildingNameList.add(buildingItem.getName());
+
+
+                    buildingKeyList.add(postSnapshot.getKey());
                 }
+                Log.d(TAG, "buildingKeyList.toString() : " + buildingKeyList.toString());
             }
 
             @Override
