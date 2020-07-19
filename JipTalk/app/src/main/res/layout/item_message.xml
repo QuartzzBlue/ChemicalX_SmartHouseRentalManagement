@@ -1,85 +1,90 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.zerobranch.layout.SwipeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/linearLayoutMessageItem"
+    android:id="@+id/swipe_layout_message"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_margin="10dp">
+    android:layout_height="80dp"
+    android:layout_margin="10dp"
+    app:draggedItem="@id/linearLayoutMessageItem"
+    app:leftItem="@id/imageView_message_delete"
+    app:swipeDirection="right">
 
-    <FrameLayout
-        android:layout_width="60dp"
-        android:layout_height="60dp"
-        android:layout_weight="1">
-
-
-        <androidx.cardview.widget.CardView
-            android:id="@+id/card"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:cardBackgroundColor="@color/design_default_color_primary"
-            app:cardCornerRadius="30dp" />
-
-        <TextView
-            android:id="@+id/textViewMsgName"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:elevation="@android:dimen/app_icon_size"
-            android:foregroundGravity="top"
-            android:gravity="center"
-            android:text="최여진"
-            android:textAlignment="center"
-            android:textColor="@android:color/white"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:translationZ="@dimen/cardview_compat_inset_shadow" />
-
-    </FrameLayout>
+    <ImageView
+        android:id="@+id/imageView_message_delete"
+        android:layout_width="80dp"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        android:gravity="center"
+        android:paddingStart="24dp"
+        android:paddingEnd="24dp"
+        android:src="@android:drawable/ic_delete"
+        android:visibility="invisible" />
 
     <LinearLayout
+        android:id="@+id/linearLayoutMessageItem"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="10dp"
-        android:layout_weight="30"
-        android:orientation="vertical"
-        android:paddingLeft="5dp">
+        android:layout_height="80dp">
 
-        <TextView
-            android:id="@+id/textViewMsgTitle"
+
+        <FrameLayout
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_weight="1">
+
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/card"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:cardBackgroundColor="@color/design_default_color_primary"
+                app:cardCornerRadius="30dp" />
+
+            <TextView
+                android:id="@+id/textViewMsgName"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:elevation="@android:dimen/app_icon_size"
+                android:foregroundGravity="top"
+                android:gravity="center"
+                android:text="최여진"
+                android:textAlignment="center"
+                android:textColor="@android:color/white"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:translationZ="@dimen/cardview_compat_inset_shadow" />
+
+        </FrameLayout>
+
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="메세지 제목"
-            android:textColor="@android:color/black"
-            android:textSize="18sp"
-            android:textStyle="bold" />
+            android:layout_marginLeft="10dp"
+            android:layout_weight="30"
+            android:orientation="vertical"
+            android:paddingLeft="5dp">
+
+            <TextView
+                android:id="@+id/textViewMsgTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="메세지 제목"
+                android:textColor="@android:color/black"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/textViewMsgContent"
+                android:layout_width="match_parent"
+                android:layout_height="34dp"
+                android:text="메세지 내용" />
+        </LinearLayout>
 
         <TextView
-            android:id="@+id/textViewMsgContent"
-            android:layout_width="match_parent"
-            android:layout_height="30dp"
-            android:text="메세지 내용" />
+            android:id="@+id/textViewMsgTime"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="00:00pm"
+            android:textAlignment="textEnd" />
     </LinearLayout>
-
-    <TextView
-        android:id="@+id/textViewMsgTime"
-        android:layout_width="100dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:text="00:00pm"
-        android:textAlignment="textEnd" />
-
-    <LinearLayout
-        android:id="@+id/linearLayoutDeleteMessage"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
-        android:gravity="right|center_vertical"
-        android:orientation="horizontal"
-        android:visibility="gone">
-
-        <ImageView
-            android:id="@+id/imageViewDeleteMessage"
-            android:layout_width="45dp"
-            android:layout_height="45dp"
-            app:srcCompat="@android:drawable/ic_menu_delete" />
-    </LinearLayout>
-</LinearLayout>
+</com.zerobranch.layout.SwipeLayout>
