@@ -460,7 +460,7 @@ public class MessageFragment extends Fragment {
                 for (DataSnapshot tenantSnapshot : dataSnapshot.getChildren()) {
                     Log.d(TAG, "Entered MessageFragment addValueEventListener");
                     Log.d(TAG, "tenantSnapshot : " + tenantSnapshot);
-                    Tenant tenant = tenantSnapshot.getValue(Tenant.class);
+                    final Tenant tenant = tenantSnapshot.getValue(Tenant.class);
                     Log.d(TAG, "tenant : " + tenant.toString());
                     for (String key : buildingKeyList) {
                         if (key.equals(tenant.getBuildingID())) {
@@ -469,6 +469,25 @@ public class MessageFragment extends Fragment {
                             Log.d(TAG, "clientNameList : " + clientNameList);
                         }
                     }
+
+                    DatabaseReference userData = rootRef.child("user");
+                    userData.addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            for (DataSnapshot userSnapshot : dataSnapshot.getChildren()) {
+                                Log.d(TAG, "userSnapshot.getValue  : " + userSnapshot.getValue(User.class).toString());
+                                User user = userSnapshot.getValue(User.class);
+                                if (tenant.getUnitID().equals(user.getUnitID())) {
+                                    clientList.add(user);
+                                }
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                        }
+                    });
 //                    Log.d(TAG, "" + client.toString());
 //                    Log.d(TAG, client.getUID() + "");
 //
