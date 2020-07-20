@@ -528,10 +528,20 @@ public class MessageFragment extends Fragment {
                     @Override
                     public void onItemSelected(AdapterView<?> parent, View view, final int position, long id) {
                         clientSelected = clientNameList.get(position);
+
+                        String name = null;
+                        for (User user : clientList) {
+                            if (clientSelected.equals(user.getName())) {
+                                name = user.getName();
+                            }
+
+                        }
+
+                        final String finalName = name;
                         buttonAddMsg.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                if (clientSelected != null) {
+                                if (clientSelected != null && finalName != null) {
                                     Intent intent = null;
                                     if (category.equals("집주인") | category.equals("임대인")) {
                                         intent = new Intent(getContext(), LandLordMessageActivity.class);
@@ -543,6 +553,12 @@ public class MessageFragment extends Fragment {
                                     intent.putExtra("clientName", clientSelected + "");
                                     intent.putExtra("clientToken", clientList.get(position).getToken() + "");
                                     startActivity(intent);
+                                } else if (finalName == null) {
+                                    AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                                    builder.setTitle("알림").setMessage("없는 계정입니다.");
+                                    builder.setNegativeButton("닫기", null);
+                                    AlertDialog alertDialog = builder.create();
+                                    alertDialog.show();
                                 }
                             }
                         });
