@@ -583,9 +583,12 @@ public class MessageFragment extends Fragment {
         fabAddBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (category != null && category.equals("세입자")) {
-                    fabAddNoti.setVisibility(View.GONE);
-                }
+//                if (category != null && category.equals("세입자")) {
+//                    Log.d(TAG, "clicked fabAddBtn 세입자");
+//                    fabAddNoti.setVisibility(View.GONE);
+//                } else if (category != null && (category.equals("집주인") || category.equals("임대인"))) {
+//                    Log.d(TAG, "clicked fabAddBtn 집주인");
+//                }
                 frameLayoutMessage.setAlpha(0.7f);
                 frameLayoutMessage.setClickable(true);
                 anim();
@@ -735,22 +738,37 @@ public class MessageFragment extends Fragment {
 //            frameLayoutMessage.setAlpha(0);
             frameLayoutMessage.setVisibility(View.GONE);
             fabAddMsg.startAnimation(fab_close);
-            fabAddNoti.startAnimation(fab_close);
             fabAddMsg.setClickable(false);
-            fabAddNoti.setClickable(false);
             textViewAddMsg.setVisibility(View.INVISIBLE);
-            textViewAddNoti.setVisibility(View.INVISIBLE);
+            if (category != null && category.equals("세입자")) {
+                Log.d(TAG, "세입자 GONE if");
+                fabAddNoti.setVisibility(View.GONE);
+                textViewAddNoti.setVisibility(View.GONE);
+
+            } else {
+                fabAddNoti.startAnimation(fab_close);
+                fabAddNoti.setClickable(false);
+                textViewAddNoti.setVisibility(View.INVISIBLE);
+            }
+
             isFabOpen = false;
         } else {
             frameLayoutMessage.setVisibility(View.VISIBLE);
             frameLayoutMessage.setAlpha(0.7f);
             frameLayoutMessage.setClickable(true);
             fabAddMsg.startAnimation(fab_open);
-            fabAddNoti.startAnimation(fab_open);
             fabAddMsg.setClickable(true);
-            fabAddNoti.setClickable(true);
             textViewAddMsg.setVisibility(View.VISIBLE);
-            textViewAddNoti.setVisibility(View.VISIBLE);
+            if (category != null && category.equals("세입자")) {
+                Log.d(TAG, "세입자 GONE else");
+                fabAddNoti.setVisibility(View.GONE);
+                textViewAddNoti.setVisibility(View.GONE);
+            } else {
+                fabAddNoti.startAnimation(fab_open);
+                fabAddNoti.setClickable(true);
+                textViewAddNoti.setVisibility(View.VISIBLE);
+            }
+
             isFabOpen = true;
         }
     }
