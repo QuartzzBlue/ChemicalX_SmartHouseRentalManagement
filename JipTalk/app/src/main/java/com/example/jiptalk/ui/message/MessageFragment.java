@@ -264,7 +264,7 @@ public class MessageFragment extends Fragment {
                             chatUserToken = u.getToken();
                         }
                     }
-                    Log.d(TAG, "chatUserUID : " + chatUserUID);
+                    Log.d(TAG, "chat chatUserUID : " + chatUserUID);
                     DatabaseReference mRootChat = rootRef.child("chat");
 
                     final String finalChatUserToken = chatUserToken;
@@ -284,6 +284,8 @@ public class MessageFragment extends Fragment {
                                         } else if (category.equals("세입자")) {
                                             intent = new Intent(getContext(), TenantMessageActivity.class);
                                         }
+
+                                        Log.d(TAG, "chatUserUID : " + chatUserUID);
                                         intent.putExtra("clientName", getChatUserName(chatUserUID));
                                         intent.putExtra("clientUID", chatUserUID);
                                         intent.putExtra("clientToken", finalChatUserToken);
