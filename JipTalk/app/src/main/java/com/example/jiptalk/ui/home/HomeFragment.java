@@ -133,7 +133,7 @@ public class HomeFragment extends Fragment {
 
                     Credit creditItem = postSnapshot.getValue(Credit.class);
 
-                    if(creditItem.getBillingDate().contains(thisDate)){
+                    if(creditItem.getBillingDate().contains(thisDate) && creditItem.getStatus().equals("완납")){
                         totalMonthlyIncome+=Integer.parseInt(creditItem.getCredit());
                     }
                 }
@@ -245,7 +245,7 @@ public class HomeFragment extends Fragment {
 
     private void setData(){
 
-        ((TextView)root.findViewById(R.id.tv_home_totalMonthlyIncome)).setText(NumberFormat.getInstance(Locale.getDefault()).format(AppData.totalMonthlyIncome)+"원");
+        ((TextView)root.findViewById(R.id.tv_home_totalMonthlyIncome)).setText(NumberFormat.getInstance(Locale.getDefault()).format(totalMonthlyIncome)+"원");
         ((TextView)root.findViewById(R.id.tv_home_paymentStatus)).setText(totalPaidCnt+"/"+totalUnitCnt);
 
     }
