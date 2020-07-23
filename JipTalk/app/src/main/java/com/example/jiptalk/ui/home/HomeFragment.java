@@ -124,8 +124,6 @@ public class HomeFragment extends Fragment {
 
                 Log.v("===","getTotalMonthlyIncome executed");
 
-                totalMonthlyIncome = 0;
-
                 for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
 
                     Calendar calendar = Calendar.getInstance();
