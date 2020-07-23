@@ -74,7 +74,7 @@
 
 |IMG|기능|
 |-----|-----|
-|img|- 납부 현황 및 월 총 납입금 요약<br>- 소유 건물 및 미납 현황 파악(Recycler View)|
+|<img src="https://user-images.githubusercontent.com/58680458/88296962-50771480-cd3a-11ea-9d28-13489a12bf77.JPG" height="350" width="200" >|- 납부 현황 및 월 총 납입금 요약<br>- 소유 건물 및 미납 현황 파악(Recycler View)|
 
 ### 2.2 건물 추가
 
