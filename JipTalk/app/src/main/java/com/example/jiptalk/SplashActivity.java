@@ -150,13 +150,7 @@ public class SplashActivity extends Activity {
         String email = appData.getString("email","");
         String password = appData.getString("password","");
 
-        getCurrentUser();
-
         return;
-    }
-
-    public void getCurrentUser(){
-        AppData.userUID = FirebaseAuth.getInstance().getCurrentUser().getUid();
     }
 
 
