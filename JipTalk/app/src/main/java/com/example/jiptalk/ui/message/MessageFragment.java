@@ -755,12 +755,7 @@ public class MessageFragment extends Fragment {
 
             isFabOpen = false;
         } else {
-            frameLayoutMessage.setVisibility(View.VISIBLE);
-            frameLayoutMessage.setAlpha(0.7f);
-            frameLayoutMessage.setClickable(true);
-            fabAddMsg.startAnimation(fab_open);
-            fabAddMsg.setClickable(true);
-            textViewAddMsg.setVisibility(View.VISIBLE);
+
             if (category != null && category.equals("세입자")) {
                 Log.d(TAG, "세입자 GONE else");
                 fabAddNoti.setVisibility(View.GONE);
@@ -770,6 +765,12 @@ public class MessageFragment extends Fragment {
                 fabAddNoti.setClickable(true);
                 textViewAddNoti.setVisibility(View.VISIBLE);
             }
+            frameLayoutMessage.setVisibility(View.VISIBLE);
+            frameLayoutMessage.setAlpha(0.7f);
+            frameLayoutMessage.setClickable(true);
+            fabAddMsg.startAnimation(fab_open);
+            fabAddMsg.setClickable(true);
+            textViewAddMsg.setVisibility(View.VISIBLE);
 
             isFabOpen = true;
         }
