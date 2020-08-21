@@ -1,6 +1,7 @@
 package com.example.jiptalk.tenant;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
@@ -13,16 +14,16 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.jiptalk.AppData;
 import com.example.jiptalk.R;
-import com.example.jiptalk.TenantPayDialog;
+import com.example.jiptalk.tenant.retrofit.RetrofitService;
 import com.example.jiptalk.vo.Building;
 import com.example.jiptalk.vo.Credit;
+import com.example.jiptalk.vo.KakaoPayResponse;
 import com.example.jiptalk.vo.Unit;
 import com.example.jiptalk.vo.User;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -36,7 +37,6 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
 
-import java.lang.reflect.Array;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -46,6 +46,12 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 public class THomeFragment extends Fragment {
 
@@ -80,9 +86,63 @@ public class THomeFragment extends Fragment {
             @Override
             public void onClick(View v) {
 
-                FragmentManager fm = getActivity().getSupportFragmentManager();
-                TenantPayDialog tenantPayDialog = new TenantPayDialog(getContext(), landlordUser, tenantUser,building,unit,credit);
-                tenantPayDialog.show(fm, "tenantPayFeeDialog show");
+//                FragmentManager fm = getActivity().getSupportFragmentManager();
+//                TenantPayDialog tenantPayDialog = new TenantPayDialog(getContext(), landlordUser, tenantUser,building,unit,credit);
+//                tenantPayDialog.show(fm, "tenantPayFeeDialog show");
+
+                Retrofit retrofit = new Retrofit.Builder()
+                        .baseUrl("https://kapi.kakao.com")
+                        .addConverterFactory(GsonConverterFactory.create())
+                        .build();
+
+                HashMap<String, Object> body = new HashMap<>();
+                body.put("cid", "TC0ONETIME");
+                body.put("partner_order_id", unit.getUnitNum());
+                body.put("partner_user_id", unit.getUnitNum()+"호"+unit.getTenantName());
+                body.put("item_name", "월세납부");
+                body.put("quantity", 1);
+                body.put("total_amount", Integer.parseInt(credit.getCredit()));
+                body.put("tax_free_amount", 0);
+                body.put("approval_url", "https://developers.kakao.com/success");
+                body.put("fail_url", "https://developers.kakao.com/fail");
+                body.put("cancel_url", "https://developers.kakao.com/cancel");
+
+                HashMap<String, Object> header = new HashMap<>();
+                String kakaoApiKey = getString(R.string.kakaopay_api_key);
+                header.put("Authorization", "KakaoAK "+kakaoApiKey);
+                header.put("Content-Type", "application/x-www-form-urlencoded;charset=UTF-8");
+
+
+                RetrofitService retrofitService = retrofit.create(RetrofitService.class);
+
+                Log.d("===", "retrofitService 객체생성");
+
+                retrofitService.postRedirect(header,body).enqueue(new Callback<KakaoPayResponse>(){
+
+                    @Override
+                    public void onResponse(Call<KakaoPayResponse> call, Response<KakaoPayResponse> response) {
+                        if(response.isSuccessful()) {
+                            KakaoPayResponse data = response.body();
+                            Log.d("===", "kakao페이 연동 성공");
+                            Log.d("===", "app url : " + data.getRedirect_app_url());
+                            Log.d("===", "app scheme : " + data.getAndroid_app_scheme());
+                            Log.d("===", "mobile url : " + data.getRedirect_mobile_url());
+                            Intent intent = new Intent(getContext(), WebViewActivity.class);
+                            intent.putExtra("redirect_url", data.getRedirect_mobile_url());
+                            intent.putExtra("scheme", data.getAndroid_app_scheme());
+                            startActivity(intent);
+
+                        }else{
+                            Log.d("===", "response : "+ response.message() + " " + response.code());
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<KakaoPayResponse> call, Throwable t) {
+                        t.printStackTrace();
+                        Log.d("===", "kakao페이 연동 실패");
+                    }
+                });
 
             }
         });
