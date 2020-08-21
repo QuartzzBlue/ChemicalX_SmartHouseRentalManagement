@@ -6,8 +6,12 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.Signature;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Base64;
 import android.util.Log;
 
 import com.example.jiptalk.vo.Building;
@@ -19,6 +23,9 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.security.MessageDigest;
+
+
 public class SplashActivity extends Activity {
 
     private static final String TAG = "SplashActivity";
@@ -28,6 +35,7 @@ public class SplashActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getAppKeyHash();
 
         /** 자동 로그인 체크 **/
         isAutoLogin();
@@ -151,6 +159,22 @@ public class SplashActivity extends Activity {
         String password = appData.getString("password","");
 
         return;
+    }
+
+    private void getAppKeyHash() {
+        try {
+            PackageInfo info = getPackageManager().getPackageInfo(getPackageName(), PackageManager.GET_SIGNATURES);
+            for (Signature signature : info.signatures) {
+                MessageDigest md;
+                md = MessageDigest.getInstance("SHA");
+                md.update(signature.toByteArray());
+                String something = new String(Base64.encode(md.digest(), 0));
+                Log.e("Hash key", something);
+            }
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            Log.e("name not found", e.toString());
+        }
     }
 
 

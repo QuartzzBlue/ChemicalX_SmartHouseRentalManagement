@@ -1,5 +1,17 @@
 {
   "projects": {
     "default": "smart-house-rental-management"
+  },
+  "targets": {
+    "smart-house-rental-management": {
+      "hosting": {
+        "server": [
+          "smart-house-rental-management"
+        ],
+        "kakaopay": [
+          "kakaopaytest"
+        ]
+      }
+    }
   }
 }

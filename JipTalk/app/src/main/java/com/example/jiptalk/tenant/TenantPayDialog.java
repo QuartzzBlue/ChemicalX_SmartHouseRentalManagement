@@ -1,22 +1,13 @@
-package com.example.jiptalk;
+package com.example.jiptalk.tenant;
 
-import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
+import android.content.Intent;
 import android.os.Bundle;
-import android.text.TextUtils;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.Button;
-import android.widget.LinearLayout;
-import android.widget.ListAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -25,17 +16,18 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 
+import com.example.jiptalk.R;
+import com.example.jiptalk.tenant.retrofit.RetrofitService;
 import com.example.jiptalk.ui.message.PushFCMMessageThread;
-import com.example.jiptalk.vo.Account;
 import com.example.jiptalk.vo.Building;
 import com.example.jiptalk.vo.Credit;
+import com.example.jiptalk.vo.KakaoPayResponse;
 import com.example.jiptalk.vo.Unit;
 import com.example.jiptalk.vo.User;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
@@ -43,10 +35,17 @@ import java.text.NumberFormat;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Locale;
-import java.util.Map;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 
 public class TenantPayDialog extends DialogFragment {
+    private int REQUEST_TEST = 0;
+    private int RESULT_OK = 1;
     private Context context;
     User landlord,tenant;
     Building building;
@@ -94,7 +93,62 @@ public class TenantPayDialog extends DialogFragment {
                 .setPositiveButton("확인", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(final DialogInterface dialog, int id) {
-                        updateCredit();
+                        Log.d("===", "click positive button");
+
+                        Retrofit retrofit = new Retrofit.Builder()
+                                .baseUrl("https://kapi.kakao.com")
+                                .addConverterFactory(GsonConverterFactory.create())
+                                .build();
+
+                        Log.d("===", "Retrofit 객체생성");
+
+                        HashMap<String, Object> body = new HashMap<>();
+                        body.put("cid", "TC0ONETIME");
+                        body.put("partner_order_id", unit.getUnitNum());
+                        body.put("partner_user_id", unit.getUnitNum()+"호"+unit.getTenantName());
+                        body.put("item_name", "월세납부");
+                        body.put("quantity", 1);
+                        body.put("total_amount", Integer.parseInt(credit.getCredit()));
+                        body.put("tax_free_amount", 0);
+                        body.put("approval_url", "https://github.com/QuartzzBlue");
+                        body.put("fail_url", "https://developers.kakao.com");
+                        body.put("cancel_url", "https://developers.kakao.com/cancel");
+
+                        HashMap<String, Object> header = new HashMap<>();
+                        String kakaoApiKey = getString(R.string.kakaopay_api_key);
+                        header.put("Authorization", "KakaoAK "+kakaoApiKey);
+                        header.put("Content-Type", "application/x-www-form-urlencoded;charset=UTF-8");
+
+                        Log.d("===", "header, body 객체생성");
+
+                        RetrofitService retrofitService = retrofit.create(RetrofitService.class);
+
+                        Log.d("===", "retrofitService 객체생성");
+
+                        retrofitService.postRedirect(header,body).enqueue(new Callback<KakaoPayResponse>(){
+
+                            @Override
+                            public void onResponse(Call<KakaoPayResponse> call, Response<KakaoPayResponse> response) {
+                                if(response.isSuccessful()) {
+                                    KakaoPayResponse data = response.body();
+                                    Log.d("===", "kakao페이 연동 성공");
+                                    Log.d("===", data.getRedirect_mobile_url());
+
+                                    Intent intent = new Intent(context, WebViewActivity.class);
+                                    intent.putExtra("redirect_url", data.getRedirect_mobile_url());
+                                    startActivityForResult(intent, REQUEST_TEST);
+
+                                }
+                            }
+
+                            @Override
+                            public void onFailure(Call<KakaoPayResponse> call, Throwable t) {
+                                t.printStackTrace();
+                                Log.d("===", "kakao페이 연동 실패");
+                            }
+                        });
+
+
                     }
                 })
                 .setNegativeButton("취소", new DialogInterface.OnClickListener() {
@@ -103,7 +157,26 @@ public class TenantPayDialog extends DialogFragment {
                     }
                 });
 
+
+
+
         return builder.create();
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == REQUEST_TEST) {
+            if (resultCode == RESULT_OK) {
+                updateCredit();
+                Toast.makeText(context, "Result: " + data.getStringExtra("result"), Toast.LENGTH_SHORT).show();
+            } else {   // RESULT_CANCEL
+                Toast.makeText(context, "Failed", Toast.LENGTH_SHORT).show();
+            }
+//        } else if (requestCode == REQUEST_ANOTHER) {
+//            ...
+        }
     }
 
     private void updateCredit(){
